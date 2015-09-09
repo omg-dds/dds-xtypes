@@ -7,7 +7,7 @@ These tests can be used to validate compliance with DDS-XTYPES each DDS implemen
 
 The test uses 25 different "versions" of a data-type. These variations are obtained by adding, removing or reordering different attributes. They are also obtained by declaring different extensibility kinds for the data type (Final, Extensible, and Mutable). These types are declared in the ShapeTypes.idl file or the equivalent ShapeTypes.xml files. These 25 types are:
 
-Default kind  | Final kind  | Extensible kind  | Mutable kind  | Mutable with explicit ID 
+Default extensibility  | Final extensibility  | Extensible extensibility  | Mutable extensibility  | Mutable with explicit ID 
 ------------- | ----------- | ---------------- | ------------- | ------------------------ 
 Shape1Default | Shape1Final | Shape1Extensible | Shape1Mutable | Shape1MutableExplicitID
 Shape2Default | Shape2Final | Shape2Extensible | Shape2Mutable | Shape2MutableExplicitID 
