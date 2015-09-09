@@ -6,11 +6,13 @@ The executables in this repository test communication between DDS DataWriters an
 These tests can be used to validate compliance with DDS-XTYPES each DDS implementation separately. The same executables can also be used to test interoperability between different DDS implementations. E.g. between RTI Connext DDS and TwinOaks CoreDX.
 
 The test uses 25 different "versions" of a data-type. These variations are obtained by adding, removing or reordering different attributes. They are also obtained by declaring different extensibility kinds for the data type (Final, Extensible, and Mutable). These types are declared in the ShapeTypes.idl file or the equivalent ShapeTypes.xml files. These 25 types are:
-Shape1Default, Shape1Final, Shape1Extensible, Shape1Mutable, Shape1MutableExplicitID, 
-Shape2Default, Shape2Final, Shape2Extensible, Shape2Mutable, Shape2MutableExplicitID, 
-Shape3Default, Shape3Final, Shape3Extensible, Shape3Mutable, Shape3MutableExplicitID, 
-Shape4Default, Shape4Final, Shape4Extensible, Shape4Mutable, Shape4MutableExplicitID, 
-Shape5Default, Shape5Final, Shape5Extensible, Shape5Mutable, Shape5MutableExplicitID
+Default kind  | Final kind  | Extensible kind | Mutable kind | Mutable with explicit ID |
+------------- |-------------| ---------------- |---------------|--------------------------|
+Shape1Default | Shape1Final | Shape1Extensible | Shape1Mutable | Shape1MutableExplicitID
+Shape2Default | Shape2Final | Shape2Extensible | Shape2Mutable | Shape2MutableExplicitID 
+Shape3Default | Shape3Final | Shape3Extensible | Shape3Mutable | Shape3MutableExplicitID
+Shape4Default | Shape4Final | Shape4Extensible | Shape4Mutable | Shape4MutableExplicitID
+Shape5Default | Shape5Final |  Shape5Extensible| Shape5Mutable | Shape5MutableExplicitID
 
 There are two executables. The first is called "Shapes_publisher" and can be configured via command-line parameters to publish  one of the 25 types. The second is called "Shapes_subscriber" and can be configured via command-line parameters to subscribe one one of the 25 types.
 
@@ -23,7 +25,7 @@ In accordance with the DDS-XTYPES specification some of these type combinations 
 The following is an example execution:
 
 ON THE PUBLISHER COMPUTER:
-
+```
 rti_xtypes$ ./ShapeType_subscriber 0 Shape2Extensible
 Waiting for data on topic "XTYPESTestTopic", type "Shape2Extensible"
 on_subscription_matched: topic "XTYPESTestTopic", type "Shape2Extensible", count: 1, change: 1
@@ -61,4 +63,5 @@ Writing Topic "XTYPESTestTopic", type "Shape1Extensible", count 2, data:
    y: 4
    shapesize: 30
 ....
+'''
 
