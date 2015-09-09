@@ -1,7 +1,7 @@
 # dds-xtypes
 Validation of interoperability  of products compliant with [OMG DDS-XTYPES standard](http://www.omg.org/spec/DDS-XTypes/). This is considered one of the core [DDS Specifications](http://portals.omg.org/dds/omg-dds-standard/). See http://portals.omg.org/dds/ for an overview of DDS.
 
-The executables in this repository test communication between *DDS DataWriters* and *DDS DataReaders* using different "versions" of a data type.  The goal is that the compatibility rules are implemented in compliance with the **OMG DDS-XTYPES**. specification.
+The executables in this repository test communication between *DDS DataWriters* and *DDS DataReaders* using different "versions" of a data type.  The goal is that the compatibility rules are implemented in compliance with the **OMG DDS-XTYPES** specification.
 
 These tests can be used to validate compliance with **OMG DDS-XTYPES** each DDS implementation separately. The same executables can also be used to test interoperability between different DDS implementations. E.g. between *RTI Connext DDS* and *TwinOaks CoreDX*.
 
