@@ -25,7 +25,7 @@ In accordance with the **OMG DDS-XTYPES** specification some of these type combi
 
 The following is an example execution:
 
-ON THE PUBLISHER COMPUTER:
+ON THE SUBSCRIBER COMPUTER:
 ```
 dds_xtypes$ ./ShapeType_subscriber 0 Shape2Extensible
 Waiting for data on topic "XTYPESTestTopic", type "Shape2Extensible"
@@ -46,7 +46,7 @@ Read data for Topic XTYPESTestTopic
    angle: 0.000000
 ....
 ```
-ON THE SUBSCRIBER COMPUTER:
+ON THE PUBLISHER COMPUTER:
 ```
 dds_xtypes$ ./ShapeType_publisher 0 Shape1Extensible
 Writing Topic "XTYPESTestTopic", type "Shape1Extensible", count 0, data:
