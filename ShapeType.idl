@@ -1,0 +1,185 @@
+
+const long STR_LEN_MAX=32;
+
+/* -------------- Shape1 -----------------------------*/
+struct Shape1Default {
+  string<STR_LEN_MAX> color; //@Key
+  long x;
+  long y;
+  long shapesize;
+}; 
+
+struct Shape1Final {
+  string<STR_LEN_MAX> color; //@Key
+  long x;
+  long y;
+  long shapesize;
+}; //@Extensibility( FINAL_EXTENSIBILITY ) 
+
+struct Shape1Extensible {
+  string<STR_LEN_MAX> color; //@Key
+  long x;
+  long y;
+  long shapesize;
+}; //@Extensibility( EXTENSIBLE_EXTENSIBILITY ) 
+
+struct Shape1Mutable {
+  string<STR_LEN_MAX> color; //@Key
+  long x;
+  long y;
+  long shapesize;
+}; //@Extensibility( MUTABLE_EXTENSIBILITY ) 
+
+struct Shape1MutableExplicitID {
+  string<STR_LEN_MAX> color; //@Key //@ID( 10 )
+  long x; //@ID( 20 )
+  long y; 
+  long shapesize; //@ID( 30 )
+}; //@Extensibility( MUTABLE_EXTENSIBILITY ) 
+
+/* -------------- Shape2 -----------------------------*/
+
+struct Shape2Default {
+  string<STR_LEN_MAX> color; //@Key
+  long x;
+  long y;
+  long shapesize;
+  float angle;
+};
+
+struct Shape2Final {
+  string<STR_LEN_MAX> color; //@Key
+  long x;
+  long y;
+  long shapesize;
+  float angle;
+}; //@Extensibility( FINAL_EXTENSIBILITY ) 
+
+struct Shape2Extensible {
+  string<STR_LEN_MAX> color; //@Key 
+  long x;
+  long y;
+  long shapesize;
+  float angle;
+}; //@Extensibility( EXTENSIBLE_EXTENSIBILITY ) 
+
+struct Shape2Mutable {
+  string<STR_LEN_MAX> color; //@Key 
+  long x;
+  long y;
+  long shapesize;
+  float angle;
+}; //@Extensibility( MUTABLE_EXTENSIBILITY ) 
+
+struct Shape2MutableExplicitID {
+  string<STR_LEN_MAX> color; //@Key //@ID( 10 )
+  long x; //@ID( 20 )
+  long y;
+  long shapesize; //@ID( 30 )            
+  float angle;    //@ID( 40 )            
+}; //@Extensibility( MUTABLE_EXTENSIBILITY )                            
+
+
+/* -------------- Shape3 -----------------------------*/
+struct Shape3Default {
+  string<STR_LEN_MAX> color; //@Key
+  long x;
+  long y;
+  long z;
+  long shapesize;
+}; 
+
+struct Shape3Final {
+  string<STR_LEN_MAX> color; //@Key
+  long x;
+  long y;
+  long z;
+  long shapesize;
+}; //@Extensibility( FINAL_EXTENSIBILITY ) 
+
+
+struct Shape3Extensible {
+  string<STR_LEN_MAX> color; //@Key
+  long x;
+  long y;
+  long z;
+  long shapesize;
+}; //@Extensibility( EXTENSIBLE_EXTENSIBILITY ) 
+
+struct Shape3Mutable {
+  string<STR_LEN_MAX> color; //@Key
+  long x;
+  long y;
+  long z;
+  long shapesize;
+}; //@Extensibility( MUTABLE_EXTENSIBILITY ) 
+
+
+struct Shape3MutableExplicitID {
+  string<STR_LEN_MAX> color; //@Key //@ID( 10 )
+  long x; //@ID( 20 )
+  long y; 
+  long z; //@ID( 15 )
+  long shapesize; //@ID( 30 )
+}; //@Extensibility( MUTABLE_EXTENSIBILITY ) 
+
+
+/* -------------- Shape4 -----------------------------*/
+struct Shape4Default {
+  string<STR_LEN_MAX> color; //@Key
+  long shapesize;
+  long x;
+  long y;
+}; 
+
+struct Shape4Final {
+  string<STR_LEN_MAX> color; //@Key
+  long shapesize;
+  long x;
+  long y;
+}; //@Extensibility( FINAL_EXTENSIBILITY ) 
+
+
+struct Shape4Extensible {
+  string<STR_LEN_MAX> color; //@Key
+  long shapesize;
+  long x;
+  long y;
+}; //@Extensibility( EXTENSIBLE_EXTENSIBILITY ) 
+
+struct Shape4Mutable {
+  string<STR_LEN_MAX> color; //@Key
+  long shapesize;
+  long x;
+  long y;
+}; //@Extensibility( MUTABLE_EXTENSIBILITY ) 
+
+struct Shape4MutableExplicitID {
+  string<STR_LEN_MAX> color; //@Key //@ID( 10 )
+  long shapesize; //@ID( 30 )
+  long x; //@ID( 20 )
+  long y; 
+}; //@Extensibility( MUTABLE_EXTENSIBILITY ) 
+
+/* -------------- Shape5 -----------------------------*/
+struct Shape5Default : Shape1Default {
+  float angle;
+};  
+
+struct Shape5Final : Shape1Final {
+  float angle;
+}; //@Extensibility( FINAL_EXTENSIBILITY ) 
+
+struct Shape5Extensible : Shape1Extensible {
+  float angle;
+}; //@Extensibility( EXTENSIBLE_EXTENSIBILITY ) 
+
+struct Shape5Mutable : Shape1Mutable {
+  float angle;
+}; //@Extensibility( MUTABLE_EXTENSIBILITY ) 
+
+struct Shape5MutableExplicitID : Shape1MutableExplicitID {
+  float angle; //@ID( 40 )
+}; //@Extensibility( MUTABLE_EXTENSIBILITY ) 
+
+
