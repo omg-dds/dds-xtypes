@@ -26,8 +26,6 @@ public:
     }
 };
 
-
-
 /*  Default types   */
 template <typename T> class Shape1Filler {
 public:
@@ -82,202 +80,12 @@ public:
     }
 };
 
-template <typename T> class ShapeFiller {
+template <typename TData, typename TDataFiller> class GenericFiller {
 public:
-    static void fill_data(T *data, const char *color, int count);
-};
-
-template <typename T1, typename T2> class ShapeFiller2 {
-public:
-  static void fill_data(T1 *data, const char *color, int count) {
-    T2::fill_data(data, color, count);
-  }
-};
-
-template <> class ShapeFiller2<Shape1Default, Shape1Filler<Shape1Default> >;
-
-
-/*  Default types   */
-template <> class ShapeFiller<Shape1Default> {
-public:
-    static void fill_data(Shape1Default *data, const char *color, int count) {
-        Shape1Filler<Shape1Default>::fill_data(data, color, count);
-     }
-};
-
-template <> class ShapeFiller<Shape2Default> {
-public:
-    static void fill_data(Shape2Default *data, const char *color, int count) {
-        Shape2Filler<Shape2Default>::fill_data(data, color, count);
+    static void fill_data(TData *data, const char *color, int count) {
+        TDataFiller::fill_data(data, color, count);
     }
 };
-
-template <> class ShapeFiller<Shape3Default> {
-public:
-    static void fill_data(Shape3Default *data, const char *color, int count) {
-        Shape3Filler<Shape3Default>::fill_data(data, color, count);
-    }
-};
-
-template <> class ShapeFiller<Shape4Default> {
-public:
-    static void fill_data(Shape4Default *data, const char *color, int count) {
-        Shape4Filler<Shape4Default>::fill_data(data, color, count);
-    }
-};
-
-template <> class ShapeFiller<Shape5Default> {
-public:
-    static void fill_data(Shape5Default *data, const char *color, int count) {
-        Shape5Filler<Shape5Default>::fill_data(data, color, count);
-    }
-};
-
-/*   Final types   */
-template <> class ShapeFiller<Shape1Final> {
-public:
-    static void fill_data(Shape1Final *data, const char *color, int count) {
-        Shape1Filler<Shape1Final>::fill_data(data, color, count);
-     }
-};
-
-template <> class ShapeFiller<Shape2Final> {
-public:
-    static void fill_data(Shape2Final *data, const char *color, int count) {
-        Shape2Filler<Shape2Final>::fill_data(data, color, count);
-    };
-};
-
-template <> class ShapeFiller<Shape3Final> {
-public:
-    static void fill_data(Shape3Final *data, const char *color, int count) {
-        Shape3Filler<Shape3Final>::fill_data(data, color, count);
-    }
-};
-
-template <> class ShapeFiller<Shape4Final> {
-public:
-    static void fill_data(Shape4Final *data, const char *color, int count) {
-        Shape4Filler<Shape4Final>::fill_data(data, color, count);
-    }
-};
-
-template <> class ShapeFiller<Shape5Final> {
-public:
-    static void fill_data(Shape5Final *data, const char *color, int count) {
-        Shape5Filler<Shape5Final>::fill_data(data, color, count);
-    }
-};
-
-/*   Extensible types   */
-
-template <> class ShapeFiller<Shape1Extensible> {
-public:
-    static void fill_data(Shape1Extensible *data, const char *color, int count) {
-        Shape1Filler<Shape1Extensible>::fill_data(data, color, count);
-     }
-};
-
-template <> class ShapeFiller<Shape2Extensible> {
-public:
-    static void fill_data(Shape2Extensible *data, const char *color, int count) {
-         Shape2Filler<Shape2Extensible>::fill_data(data, color, count);
-    };
-};
-
-template <> class ShapeFiller<Shape3Extensible> {
-public:
-    static void fill_data(Shape3Extensible *data, const char *color, int count) {
-         Shape3Filler<Shape3Extensible>::fill_data(data, color, count);
-    }
-};
-
-template <> class ShapeFiller<Shape4Extensible> {
-public:
-    static void fill_data(Shape4Extensible *data, const char *color, int count) {
-        Shape4Filler<Shape4Extensible>::fill_data(data, color, count);
-    }
-};
-
-template <> class ShapeFiller<Shape5Extensible> {
-public:
-    static void fill_data(Shape5Extensible *data, const char *color, int count) {
-        Shape5Filler<Shape5Extensible>::fill_data(data, color, count);
-    }
-};
-
-/*   Mutable types   */
-template <> class ShapeFiller<Shape1Mutable> {
-public:
-    static void fill_data(Shape1Mutable *data, const char *color, int count) {
-        Shape1Filler<Shape1Mutable>::fill_data(data, color, count);
-     }
-};
-
-template <> class ShapeFiller<Shape2Mutable> {
-public:
-    static void fill_data(Shape2Mutable *data, const char *color, int count) {
-        Shape2Filler<Shape2Mutable>::fill_data(data, color, count);
-    };
-};
-
-template <> class ShapeFiller<Shape3Mutable> {
-public:
-    static void fill_data(Shape3Mutable *data, const char *color, int count) {
-        Shape3Filler<Shape3Mutable>::fill_data(data, color, count);
-    }
-};
-
-template <> class ShapeFiller<Shape4Mutable> {
-public:
-    static void fill_data(Shape4Mutable *data, const char *color, int count) {
-        Shape4Filler<Shape4Mutable>::fill_data(data, color, count);
-    }
-};
-
-template <> class ShapeFiller<Shape5Mutable> {
-public:
-    static void fill_data(Shape5Mutable *data, const char *color, int count) {
-        Shape5Filler<Shape5Mutable>::fill_data(data, color, count);
-    }
-};
-
-/*   MutableExplicitID types   */
-template <> class ShapeFiller<Shape1MutableExplicitID> {
-public:
-    static void fill_data(Shape1MutableExplicitID *data, const char *color, int count) {
-        Shape1Filler<Shape1MutableExplicitID>::fill_data(data, color, count);
-     }
-};
-
-template <> class ShapeFiller<Shape2MutableExplicitID> {
-public:
-    static void fill_data(Shape2MutableExplicitID *data, const char *color, int count) {
-        Shape2Filler<Shape2MutableExplicitID>::fill_data(data, color, count);
-    };
-};
-
-template <> class ShapeFiller<Shape3MutableExplicitID> {
-public:
-    static void fill_data(Shape3MutableExplicitID *data, const char *color, int count) {
-        Shape3Filler<Shape3MutableExplicitID>::fill_data(data, color, count);
-    }
-};
-
-template <> class ShapeFiller<Shape4MutableExplicitID> {
-public:
-    static void fill_data(Shape4MutableExplicitID *data, const char *color, int count) {
-        Shape4Filler<Shape4MutableExplicitID>::fill_data(data, color, count);
-    }
-};
-
-template <> class ShapeFiller<Shape5MutableExplicitID> {
-public:
-    static void fill_data(Shape5MutableExplicitID *data, const char *color, int count) {
-        Shape5Filler<Shape5MutableExplicitID>::fill_data(data, color, count);
-    }
-};
-
 
 class WriterBase {
 public:
@@ -286,7 +94,7 @@ public:
     virtual DDSTopic *get_topic() = 0;
 };
 
-template <typename T, typename TSupport, typename TDataWriter>
+template <typename T, typename TFiller, typename TSupport, typename TDataWriter>
 class Writer : public WriterBase {
 public:
     typedef T data_type;
@@ -350,8 +158,9 @@ public:
 private:
     TDataWriter *_writer;
     DDSTopic *_topic;
+
     T *_data;
-    ShapeFiller<T> _shapeFiller;
+    GenericFiller<T, TFiller> _shapeFiller;
 };
 
 class ReaderBase {
@@ -601,79 +410,79 @@ public:
 
     static WriterBase *create_writer(const char *type_name) {
         if ( strcmp(type_name, "Shape1Default") == 0 ) {
-            return new Writer<Shape1Default, Shape1DefaultTypeSupport, Shape1DefaultDataWriter>();
+	  return new Writer<Shape1Default, Shape1Filler<Shape1Default>, Shape1DefaultTypeSupport, Shape1DefaultDataWriter>();
         }
         else if ( strcmp(type_name, "Shape1Final") == 0 ) {
-            return new Writer<Shape1Final, Shape1FinalTypeSupport, Shape1FinalDataWriter>();
+	  return new Writer<Shape1Final, Shape1Filler<Shape1Final>, Shape1FinalTypeSupport, Shape1FinalDataWriter>();
         }
         else if ( strcmp(type_name, "Shape1Extensible") == 0 ) {
-            return new Writer<Shape1Extensible, Shape1ExtensibleTypeSupport, Shape1ExtensibleDataWriter>();
+            return new Writer<Shape1Extensible, Shape1Filler<Shape1Extensible>, Shape1ExtensibleTypeSupport, Shape1ExtensibleDataWriter>();
         }
         else if ( strcmp(type_name, "Shape1Mutable") == 0 ) {
-            return new Writer<Shape1Mutable, Shape1MutableTypeSupport, Shape1MutableDataWriter>();
+            return new Writer<Shape1Mutable, Shape1Filler<Shape1Mutable>, Shape1MutableTypeSupport, Shape1MutableDataWriter>();
         }
         else if ( strcmp(type_name, "Shape1MutableExplicitID") == 0 ) {
-            return new Writer<Shape1MutableExplicitID, Shape1MutableExplicitIDTypeSupport, Shape1MutableExplicitIDDataWriter>();
+            return new Writer<Shape1MutableExplicitID, Shape1Filler<Shape1MutableExplicitID>, Shape1MutableExplicitIDTypeSupport, Shape1MutableExplicitIDDataWriter>();
         }
         else if (strcmp(type_name, "Shape2Default") == 0 ) {
-            return new Writer<Shape2Default, Shape2DefaultTypeSupport, Shape2DefaultDataWriter>();
+            return new Writer<Shape2Default, Shape2Filler<Shape2Default>, Shape2DefaultTypeSupport, Shape2DefaultDataWriter>();
         }
         else if (strcmp(type_name, "Shape2Final") == 0 ) {
-            return new Writer<Shape2Final, Shape2FinalTypeSupport, Shape2FinalDataWriter>();
+            return new Writer<Shape2Final, Shape2Filler<Shape2Final>, Shape2FinalTypeSupport, Shape2FinalDataWriter>();
         }
         else if (strcmp(type_name, "Shape2Extensible") == 0 ) {
-            return new Writer<Shape2Extensible, Shape2ExtensibleTypeSupport, Shape2ExtensibleDataWriter>();
+            return new Writer<Shape2Extensible, Shape2Filler<Shape2Extensible>, Shape2ExtensibleTypeSupport, Shape2ExtensibleDataWriter>();
         }
         else if (strcmp(type_name, "Shape2Mutable") == 0 ) {
-            return new Writer<Shape2Mutable, Shape2MutableTypeSupport, Shape2MutableDataWriter>();
+            return new Writer<Shape2Mutable, Shape2Filler<Shape2Mutable>, Shape2MutableTypeSupport, Shape2MutableDataWriter>();
         }
         else if (strcmp(type_name, "Shape2MutableExplicitID") == 0 ) {
-            return new Writer<Shape2MutableExplicitID, Shape2MutableExplicitIDTypeSupport, Shape2MutableExplicitIDDataWriter>();
+            return new Writer<Shape2MutableExplicitID, Shape2Filler<Shape2MutableExplicitID>, Shape2MutableExplicitIDTypeSupport, Shape2MutableExplicitIDDataWriter>();
         }
         else if (strcmp(type_name, "Shape3Default") == 0 ) {
-            return new Writer<Shape3Default, Shape3DefaultTypeSupport, Shape3DefaultDataWriter>();
+            return new Writer<Shape3Default, Shape3Filler<Shape3Default>, Shape3DefaultTypeSupport, Shape3DefaultDataWriter>();
         }
         else if (strcmp(type_name, "Shape3Final") == 0 ) {
-            return new Writer<Shape3Final, Shape3FinalTypeSupport, Shape3FinalDataWriter>();
+            return new Writer<Shape3Final, Shape3Filler<Shape3Final>, Shape3FinalTypeSupport, Shape3FinalDataWriter>();
         }
         else if (strcmp(type_name, "Shape3Extensible") == 0 ) {
-            return new Writer<Shape3Extensible, Shape3ExtensibleTypeSupport, Shape3ExtensibleDataWriter>();
+            return new Writer<Shape3Extensible, Shape3Filler<Shape3Extensible>, Shape3ExtensibleTypeSupport, Shape3ExtensibleDataWriter>();
         }
         else if (strcmp(type_name, "Shape3Mutable") == 0 ) {
-            return new Writer<Shape3Mutable, Shape3MutableTypeSupport, Shape3MutableDataWriter>();
+            return new Writer<Shape3Mutable, Shape3Filler<Shape3Mutable>, Shape3MutableTypeSupport, Shape3MutableDataWriter>();
         }
         else if (strcmp(type_name, "Shape3MutableExplicitID") == 0 ) {
-            return new Writer<Shape3MutableExplicitID, Shape3MutableExplicitIDTypeSupport, Shape3MutableExplicitIDDataWriter>();
+            return new Writer<Shape3MutableExplicitID, Shape3Filler<Shape3MutableExplicitID>, Shape3MutableExplicitIDTypeSupport, Shape3MutableExplicitIDDataWriter>();
         }
         else if (strcmp(type_name, "Shape4Default") == 0 ) {
-            return new Writer<Shape4Default, Shape4DefaultTypeSupport, Shape4DefaultDataWriter>();
+            return new Writer<Shape4Default, Shape4Filler<Shape4Default>, Shape4DefaultTypeSupport, Shape4DefaultDataWriter>();
         }
         else if (strcmp(type_name, "Shape4Final") == 0 ) {
-            return new Writer<Shape4Final, Shape4FinalTypeSupport, Shape4FinalDataWriter>();
+            return new Writer<Shape4Final, Shape4Filler<Shape4Final>, Shape4FinalTypeSupport, Shape4FinalDataWriter>();
         }
         else if (strcmp(type_name, "Shape4Extensible") == 0 ) {
-            return new Writer<Shape4Extensible, Shape4ExtensibleTypeSupport, Shape4ExtensibleDataWriter>();
+            return new Writer<Shape4Extensible, Shape4Filler<Shape4Extensible>, Shape4ExtensibleTypeSupport, Shape4ExtensibleDataWriter>();
         }
         else if (strcmp(type_name, "Shape4Mutable") == 0 ) {
-            return new Writer<Shape4Mutable, Shape4MutableTypeSupport, Shape4MutableDataWriter>();
+            return new Writer<Shape4Mutable, Shape4Filler<Shape4Mutable>, Shape4MutableTypeSupport, Shape4MutableDataWriter>();
         }
         else if (strcmp(type_name, "Shape4MutableExplicitID") == 0 ) {
-            return new Writer<Shape4MutableExplicitID, Shape4MutableExplicitIDTypeSupport, Shape4MutableExplicitIDDataWriter>();
+            return new Writer<Shape4MutableExplicitID, Shape4Filler<Shape4MutableExplicitID>, Shape4MutableExplicitIDTypeSupport, Shape4MutableExplicitIDDataWriter>();
         }
         else if (strcmp(type_name, "Shape5Default") == 0 ) {
-            return new Writer<Shape5Default, Shape5DefaultTypeSupport, Shape5DefaultDataWriter>();
+            return new Writer<Shape5Default, Shape5Filler<Shape5Default>, Shape5DefaultTypeSupport, Shape5DefaultDataWriter>();
         }
         else if (strcmp(type_name, "Shape5Final") == 0 ) {
-            return new Writer<Shape5Final, Shape5FinalTypeSupport, Shape5FinalDataWriter>();
+            return new Writer<Shape5Final, Shape5Filler<Shape5Final>, Shape5FinalTypeSupport, Shape5FinalDataWriter>();
         }
         else if (strcmp(type_name, "Shape5Extensible") == 0 ) {
-            return new Writer<Shape5Extensible, Shape5ExtensibleTypeSupport, Shape5ExtensibleDataWriter>();
+            return new Writer<Shape5Extensible, Shape5Filler<Shape5Extensible>, Shape5ExtensibleTypeSupport, Shape5ExtensibleDataWriter>();
         }
         else if (strcmp(type_name, "Shape5Mutable") == 0 ) {
-            return new Writer<Shape5Mutable, Shape5MutableTypeSupport, Shape5MutableDataWriter>();
+            return new Writer<Shape5Mutable, Shape5Filler<Shape5Mutable>, Shape5MutableTypeSupport, Shape5MutableDataWriter>();
         }
         else if (strcmp(type_name, "Shape5MutableExplicitID") == 0 ) {
-            return new Writer<Shape5MutableExplicitID, Shape5MutableExplicitIDTypeSupport, Shape5MutableExplicitIDDataWriter>();
+            return new Writer<Shape5MutableExplicitID, Shape5Filler<Shape5MutableExplicitID>, Shape5MutableExplicitIDTypeSupport, Shape5MutableExplicitIDDataWriter>();
         }
 
 
