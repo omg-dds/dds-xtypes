@@ -27,7 +27,10 @@ The following is an example execution:
 
 ON THE SUBSCRIBER COMPUTER:
 ```
-dds_xtypes$ ./ShapeType_subscriber 0 Shape2Extensible
+dds-xtypes$ ./rti_connext_dds_5.2_linux -sub -domain 0 -type Shape2Extensible 
+Usage:  ./rti_connext_dds_5.2_linux [-pub | -sub] [-domain <domainId>] [-type <typeName>]
+Info: Starting subscribing application. Domain: 0, Type: Shape2Extensible
+
 Waiting for data on topic "XTYPESTestTopic", type "Shape2Extensible"
 on_subscription_matched: topic "XTYPESTestTopic", type "Shape2Extensible", count: 1, change: 1
 
@@ -48,7 +51,10 @@ Read data for Topic XTYPESTestTopic
 ```
 ON THE PUBLISHER COMPUTER:
 ```
-dds_xtypes$ ./ShapeType_publisher 0 Shape1Extensible
+dds-xtypes$  ./rti_connext_dds_5.2_linux -pub -domain 0 -type Shape1Extensible
+Usage:  ./rti_connext_dds_5.2_linux [-pub | -sub] [-domain <domainId>] [-type <typeName>]
+Info: Starting publishing application. Domain: 0, Type: Shape1Extensible
+
 Writing Topic "XTYPESTestTopic", type "Shape1Extensible", count 0, data:
    color: "BLUE"
    x: 0
