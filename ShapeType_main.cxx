@@ -41,9 +41,6 @@ void setup_signal_handler()
 
 DomainParticipant *create_participant(int domain_id) 
 {
-    DomainParticipant *participant = NULL;
-    int count = 0;   
-    
     DomainParticipantQos pQos;
     DomainParticipantFactory::get_instance()->get_default_participant_qos(pQos);
  
@@ -51,7 +48,7 @@ DomainParticipant *create_participant(int domain_id)
     pQos.discovery_config.participant_message_reader_reliability_kind = DDS_RELIABLE_RELIABILITY_QOS;
 #endif
     
-    participant = DomainParticipantFactory::get_instance()->create_participant(
+    DomainParticipant *participant = DomainParticipantFactory::get_instance()->create_participant(
         domain_id, pQos,             
         NULL /* listener */, DDS_STATUS_MASK_NONE);
     
@@ -66,6 +63,7 @@ int publish(DomainParticipant *participant, const char *type_name)
     send_period.nanosec = 0;
     
     WriterBase *writer = ShapeTypeVariants::create_writer(type_name);
+
     if ( ( writer == NULL ) || (!writer->initialize(participant, "XTYPESTestTopic")) ) {
        return -1;
     }

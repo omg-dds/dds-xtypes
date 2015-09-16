@@ -3,7 +3,7 @@ Validation of interoperability  of products compliant with [OMG DDS-XTYPES stand
 
 The executables in this repository test communication between *DDS DataWriters* and *DDS DataReaders* using different "versions" of a data type.  The goal is that the compatibility rules are implemented in compliance with the **OMG DDS-XTYPES** specification.
 
-These tests can be used to validate compliance with **OMG DDS-XTYPES** each DDS implementation separately. The same executables can also be used to test interoperability between different DDS implementations. E.g. between *RTI Connext DDS* and *TwinOaks CoreDX*.
+These tests can be used to validate compliance with **OMG DDS-XTYPES** each DDS implementation separately. The same executables can also be used to test interoperability between different DDS implementations. E.g. between *RTI Connext DDS* and *TwinOaks CoreDX DDS*.
 
 The test uses 25 different "versions" of a data-type. These variations are obtained by adding, removing or reordering different attributes. They are also obtained by declaring different extensibility kinds for the data type (Final, Extensible [the default], and Mutable). These types are declared in the *ShapeTypes.idl* file or the equivalent *ShapeTypes.xml* file. The 25 types defined there are:
 
@@ -27,7 +27,10 @@ The following is an example execution:
 
 ON THE SUBSCRIBER COMPUTER:
 ```
-dds_xtypes$ ./ShapeType_subscriber 0 Shape2Extensible
+dds-xtypes$ ./rti_connext_dds_5.2_linux -sub -domain 0 -type Shape2Extensible 
+Usage:  ./rti_connext_dds_5.2_linux [-pub | -sub] [-domain <domainId>] [-type <typeName>]
+Info: Starting subscribing application. Domain: 0, Type: Shape2Extensible
+
 Waiting for data on topic "XTYPESTestTopic", type "Shape2Extensible"
 on_subscription_matched: topic "XTYPESTestTopic", type "Shape2Extensible", count: 1, change: 1
 
@@ -48,7 +51,10 @@ Read data for Topic XTYPESTestTopic
 ```
 ON THE PUBLISHER COMPUTER:
 ```
-dds_xtypes$ ./ShapeType_publisher 0 Shape1Extensible
+dds-xtypes$  ./rti_connext_dds_5.2_linux -pub -domain 0 -type Shape1Extensible
+Usage:  ./rti_connext_dds_5.2_linux [-pub | -sub] [-domain <domainId>] [-type <typeName>]
+Info: Starting publishing application. Domain: 0, Type: Shape1Extensible
+
 Writing Topic "XTYPESTestTopic", type "Shape1Extensible", count 0, data:
    color: "BLUE"
    x: 0

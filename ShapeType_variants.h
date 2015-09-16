@@ -12,7 +12,6 @@
 #  include <dds/dds.hh>
 #  include "ShapeType.hh"
 #  include "ShapeTypeTypeSupport.hh"
-
 #  if (COREDX_DDS_VERSION_MAJOR < 4)
 #    error X-Types support requires CoreDX DDS v4.0 or newer
 #  endif
@@ -167,11 +166,13 @@ public:
                
 #if   defined RTI_CONNEXT_DDS
         TSupport::print_data(_data);
+        return _writer->write(*_data, HANDLE_NIL) == RETCODE_OK;
+
 #elif defined TWINOAKS_COREDX
         T::print(stdout, _data);
+        return _writer->write(_data, HANDLE_NIL) == RETCODE_OK;
 #endif
 
-        return _writer->write(*_data, HANDLE_NIL) == RETCODE_OK;
     }
 
     virtual Topic *get_topic() { return _topic;  }
@@ -280,6 +281,7 @@ public:
         ReturnCode_t retcode;
 
         do {
+
 #if   defined(RTI_CONNEXT_DDS)
             retcode = _reader->take_next_sample(*_data, info);
 #elif defined(TWINOAKS_COREDX)
