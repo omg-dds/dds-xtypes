@@ -3,7 +3,7 @@ Validation of interoperability  of products compliant with [OMG DDS-XTYPES stand
 
 The executables in this repository test communication between *DDS DataWriters* and *DDS DataReaders* using different "versions" of a data type.  The goal is that the compatibility rules are implemented in compliance with the **OMG DDS-XTYPES** specification.
 
-These tests can be used to validate compliance with **OMG DDS-XTYPES** each DDS implementation separately. The same executables can also be used to test interoperability between different DDS implementations. E.g. between *RTI Connext DDS* and *TwinOaks CoreDX*.
+These tests can be used to validate compliance with **OMG DDS-XTYPES** each DDS implementation separately. The same executables can also be used to test interoperability between different DDS implementations. E.g. between *RTI Connext DDS* and *TwinOaks CoreDX DDS*.
 
 The test uses 25 different "versions" of a data-type. These variations are obtained by adding, removing or reordering different attributes. They are also obtained by declaring different extensibility kinds for the data type (Final, Extensible [the default], and Mutable). These types are declared in the *ShapeTypes.idl* file or the equivalent *ShapeTypes.xml* file. The 25 types defined there are:
 

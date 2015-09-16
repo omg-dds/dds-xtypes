@@ -42,9 +42,8 @@ void setup_signal_handler()
 DomainParticipant *create_participant(int domain_id) 
 {
     DomainParticipant *participant = NULL;
-    int count = 0;   
     
-    DDS_DomainParticipantQos pQos;
+    DOMAIN_PARTICIPANT_QOS pQos;
     TheParticipantFactory->get_default_participant_qos(pQos);
  
 #if defined RTI_CONNEXT_DDS
@@ -61,8 +60,10 @@ DomainParticipant *create_participant(int domain_id)
 int publish(DomainParticipant *participant, const char *type_name)
 {
     int count = 0;  
-    DDS_Duration_t send_period = {1, 0};
+    DURATION_T send_period;
     WriterBase *writer;
+    send_period.sec     = 1;
+    send_period.nanosec = 0;
 
     writer = ShapeTypeVariants::create_writer(type_name);
     if ( ( writer == NULL ) || (!writer->initialize(participant, "XTYPESTestTopic")) ) {
@@ -87,9 +88,10 @@ int publish(DomainParticipant *participant, const char *type_name)
 
 int subscribe(DomainParticipant *participant, const char *type_name)
 {
-    DDS_Duration_t receive_period = {1, 0};
+    DURATION_T receive_period;
     ReaderBase *reader;
-    
+    receive_period.sec     = 1;
+    receive_period.nanosec = 0;
     reader =ShapeTypeVariants::create_reader(type_name);;
     if ( (reader == NULL) || (!reader->initialize(participant, "XTYPESTestTopic")) ) {
         return -1;

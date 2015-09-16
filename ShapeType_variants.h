@@ -4,13 +4,52 @@
 #include <stdlib.h>
 
 #if defined RTI_CONNEXT_DDS
-#include "ShapeType.h"
-#include "ShapeTypeSupport.h"
-#include "ndds/ndds_cpp.h"
-#include "ndds/ndds_namespace_cpp.h"
+#  include "ShapeType.h"
+#  include "ShapeTypeSupport.h"
+#  include "ndds/ndds_cpp.h"
+#  include "ndds/ndds_namespace_cpp.h"
+#  define TOPIC_DEFAULT_QOS        DDS_TOPIC_QOS_DEFAULT
+#  define PUBLISHER_DEFAULT_QOS    DDS_PUBLISHER_QOS_DEFAULT
+#  define DATAWRITER_DEFAULT_QOS   DDS_DATAWRITER_QOS_DEFAULT
+#  define SUBSCRIBER_DEFAULT_QOS   DDS_SUBSCRIBER_QOS_DEFAULT
+#  define DATAREADER_DEFAULT_QOS   DDS_DATAREADER_QOS_DEFAULT
+#  define DOMAIN_PARTICIPANT_QOS   DDS_DomainParticipantQos
+#  define DURATION_T               DDS_Duration_t
+#  define DDS_CREATE_DATA()        TSupport::create_data()
+#elif defined(TWINOAKS_COREDX)
+#  include <dds/dds.hh>
+#  include "ShapeType.hh"
+#  include "ShapeTypeTypeSupport.hh"
+
+#  if (COREDX_DDS_VERSION_MAJOR < 4)
+#    error X-Types support requires CoreDX DDS v4.0 or newer
+#  endif
+
+#  define DDSDomainParticipant     DDS::DomainParticipant
+#  define DDSSubscriber            DDS::Subscriber
+#  define DDSPublisher             DDS::Publisher
+#  define DDSTopic                 DDS::Topic
+#  define DDSDataReader            DDS::DataReader
+#  define DDSDataWriter            DDS::DataWriter
+#  define DDSTopicListener         DDS::TopicListener
+#  define DDSDataReaderListener    DDS::DataReaderListener
+#  define DDSDataWriterListener    DDS::DataWriterListener
+#  define DDSWaitSet               DDS::WaitSet
+#  define DDSConditionSeq          DDS::ConditionSeq
+#  define TheParticipantFactory    DDS::DomainParticipantFactory::get_instance()
+
+#  define TOPIC_DEFAULT_QOS        DDS::TOPIC_QOS_DEFAULT
+#  define PUBLISHER_DEFAULT_QOS    DDS::PUBLISHER_QOS_DEFAULT
+#  define DATAWRITER_DEFAULT_QOS   DDS::DATAWRITER_QOS_DEFAULT
+#  define SUBSCRIBER_DEFAULT_QOS   DDS::SUBSCRIBER_QOS_DEFAULT
+#  define DATAREADER_DEFAULT_QOS   DDS::DATAREADER_QOS_DEFAULT
+
+#  define DOMAIN_PARTICIPANT_QOS   DDS::DomainParticipantQos
+#  define DURATION_T               DDS::Duration_t
+#  define DDS_CREATE_DATA()        new T()
 #else
-#error No DDS vendor -define was provided. No DDS header files included.  Compilation will fail
-#error Please configure the makefile to define one for the following variables: RTI_CONNEXT_DDS, TWINOAKS_COREDX, or PRISMTECH_OPENSPLICE
+#  error No DDS vendor -define was provided. No DDS header files included.  Compilation will fail
+#  error Please configure the makefile to define one for the following variables: RTI_CONNEXT_DDS, TWINOAKS_COREDX, or PRISMTECH_OPENSPLICE
 #endif
 
 
@@ -111,7 +150,7 @@ public:
         }
          
         DDSPublisher *publisher = participant->create_publisher(
-            DDS_PUBLISHER_QOS_DEFAULT, NULL /* listener */, DDS_STATUS_MASK_NONE);
+            PUBLISHER_DEFAULT_QOS, NULL /* listener */, DDS_STATUS_MASK_NONE);
         if (publisher == NULL) {
             printf("create_publisher error for topic \"%s\"\n", topic_name);
             return false;
@@ -119,7 +158,7 @@ public:
 
         _topic = participant->create_topic(
             topic_name, TSupport::get_type_name(),
-            DDS_TOPIC_QOS_DEFAULT, new TheTopicListener(),
+            TOPIC_DEFAULT_QOS, new TheTopicListener(),
             DDS_INCONSISTENT_TOPIC_STATUS);
         if (_topic == NULL) {
             printf("create_topic error for topic \"%s\"\n", topic_name);
@@ -127,7 +166,7 @@ public:
         }
 
         DDSDataWriter *writer = publisher->create_datawriter(
-            _topic, DDS_DATAWRITER_QOS_DEFAULT, NULL /* listener */,
+            _topic, DATAWRITER_DEFAULT_QOS, NULL /* listener */,
             DDS_STATUS_MASK_NONE);
         if (writer == NULL) {
             printf("create_datawriter error for topic \"%s\"\n", topic_name);
@@ -140,7 +179,7 @@ public:
             return false;
         }
 
-        _data = TSupport::create_data();
+        _data = DDS_CREATE_DATA();
         return true;
     }
 
@@ -149,8 +188,13 @@ public:
         printf("Writing Topic \"%s\", type \"%s\", count %d, data:", 
                _writer->get_topic()->get_name(),
                _writer->get_topic()->get_type_name(), count);
+#if defined(TWINOAKS_COREDX)
+        T::print(stdout, _data);
+        return _writer->write(_data, DDS_HANDLE_NIL) == DDS_RETCODE_OK;
+#else
         TSupport::print_data(_data);
         return _writer->write(*_data, DDS_HANDLE_NIL) == DDS_RETCODE_OK;
+#endif
     }
 
     virtual DDSTopic *get_topic() { return _topic;  }
@@ -168,7 +212,7 @@ public:
     virtual bool initialize(DDSDomainParticipant *participant, const char *topic_name) = 0;
     virtual bool take_data() = 0;
     virtual DDSTopic *get_topic() = 0;
-    virtual bool wait_for_data(DDS_Duration_t timeout) = 0;
+    virtual bool wait_for_data(DURATION_T timeout) = 0;
 };
 
 
@@ -211,7 +255,7 @@ public:
         }
          
         DDSSubscriber *subscriber = participant->create_subscriber(
-            DDS_SUBSCRIBER_QOS_DEFAULT, NULL /* listener */, DDS_STATUS_MASK_NONE);
+            SUBSCRIBER_DEFAULT_QOS, NULL /* listener */, DDS_STATUS_MASK_NONE);
         if (subscriber == NULL) {
             printf("create subscriber error for topic \"%s\"\n", topic_name);
             return false;
@@ -219,7 +263,7 @@ public:
 
         _topic = participant->create_topic(
             topic_name, TSupport::get_type_name(),
-            DDS_TOPIC_QOS_DEFAULT, new TheTopicListener(),
+            TOPIC_DEFAULT_QOS, new TheTopicListener(),
             DDS_INCONSISTENT_TOPIC_STATUS );
         if (_topic == NULL) {
             printf("create topic error for topic \"%s\"\n", topic_name);
@@ -227,7 +271,7 @@ public:
         }
 
         DDSDataReader *reader = subscriber->create_datareader(
-            _topic, DDS_DATAREADER_QOS_DEFAULT, new TheReaderListener(),
+            _topic, DATAREADER_DEFAULT_QOS, new TheReaderListener(),
             DDS_REQUESTED_INCOMPATIBLE_QOS_STATUS | DDS_SUBSCRIPTION_MATCHED_STATUS);
         if (reader == NULL) {
             printf("create datareader error for topic \"%s\"\n", topic_name);
@@ -240,9 +284,17 @@ public:
             return false;
         }
 
-        _data = TSupport::create_data();
-
+        _data = DDS_CREATE_DATA();
+#if defined(TWINOAKS_COREDX)
+        DDS::ReadCondition * c;                                       //
+        c = _reader->create_readcondition( DDS::ANY_SAMPLE_STATE,     //
+                                            DDS::ANY_VIEW_STATE,      //
+                                            DDS::ANY_INSTANCE_STATE); //
+        
+        _waitset.attach_condition(*c);
+#else
         _waitset.attach_condition(_reader->get_statuscondition());
+#endif
         return true;
     }
 
@@ -251,10 +303,18 @@ public:
         DDS_ReturnCode_t retcode;
 
         do {
+#if defined(TWINOAKS_COREDX)
+            retcode = _reader->take_next_sample(_data, &info);
+#else
             retcode = _reader->take_next_sample(*_data, info);
+#endif
             if ( (retcode == DDS_RETCODE_OK ) && info.valid_data ) {
                 printf("\nRead data for Topic %s", _reader->get_topicdescription()->get_name()); 
+#if defined(TWINOAKS_COREDX)
+                T::print(stdout, _data);
+#else
                 TSupport::print_data(_data);
+#endif
             }
             else if (retcode == DDS_RETCODE_NO_DATA) {
                 return true; // all done reading return success
@@ -268,7 +328,7 @@ public:
 
     DDSTopic *get_topic() { return _topic;  }
 
-    bool wait_for_data(DDS_Duration_t timeout) {
+    bool wait_for_data(DURATION_T timeout) {
         DDSConditionSeq active_cond;
         return _waitset.wait(active_cond, timeout) == DDS_RETCODE_OK;
     }
