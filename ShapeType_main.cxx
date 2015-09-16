@@ -44,14 +44,14 @@ DomainParticipant *create_participant(int domain_id)
     DomainParticipant *participant = NULL;
     int count = 0;   
     
-    DDS_DomainParticipantQos pQos;
-    TheParticipantFactory->get_default_participant_qos(pQos);
+    DomainParticipantQos pQos;
+    DomainParticipantFactory::get_instance()->get_default_participant_qos(pQos);
  
-#if defined RTI_CONNEXT_DDS
+#if defined(RTI_CONNEXT_DDS)
     pQos.discovery_config.participant_message_reader_reliability_kind = DDS_RELIABLE_RELIABILITY_QOS;
 #endif
     
-    participant = TheParticipantFactory->create_participant(
+    participant = DomainParticipantFactory::get_instance()->create_participant(
         domain_id, pQos,             
         NULL /* listener */, DDS_STATUS_MASK_NONE);
     
@@ -61,10 +61,11 @@ DomainParticipant *create_participant(int domain_id)
 int publish(DomainParticipant *participant, const char *type_name)
 {
     int count = 0;  
-    DDS_Duration_t send_period = {1, 0};
-    WriterBase *writer;
-
-    writer = ShapeTypeVariants::create_writer(type_name);
+    Duration_t send_period;
+    send_period.sec     = 1;
+    send_period.nanosec = 0;
+    
+    WriterBase *writer = ShapeTypeVariants::create_writer(type_name);
     if ( ( writer == NULL ) || (!writer->initialize(participant, "XTYPESTestTopic")) ) {
        return -1;
     }
@@ -77,20 +78,17 @@ int publish(DomainParticipant *participant, const char *type_name)
         wait_set->wait(active_cond, send_period);
     }
 
-    /* Delete all entities */
-    participant->delete_contained_entities();
-    TheParticipantFactory->delete_participant(participant);
-
     return 0;
 }
 
 
 int subscribe(DomainParticipant *participant, const char *type_name)
 {
-    DDS_Duration_t receive_period = {1, 0};
-    ReaderBase *reader;
+    Duration_t receive_period;
+    receive_period.sec     = 1;
+    receive_period.nanosec = 0;
     
-    reader =ShapeTypeVariants::create_reader(type_name);;
+    ReaderBase *reader = ShapeTypeVariants::create_reader(type_name);;
     if ( (reader == NULL) || (!reader->initialize(participant, "XTYPESTestTopic")) ) {
         return -1;
     }
@@ -105,16 +103,13 @@ int subscribe(DomainParticipant *participant, const char *type_name)
         reader->take_data();
     }
 
-    /* Delete all entities */
-    participant->delete_contained_entities();
-    TheParticipantFactory->delete_participant(participant);
-
     return 0;
 }
 
  
 int run(int domain_id, const char *type_name, bool is_publisher)
 {
+    int exit_value = 0;
     DomainParticipant *participant = create_participant(domain_id);
     if (participant == NULL) {
         printf("create_participant error\n");
@@ -126,11 +121,17 @@ int run(int domain_id, const char *type_name, bool is_publisher)
             domain_id, type_name);
     
     if ( is_publisher == true) {
-        return publish(participant, type_name);
+        exit_value = publish(participant, type_name);
     } 
     else {
-        return subscribe(participant, type_name);
+        exit_value = subscribe(participant, type_name);
     } 
+
+    /* Delete all entities */
+    participant->delete_contained_entities();
+    DomainParticipantFactory::get_instance()->delete_participant(participant);
+
+    return exit_value;
 }
 
 int main(int argc, char *argv[])
