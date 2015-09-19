@@ -115,7 +115,7 @@ public:
         ReturnCode_t retcode;
         retcode = TSupport::register_type(participant, TSupport::get_type_name());
         if ( retcode != RETCODE_OK) {
-            fprintf(stderr, "Failed to register type for topic \"%s\" retcode=%d\n", topic_name, retcode);
+            fprintf(stderr, "Failed to register type for topic \"%s\" retcode=%d\n", topic_name, (int)retcode);
             return false;
         }
          
@@ -228,7 +228,7 @@ public:
         ReturnCode_t retcode;
         retcode = TSupport::register_type(participant, TSupport::get_type_name());
         if ( retcode != RETCODE_OK) {
-            fprintf(stderr, "Failed to register type for topic \"%s\" retcode=%d\n", topic_name, retcode);
+            fprintf(stderr, "Failed to register type for topic \"%s\" retcode=%d\n", topic_name, (int)retcode);
             return false;
         }
          
@@ -265,11 +265,11 @@ public:
        	ReadCondition  *cond = _reader->create_readcondition( ANY_SAMPLE_STATE, 
                                             		      ANY_VIEW_STATE, 
                                             		      ANY_INSTANCE_STATE);
-#if   defined(RTI_CONNEXT_DDS)
         _waitset.attach_condition(cond);
+
+#if   defined(RTI_CONNEXT_DDS)
         _data = TSupport::create_data();
 #elif defined(TWINOAKS_COREDX)
-        _waitset.attach_condition(*cond);
         _data = new T();
 #endif
 
@@ -304,7 +304,7 @@ public:
         }
         while ( retcode == RETCODE_OK );
         
-        fprintf(stderr, "Take error %d for Topic %s\n",retcode,  _reader->get_topicdescription()->get_name()); 
+        fprintf(stderr, "Take error %d for Topic %s\n",(int)retcode,  _reader->get_topicdescription()->get_name()); 
         return false; // done reading but return error
     }
 

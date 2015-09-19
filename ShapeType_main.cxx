@@ -69,7 +69,7 @@ int publish(DomainParticipant *participant, const char *type_name)
     }
 
     /* Main loop */
-    WaitSet *wait_set = new DDSWaitSet();
+    WaitSet *wait_set = new WaitSet();
     ConditionSeq active_cond;
     for (count=0; exit_application == false ; ++count) {
         writer->write_data("BLUE", count);
