@@ -98,6 +98,7 @@ public:
 
 class WriterBase {
 public:
+    virtual ~WriterBase() {}
     virtual bool initialize(DomainParticipant *participant, const char *topic_name) = 0;
     virtual bool write_data(const char *color, int count) = 0;
     virtual Topic *get_topic() = 0;
@@ -111,6 +112,14 @@ public:
     typedef TDataWriter data_writer;
 
   public:
+    virtual ~Writer() {
+      _topic->set_listener(NULL, 0);
+#if defined(TWINOAKS_COREDX)
+      delete _data;
+      delete _topic_listener;
+#endif
+    }
+
     virtual bool initialize(DomainParticipant *participant, const char *topic_name) {
         ReturnCode_t retcode;
         retcode = TSupport::register_type(participant, TSupport::get_type_name());
@@ -126,9 +135,11 @@ public:
             return false;
         }
 
+        _topic_listener = new TheTopicListener();
+
         _topic = participant->create_topic(
             topic_name, TSupport::get_type_name(),
-            TOPIC_QOS_DEFAULT, new TheTopicListener(),
+            TOPIC_QOS_DEFAULT, _topic_listener,
             INCONSISTENT_TOPIC_STATUS);
         if (_topic == NULL) {
             printf("create_topic error for topic \"%s\"\n", topic_name);
@@ -178,15 +189,16 @@ public:
     virtual Topic *get_topic() { return _topic;  }
 
 private:
-    TDataWriter *_writer;
-    Topic *_topic;
-
-    T *_data;
+    TDataWriter   *_writer;
+    Topic         *_topic;
+    TopicListener *_topic_listener;
+    T             *_data;
     GenericFiller<T, TFiller> _shapeFiller;
 };
 
 class ReaderBase {
 public:
+    virtual ~ReaderBase() {}
     virtual bool initialize(DomainParticipant *participant, const char *topic_name) = 0;
     virtual bool take_data() = 0;
     virtual Topic *get_topic() = 0;
@@ -224,6 +236,16 @@ public:
     typedef TDataReader data_reader_type;
 
   public:
+    virtual ~Reader() {
+
+      _reader->set_listener(NULL, 0);
+      _topic->set_listener(NULL, 0);      
+#if defined(TWINOAKS_COREDX)
+      delete _reader_listener;
+      delete _topic_listener;
+      delete _data;
+#endif
+    }
     bool initialize(DomainParticipant *participant, const char *topic_name) {
         ReturnCode_t retcode;
         retcode = TSupport::register_type(participant, TSupport::get_type_name());
@@ -239,17 +261,20 @@ public:
             return false;
         }
 
+        _topic_listener = new TheTopicListener();
         _topic = participant->create_topic(
             topic_name, TSupport::get_type_name(),
-            TOPIC_QOS_DEFAULT, new TheTopicListener(),
+            TOPIC_QOS_DEFAULT, _topic_listener,
             INCONSISTENT_TOPIC_STATUS );
         if (_topic == NULL) {
             printf("create topic error for topic \"%s\"\n", topic_name);
             return false;
         }
 
+        
+        _reader_listener = new TheReaderListener();
         DataReader *reader = subscriber->create_datareader(
-            _topic, DATAREADER_QOS_DEFAULT, new TheReaderListener(),
+            _topic, DATAREADER_QOS_DEFAULT, _reader_listener,
             REQUESTED_INCOMPATIBLE_QOS_STATUS | SUBSCRIPTION_MATCHED_STATUS);
         if (reader == NULL) {
             printf("create datareader error for topic \"%s\"\n", topic_name);
@@ -316,9 +341,11 @@ public:
     }
 
 private:
-    TDataReader *_reader;
-    Topic *_topic;
-    T *_data;
+    TDataReader        * _reader;
+    DataReaderListener * _reader_listener;
+    Topic              * _topic;
+    TopicListener      * _topic_listener;
+    T                  * _data;
     WaitSet _waitset;
 };
 

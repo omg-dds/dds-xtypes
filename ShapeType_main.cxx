@@ -75,7 +75,8 @@ int publish(DomainParticipant *participant, const char *type_name)
         writer->write_data("BLUE", count);
         wait_set->wait(active_cond, send_period);
     }
-
+    delete wait_set;
+    delete writer;
     return 0;
 }
 
@@ -100,6 +101,8 @@ int subscribe(DomainParticipant *participant, const char *type_name)
         reader->wait_for_data(receive_period);
         reader->take_data();
     }
+    
+    delete reader;
 
     return 0;
 }
