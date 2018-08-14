@@ -117,8 +117,8 @@ Published Sample | Received Sample
 
 TypeConsistencEnforcementQosPolicy.prevent_type_widening set to 0
 
-| TestCode   | Publisher Type   | Subscriber Type |
----|---|---|---  
+| TestCode   | Publisher Type   | Subscriber Type | Representation Id |
+|------------|------------------|-----------------|-------------------|
 | #SER2A | Shape1Appendable | Shape2Appendable | V1 and V2  |
 | #SER2B | Shape1Mutable | Shape2Mutable | V1 and V2 |
 | #SER2C | Shape2Appendable | Shape1Appendable |V1 and V2  |
