@@ -306,11 +306,11 @@ Published Sample | Received Sample
   
 ### 5.2.13 Making an existing member optional(#SER13) <a id="5.2.13"></a>
 
-| TestCode   | Publisher Type   | Subscriber Type   |  Representation Id | 
----|---|---|---    
-| #SER13A | Shape1Mutable (optional not set) | Shape11Mutable | V1 and V2  
-| #SER13B | Shape1Mutable | (optional set) | Shape11Mutable | V1 and V2   |
-| #SER13C | Shape11Mutable  | Shape1Mutable | V1 and V2  |
+| TestCode | Publisher Type                   | Subscriber Type  |  Representation Id | 
+|----------|----------------------------------|------------------|--------------------|
+| #SER13A  | Shape1Mutable (optional not set) | Shape11Mutable   | V1 and V2          |
+| #SER13B  | Shape1Mutable (optional set)     | Shape11Mutable   | V1 and V2          |
+| #SER13C  | Shape11Mutable                   | Shape1Mutable    | V1 and V2          |
   
 #### 
 
