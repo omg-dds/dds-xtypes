@@ -143,8 +143,8 @@ TypeConsistencEnforcementQosPolicy.prevent_type_widening set to 0
   
 #### 
 
-| Publishing Type   | Subscribing Type   | Published Sample   |
----|---|---|---  
+| Publishing Type   | Subscribing Type   | Published Sample   | Received Sample |
+|-------------------|--------------------|--------------------|-----------------|
 | Shape1.. | Shape3.. |<code>{&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED&nbsp;SHAPE&nbsp;DESC",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25}<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10,<br/>};</code>|<code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED&nbsp;SHAPE&nbsp;DESC",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5,10},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15,10},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25,10}<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10<br/>};</code>
 | Shape3.. | Shape1.. |<code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED&nbsp;SHAPE&nbsp;DESC",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5,20},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15,90},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25,33}<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10<br/>};</code>|<code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED&nbsp;SHAPE&nbsp;DESC",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25}<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10,<br/>};&nbsp;&nbsp;
 </code>
