@@ -300,9 +300,8 @@ Published Sample | Received Sample
 #### 
 
 | Publishing Type   | Subscribing Type   | Published Sample   | Received Sample |
----|---|---|---  
-  
-| Shape1.. | Shape1.. |<code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"NULL",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25}<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10<br/>};</code>|<code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"NULL",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25},<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10<br/>};</code>
+|---|---|---|---|
+| Shape1.. | Shape1.. |<code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"NULL",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25}<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10<br/>};</code>|<code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"NULL",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25},<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10<br/>};</code>|
   
 ### 5.2.13 Making an existing member optional(#SER13) <a id="5.2.13"></a>
 
