@@ -659,27 +659,28 @@ TypeConsistencyEnforcement.ignore_sequence_bounds to 1
   
 #### 
 
-| Publishing Type   | Subscribing Type   | Published Sample   | Representation Id |
----|---|---|---
-| Parameter1.. | Parameter2.. | <pre><code>{
+<table><tbody>
+<tr><td> Publishing Type </td><td> Subscribing Type </td><td> Published Sample </td><td> Representation Id </td></tr>
+<tr><td> Parameter1.. </td><td> Parameter2.. </td><td> <pre><code>{
     _d: USHORT_PARAM,
     {
         val_us: 34
     }
-};</code></pre> | <pre><code>{
+};</code></pre> </td><td> <pre><code>{
     _d: USHORT_PARAM,
     {
         val_us: 34
     }
-};</code></pre>
-| Parameter2.. | Parameter1.. | <pre><code>{
+};</code></pre></td></tr>
+<tr><td> Parameter2.. </td><td> Parameter1.. </td><td> <pre><code>{
     _d: LONG_PARAM,
     {
         val_l: 34
     }
-};</code></pre>|<pre><code>{
+};</code></pre></td><td><pre><code>{
     _d: LONG_PARAM,
-};</code></pre> 
+};</code></pre></td></tr>
+</tbody></table>
   
 ### 5.2.10 Add Member with Out-of-Range Non-Default Label to a Union Type without Default. Discriminator uses try_construct DEFAULT(#SER10) <a id="5.2.10"></a>
 
