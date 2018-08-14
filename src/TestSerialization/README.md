@@ -447,14 +447,14 @@ TypeConsistencEnforcementQosPolicy.prevent_type_widening set to 0
   
 ### 5.2.5 Type Refactoring Using Inheritance(#SER5) <a id="5.2.5"></a>
 
-| TestCode   | Publisher Type   | Subscriber Type   |  Representation Id |
----|---|---|---
-| #SER5A | Shape2Final | Shape5Final | V1 and V2  |
-| #SER5B | Shape2Appendable | Shape5Appendable |V1 and V2 |
-| #SER5C | Shape2Mutable | Shape5Mutable | V1 and V2 |
-| #SER5D | Shape5Final | Shape2Final | V1 and V2  |
-| #SER5E | Shape5Appendable | Shape2Appendable | V1 and V2  |
-| #SER5F | Shape5Mutable | Shape2Mutable | V1 and V2  |
+| TestCode | Publisher Type   | Subscriber Type  | Representation Id |
+|----------|------------------|------------------|-------------------|
+| #SER5A   | Shape2Final      | Shape5Final      | V1 and V2.        |
+| #SER5B   | Shape2Appendable | Shape5Appendable | V1 and V2         |
+| #SER5C   | Shape2Mutable    | Shape5Mutable    | V1 and V2         |
+| #SER5D   | Shape5Final      | Shape2Final      | V1 and V2         |
+| #SER5E   | Shape5Appendable | Shape2Appendable | V1 and V2         |
+| #SER5F   | Shape5Mutable    | Shape2Mutable    | V1 and V2         |
   
 #### 
 
@@ -525,14 +525,14 @@ TypeConsistencEnforcementQosPolicy.prevent_type_widening set to 0
 
 TypeConsistencyEnforcement.ignore_string_bounds to 1
 
-| TestCode   | Publisher Type   | Subscriber Type   |  Representation Id |
----|---|---|---
-| #SER6A | Shape1Final | Shape6Final | V1 and V2  
-| #SER6B | Shape1Appendable | Shape6Appendable | V1 and V2  |
-| #SER6C | Shape1Mutable | Shape6Mutable | V1 and V2 |
-| #SER6D | Shape6Final | Shape1Final | V1 and V2 |
-| #SER6E | Shape6Appendable | Shape1Appendable | V1 and V2  |
-| #SER6D | Shape6Mutable | Shape1Mutable | V1 and V2 |
+| TestCode | Publisher Type   | Subscriber Type   | Representation Id |
+|----------|------------------|-------------------|-------------------|
+| #SER6A   | Shape1Final      | Shape6Final       | V1 and V2         |
+| #SER6B   | Shape1Appendable | Shape6Appendable  | V1 and V2         |
+| #SER6C   | Shape1Mutable    | Shape6Mutable     | V1 and V2         |
+| #SER6D   | Shape6Final      | Shape1Final       | V1 and V2         |
+| #SER6E   | Shape6Appendable | Shape1Appendable  | V1 and V2         |
+| #SER6D   | Shape6Mutable    | Shape1Mutable     | V1 and V2         |
   
 #### 
 
@@ -591,14 +591,14 @@ TypeConsistencyEnforcement.ignore_string_bounds to 1
 
 TypeConsistencyEnforcement.ignore_sequence_bounds to 1
 
-| TestCode   | Publisher Type   | Subscriber Type   |  Representation Id |
----|---|---|---  
-| #SER7A | Shape1Final | Shape6Final | V1 and V2 |
-| #SER7B | Shape1Appendable | Shape6Appendable | V1 and V2 |
-| #SER7C | Shape1Mutable | Shape6Mutable | V1 and V2 |
-| #SER7D | Shape6Final | Shape1Final | V1 and V2  |
-| #SER7E | Shape6Appendable | Shape1Appendable | V1 and V2 |
-| #SER7F | Shape6Mutable | Shape1Mutable | V1 and V2 |
+| TestCode | Publisher Type   | Subscriber Type   | Representation Id |
+|----------|------------------|-------------------|-------------------|
+| #SER7A   | Shape1Final      | Shape6Final       | V1 and V2         |
+| #SER7B   | Shape1Appendable | Shape6Appendable  | V1 and V2         |
+| #SER7C   | Shape1Mutable    | Shape6Mutable     | V1 and V2         |
+| #SER7D   | Shape6Final      | Shape1Final       | V1 and V2         |
+| #SER7E   | Shape6Appendable | Shape1Appendable  | V1 and V2         |
+| #SER7F   | Shape6Mutable    | Shape1Mutable     | V1 and V2         |
   
 #### 
 
@@ -655,14 +655,14 @@ TypeConsistencyEnforcement.ignore_sequence_bounds to 1
   
 ### 5.2.8 Reorder Members in a Union Type (#SER8) <a id="5.2.8"></a>
 
-| TestCode   | Publisher Type   | Subscriber Type   |  Representation Id |
----|---|---|---  
-| #SER8A | Parameter1Final | Parameter3Final | V1 and V2  |
-| #SER8B | Parameter1Appendable | Parameter3Appendable | V1 and V2  |
-| #SER8C | Parameter1Mutable | Parameter3Mutable | V1 and V2 |
-| #SER8D | Parameter3Final | Parameter1Final | V1 and V2  |
-| #SER8E | Parameter3Appendable | Parameter1Appendable | V1 and V2  |
-| #SER8F | Parameter3Mutable | Parameter1Mutable | V1 and V2  |
+| TestCode | Publisher Type       | Subscriber Type      | Representation Id |
+|----------|----------------------|----------------------|-------------------|
+| #SER8A   | Parameter1Final      | Parameter3Final      | V1 and V2         |
+| #SER8B   | Parameter1Appendable | Parameter3Appendable | V1 and V2         |
+| #SER8C   | Parameter1Mutable    | Parameter3Mutable    | V1 and V2         |
+| #SER8D   | Parameter3Final      | Parameter1Final      | V1 and V2         |
+| #SER8E   | Parameter3Appendable | Parameter1Appendable | V1 and V2         |
+| #SER8F   | Parameter3Mutable    | Parameter1Mutable    | V1 and V2         |
   
 #### 
 
@@ -688,12 +688,12 @@ TypeConsistencyEnforcement.ignore_sequence_bounds to 1
   
 ### 5.2.9 Add Member with Non-Default Label to a Union Type without Default Label(#SER9) <a id="5.2.9"></a>
 
-| TestCode   | Publisher Type   | Subscriber Type   |  Representation Id|
----|---|---|---
-| #SER9A | Parameter1Appendable | Parameter2Appendable | V1 and V2 |
-| #SER9B | Parameter1Mutable | Parameter2Mutable | V1 and V2 |
-| #SER9C | Parameter2Appendable | Parameter1Appendable | V1 and V2 |
-| #SER9D | Parameter2Mutable | Parameter1Mutable | V1 and V2 |
+| TestCode | Publisher Type       | Subscriber Type      | Representation Id |
+|----------|----------------------|----------------------|-------------------|
+| #SER9A   | Parameter1Appendable | Parameter2Appendable | V1 and V2         |
+| #SER9B   | Parameter1Mutable    | Parameter2Mutable    | V1 and V2         |
+| #SER9C   | Parameter2Appendable | Parameter1Appendable | V1 and V2         |
+| #SER9D   | Parameter2Mutable    | Parameter1Mutable    | V1 and V2         |
   
 #### 
 
@@ -727,12 +727,12 @@ TypeConsistencyEnforcement.ignore_sequence_bounds to 1
   
 ### 5.2.10 Add Member with Out-of-Range Non-Default Label to a Union Type without Default. Discriminator uses try_construct DEFAULT(#SER10) <a id="5.2.10"></a>
 
-| TestCode   | Publisher Type   | Subscriber Type   |  Representation Id |
----|---|---|---    
-| #SER10A | Parameter1Appendable | Parameter7Appendable | V1 and V2  |
-| #SER10B | Parameter1Mutable | Parameter7Mutable | V1 and V2 |
-| #SER10C | Parameter7Appendable | Parameter1Appendable | V1 and V2  |
-| #SER10D | Parameter7Mutable | Parameter1Mutable | V1 and V2  |
+| TestCode | Publisher Type       | Subscriber Type      | Representation Id |
+|----------|----------------------|----------------------|-------------------|
+| #SER10A  | Parameter1Appendable | Parameter7Appendable | V1 and V2         |
+| #SER10B  | Parameter1Mutable    | Parameter7Mutable    | V1 and V2         |
+| #SER10C  | Parameter7Appendable | Parameter1Appendable | V1 and V2         |
+| #SER10D  | Parameter7Mutable    | Parameter1Mutable    | V1 and V2         |
   
 #### 
 
@@ -769,12 +769,12 @@ TypeConsistencyEnforcement.ignore_sequence_bounds to 1
   
 ### 5.2.11 Add Member with Default Label to a Union Type without Default Label (#SER11) <a id="5.2.11"></a>
 
-| TestCode   | Publisher Type   | Subscriber Type   |  Representation Id |
----|---|---|--- 
-| #SER11A | Parameter1Appendable | Parameter4Appendable | V1 and V2 |
-| #SER11B | Parameter1Mutable | Parameter4Mutable | V1 and V2 |
-| #SER11C | Parameter4Appendable | Parameter1Appendable | V1 and V2 |
-| #SER11D | Parameter4Mutable | Parameter1Mutable | V1 and V2 |
+| TestCode | Publisher Type       | Subscriber Type      | Representation Id |
+|----------|----------------------|----------------------|-------------------|
+| #SER11A  | Parameter1Appendable | Parameter4Appendable | V1 and V2         |
+| #SER11B  | Parameter1Mutable    | Parameter4Mutable    | V1 and V2         |
+| #SER11C  | Parameter4Appendable | Parameter1Appendable | V1 and V2         |
+| #SER11D  | Parameter4Mutable    | Parameter1Mutable    | V1 and V2         |
   
 #### 
 
@@ -808,11 +808,11 @@ TypeConsistencyEnforcement.ignore_sequence_bounds to 1
   
 ### 5.2.12 Setting optional member to NULL(#SER12) <a id="5.2.12"></a>
 
-| TestCode   | Publisher Type   | Subscriber Type   | Representation Id |
----|---|---|---  
-| #SER12A | Shape1Final | Shape1Final | V1 and V2 |
-| #SER12B | Shape1Appendable | Shape1Appendable | V1 and V2 |
-| #SER12C | Shape1Mutable | Shape1Mutable | V1 and V2  |
+| TestCode | Publisher Type   | Subscriber Type  | Representation Id |
+|----------|------------------|------------------|-------------------|
+| #SER12A  | Shape1Final      | Shape1Final      | V1 and V2         |
+| #SER12B  | Shape1Appendable | Shape1Appendable | V1 and V2         |
+| #SER12C  | Shape1Mutable    | Shape1Mutable    | V1 and V2         |
   
 #### 
 
