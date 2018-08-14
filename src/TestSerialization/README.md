@@ -246,10 +246,59 @@ TypeConsistencEnforcementQosPolicy.prevent_type_widening set to 0
 
 #### 
 
-| Publishing Type   | Subscribing Type   | Published Sample   | Received Sample |
-|-------------------|--------------------|--------------------|-----------------|
-| Shape1.. | Shape2.. |<code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED&nbsp;SHAPE&nbsp;DESC",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25}<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10,<br/>};</code>|<code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED&nbsp;SHAPE&nbsp;DESC",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25}<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10,<br/>&nbsp;&nbsp;&nbsp;&nbsp;90<br/>};</code>|
-| Shape2.. | Shape1.. | <code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED&nbsp;SHAPE&nbsp;DESC",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25}<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10,<br/>&nbsp;&nbsp;&nbsp;&nbsp;180<br/>};</code>|<code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED&nbsp;SHAPE&nbsp;DESC",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25}<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10,<br/>};&nbsp;&nbsp;</code>|  
+<table>
+	<tbody>
+<tr> <td> Publishing Type   </td> <td> Subscribing Type   </td> <td> Published Sample   </td> <td> Received Sample </td> </tr>
+<tr> <td> Shape1.. </td> <td> Shape2.. </td> <td>
+ <pre><code>{
+    "RED",
+    "RED SHAPE DESC",
+    {"Tag_1"},
+    {
+        {1,5},
+        {10,15},
+        {20,25}
+    },
+    10,
+};</code>
+</pre></td>
+ <td><pre><code>{
+    "RED",
+    "RED SHAPE DESC",
+    {"Tag_1"},
+    {
+        {1,5},
+        {10,15},
+        {20,25}
+    },
+    10,
+    90
+};</code></pre></td> </tr>
+<tr> <td> Shape2.. </td> <td> Shape1.. </td> <td> <pre><code>{
+    "RED",
+    "RED SHAPE DESC",
+    {"Tag_1"},
+    {
+        {1,5},
+        {10,15},
+        {20,25}
+    },
+    10,
+    180
+};</code></pre></td> <td><pre><code>{
+    "RED",
+    "RED SHAPE DESC",
+    {"Tag_1"},
+    {
+        {1,5},
+        {10,15},
+        {20,25}
+    },
+    10,
+};  </code></pre></td> </tr>
+</tbody>
+</table>
+
 ### 5.2.3 Add Member at the End of Nested Type With Default Value(#SER3) <a id="5.2.3"></a>
 
 TypeConsistencEnforcementQosPolicy.prevent_type_widening set to 0
