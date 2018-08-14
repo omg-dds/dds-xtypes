@@ -435,9 +435,17 @@ TypeConsistencEnforcementQosPolicy.prevent_type_widening set to 0
   
 #### 
 
-| Publishing Type   | Subscribing Type   | Published Sample   |  |
----|---|---|---  
-| Shape2.. | Shape5.. |<pre><code>{
+<table><tbody>
+	<tr>
+		<td>Publishing Type</td>
+		<td>Subscribing Type</td>
+		<td>Published Sample</td>
+		<td>Received Sample</td>
+	</tr>
+	<tr>
+		<td>Shape2.. </td>
+		<td>Shape5.. </td>
+		<td><pre><code>{
     "RED",
     "RED SHAPE DESC",
     {"Tag_1"},
@@ -447,8 +455,9 @@ TypeConsistencEnforcementQosPolicy.prevent_type_widening set to 0
         {20,25}
     },
     10,
-    90[ae][af][ag],
-};</code></pre> |<pre><code>{
+    90,
+};</code></pre></td>
+<td> <pre><code>{
     {
         "RED",
         "RED SHAPE DESC",
@@ -461,8 +470,8 @@ TypeConsistencEnforcementQosPolicy.prevent_type_widening set to 0
         10
     },
     90
-}; </code></pre> 
-| Shape5.. | Shape2.. | <pre><code>{
+}; </code></pre> </td></tr>
+<tr></td><td> Shape5.. </td><td> Shape2.. </td><td> <pre><code>{
     {
         "RED",
         "RED SHAPE DESC",
@@ -475,7 +484,7 @@ TypeConsistencEnforcementQosPolicy.prevent_type_widening set to 0
         10
     },
     90
-};</code></pre>|<pre><code>{
+};</code></pre></td><td><pre><code>{
     "RED",
     "RED SHAPE DESC",
     {"Tag_1"},
@@ -486,7 +495,8 @@ TypeConsistencEnforcementQosPolicy.prevent_type_widening set to 0
     },
     10,
     90,
-};</code></pre>
+};</code></pre></tr>
+</table></tbody>
   
 ### 5.2.6 Different Maximum String Length in Publisher and Subscriber Type with try_construct TRIM(#SER6) <a id="5.2.6"></a>
 
