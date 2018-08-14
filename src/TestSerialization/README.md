@@ -574,9 +574,9 @@ TypeConsistencyEnforcement.ignore_sequence_bounds to 1
   
 #### 
 
-| Publishing Type   | Subscribing Type   | Published Sample   | Received Sample |
----|---|---|---  
-| Shape1.. | Shape6.. | <pre><code>{
+<table><tbody>
+<tr><td> Publishing Type </td><td> Subscribing Type   </td><td> Published Sample </td><td> Received Sample </td></tr>
+<tr><td> Shape1.. </td><td> Shape6.. </td><td> <pre><code>{
     "RED",
     "RED SHAPE DESC",
     {
@@ -590,8 +590,8 @@ TypeConsistencyEnforcement.ignore_sequence_bounds to 1
         {20,25}
     },
     10
-};</code></pre>| Sample is dropped 
-| Shape6.. | Shape1.. | <pre><code>{
+};</code></pre></td><td> Sample is dropped</td></tr>
+<tr><td> Shape6.. </td><td> Shape1.. </td><td> <pre><code>{
     "RED",
     "RED SHAPE DESC",
     {
@@ -604,7 +604,7 @@ TypeConsistencyEnforcement.ignore_sequence_bounds to 1
         {20,25}
     },
     10
-};</code></pre>| <pre><code>{
+};</code></pre> </td><td> <pre><code>{
     "RED",
     "RED SHAPE DESC",
     {
@@ -617,7 +617,8 @@ TypeConsistencyEnforcement.ignore_sequence_bounds to 1
         {20,25}
     },
     10
-};</code></pre>
+};</code></pre></td></tr>
+</tbody></table>
   
 ### 5.2.8 Reorder Members in a Union Type (#SER8) <a id="5.2.8"></a>
 
