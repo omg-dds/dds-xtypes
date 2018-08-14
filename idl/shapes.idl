@@ -1,0 +1,750 @@
+/* -----------------------------------------------*/
+
+const long STR_LEN_MAX=14;
+const long SMALL_STR_LEN_MAX=9;
+
+const long TAG_MAX = 3;
+const long SMALL_TAG_MAX = 2;
+
+const long ARRAY_LENGTH = 3;
+const long SMALL_ARRAY_LENGTH = 2;
+
+@final
+struct Point2DFinal {
+  long x;
+  long y; 
+};
+
+@appendable
+struct Point2DAppendable {
+  long x;
+  long y; 
+};
+
+@final
+struct Point3DFinal {
+  long x;
+  long y;
+  @default(10)
+  long z;
+};
+
+@appendable
+struct Point3DAppendable {
+  long x;
+  long y;
+  @default(10)
+  long z;
+};
+
+module IntKind{
+  @appendable
+  enum ParameterIntKind {
+      /*@default_literal*/
+      SHORT_PARAM,
+      USHORT_PARAM,
+      LONG_PARAM,
+      ULONG_PARAM
+  };
+};
+
+module LongIntKind{
+  @appendable
+  enum ParameterLongIntKind {
+      /*@default_literal*/
+      SHORT_PARAM,
+      USHORT_PARAM,
+      LONG_PARAM,
+      ULONG_PARAM,
+      LONGLONG_PARAM,
+      ULONGLONG_PARAM
+  };
+};
+
+
+/* -------------- Shape1 -----------------------------*/
+struct Shape1Default {
+  @key
+  string<STR_LEN_MAX> color;
+  @try_construct(TRIM)
+  @optional @optional string<STR_LEN_MAX> description;
+  @try_construct(DISCARD)
+  sequence<string<SMALL_STR_LEN_MAX>,TAG_MAX> tags;
+  Point2DAppendable points[ARRAY_LENGTH];
+  long shapesize;
+}; 
+
+@final
+struct Shape1Final {
+  @key 
+  string<STR_LEN_MAX> color;
+  @try_construct(TRIM)
+  @optional @optional string<STR_LEN_MAX> description;
+  @try_construct(DISCARD)
+  sequence<string<SMALL_STR_LEN_MAX>,TAG_MAX> tags;
+  Point2DFinal points[ARRAY_LENGTH];
+  long shapesize;
+};
+
+@appendable
+struct Shape1Appendable {
+  @key
+  string<STR_LEN_MAX> color;
+  @try_construct(TRIM)
+  @optional string<STR_LEN_MAX> description;
+  @try_construct(DISCARD)
+  sequence<string<SMALL_STR_LEN_MAX>,TAG_MAX> tags;
+  Point2DAppendable points[ARRAY_LENGTH];
+  long shapesize;
+}; 
+
+@mutable
+struct Shape1Mutable {
+  @key
+  string<STR_LEN_MAX> color;
+  @try_construct(TRIM)
+  @optional string<STR_LEN_MAX> description;
+  @try_construct(DISCARD)
+  sequence<string<SMALL_STR_LEN_MAX>,TAG_MAX> tags;
+  Point2DAppendable points[ARRAY_LENGTH];
+  long shapesize;
+};
+
+@mutable
+struct Shape1MutableExplicitID {
+  @key
+  @id(10)
+  string<STR_LEN_MAX> color; 
+  @id(20)
+  @try_construct(TRIM)
+  @optional string<STR_LEN_MAX> description;
+  @id(30)
+  @try_construct(DISCARD)
+  sequence<string<SMALL_STR_LEN_MAX>,TAG_MAX> tags;
+  @id(40)
+  Point2DAppendable points[ARRAY_LENGTH];
+  @id(50)
+  long shapesize;
+};
+
+/* -------------- Shape2 -----------------------------*/
+@final
+struct Shape2Final {
+  @key
+  string<STR_LEN_MAX> color;
+  @try_construct(TRIM)
+  @optional string<STR_LEN_MAX> description;
+  @try_construct(DISCARD)
+  sequence<string<SMALL_STR_LEN_MAX>,TAG_MAX> tags;
+  Point2DFinal points[ARRAY_LENGTH];
+  long shapesize;
+  @default(45)
+  double angle;
+};
+
+@appendable
+struct Shape2Appendable {
+  @key
+  string<STR_LEN_MAX> color;
+  @try_construct(TRIM)
+  @optional string<STR_LEN_MAX> description;
+  @try_construct(DISCARD)
+  sequence<string<SMALL_STR_LEN_MAX>,TAG_MAX> tags;
+  Point2DAppendable points[ARRAY_LENGTH];
+  long shapesize;
+  @default(45)
+  double angle;
+};
+
+@mutable
+struct Shape2Mutable {
+  @key
+  string<STR_LEN_MAX> color;
+  @try_construct(TRIM)
+  @optional string<STR_LEN_MAX> description;
+  @try_construct(DISCARD)
+  sequence<string<SMALL_STR_LEN_MAX>,TAG_MAX> tags;
+  Point2DAppendable points[ARRAY_LENGTH];
+  long shapesize;
+  @default(45)
+  double angle;
+};
+
+/* -------------- Shape3 -----------------------------*/
+@final
+struct Shape3Final {
+  @key
+  string<STR_LEN_MAX> color;
+  @try_construct(TRIM)
+  @optional string<STR_LEN_MAX> description;
+  @try_construct(DISCARD)
+  sequence<string<SMALL_STR_LEN_MAX>,TAG_MAX> tags;
+  Point3DFinal points[ARRAY_LENGTH];
+  long shapesize;
+};
+
+@appendable
+struct Shape3Appendable {
+  @key
+  string<STR_LEN_MAX> color;
+  @try_construct(TRIM)
+  @optional string<STR_LEN_MAX> description;
+  @try_construct(DISCARD)
+  sequence<string<SMALL_STR_LEN_MAX>,TAG_MAX> tags;
+  Point3DAppendable points[ARRAY_LENGTH];
+  long shapesize;
+};
+
+@mutable
+struct Shape3Mutable {
+  @key
+  string<STR_LEN_MAX> color;
+  @try_construct(TRIM)
+  @optional string<STR_LEN_MAX> description;
+  @try_construct(DISCARD)
+  sequence<string<SMALL_STR_LEN_MAX>,TAG_MAX> tags;
+  Point3DAppendable points[ARRAY_LENGTH];
+  long shapesize;
+};
+
+/* -------------- Shape4 -----------------------------*/
+@final
+struct Shape4Final {
+  @key
+  string<STR_LEN_MAX> color;
+  @try_construct(TRIM)
+  @optional string<STR_LEN_MAX> description;
+  @try_construct(DISCARD)
+  sequence<string<SMALL_STR_LEN_MAX>,TAG_MAX> tags;
+  @default(45)
+  double angle;
+  Point2DFinal points[ARRAY_LENGTH];
+  long shapesize;
+};
+
+@appendable
+struct Shape4Appendable {
+  @key
+  string<STR_LEN_MAX> color;
+  @try_construct(TRIM)
+  @optional string<STR_LEN_MAX> description;
+  @try_construct(DISCARD)
+  sequence<string<SMALL_STR_LEN_MAX>,TAG_MAX> tags;
+  @default(45)
+  double angle;
+  Point2DAppendable points[ARRAY_LENGTH];
+  long shapesize;
+};
+
+@mutable
+struct Shape4Mutable {
+  @key
+  string<STR_LEN_MAX> color;
+  @try_construct(TRIM)
+  @optional string<STR_LEN_MAX> description;
+  @try_construct(DISCARD)
+  sequence<string<SMALL_STR_LEN_MAX>,TAG_MAX> tags;
+  @default(45)
+  double angle;
+  Point2DAppendable points[ARRAY_LENGTH];
+  long shapesize;
+};
+
+@mutable
+struct Shape4MutableExplicitID {
+  @key
+  @id(10)
+  string<STR_LEN_MAX> color;
+  @id(20)
+  @try_construct(TRIM)
+  @optional string<STR_LEN_MAX> description;
+  @id(30)
+  @try_construct(DISCARD)
+  sequence<string<SMALL_STR_LEN_MAX>,TAG_MAX> tags;
+  @default(45)
+  @id(60)
+  double angle;
+  @id(40)
+  Point2DAppendable points[ARRAY_LENGTH];
+  @id(50)
+  long shapesize;
+};
+
+/* -------------- Shape5 -----------------------------*/
+
+@final
+struct Shape5Final : Shape1Final {
+    double angle;
+};
+
+@appendable
+struct Shape5Appendable : Shape1Appendable {
+    double angle;
+};
+
+@mutable
+struct Shape5Mutable : Shape1Mutable {
+    double angle;
+};
+
+/* -------------- Shape6 -----------------------------*/
+@final
+struct Shape6Final {
+  @key
+  @try_construct(TRIM)
+  string<STR_LEN_MAX> color;
+  @try_construct(TRIM)
+  string<SMALL_STR_LEN_MAX> description;
+  @try_construct(DISCARD)
+  sequence<string<SMALL_STR_LEN_MAX>,TAG_MAX> tags;
+  Point2DFinal points[ARRAY_LENGTH];
+  long shapesize;
+};
+
+@appendable
+struct Shape6Appendable {
+  @key
+  @try_construct(TRIM)
+  string<STR_LEN_MAX> color;
+  @try_construct(TRIM)
+  string<SMALL_STR_LEN_MAX> description;
+  @try_construct(DISCARD)
+  sequence<string<SMALL_STR_LEN_MAX>,TAG_MAX> tags;
+  Point2DAppendable points[ARRAY_LENGTH];
+  long shapesize;
+};
+
+@mutable
+struct Shape6Mutable {
+  @key
+  @try_construct(TRIM)
+  string<STR_LEN_MAX> color;
+  @try_construct(TRIM)
+  string<SMALL_STR_LEN_MAX> description;
+  @try_construct(DISCARD)
+  sequence<string<SMALL_STR_LEN_MAX>,TAG_MAX> tags;
+  Point2DAppendable points[ARRAY_LENGTH];
+  long shapesize;
+};
+
+/* -------------- Shape7 -----------------------------*/
+@final
+struct Shape7Final {
+  @key
+  string<STR_LEN_MAX> color;
+  @try_construct(TRIM)
+  @optional string<STR_LEN_MAX> description;
+  @try_construct(DISCARD)
+  sequence<string<SMALL_STR_LEN_MAX>,SMALL_TAG_MAX> tags;
+  Point2DFinal points[ARRAY_LENGTH];
+  long shapesize;
+};
+
+@appendable
+struct Shape7Appendable {
+  @key
+  string<STR_LEN_MAX> color;
+  @try_construct(TRIM)
+  @optional string<STR_LEN_MAX> description;
+  @try_construct(DISCARD)
+  sequence<string<SMALL_STR_LEN_MAX>,SMALL_TAG_MAX> tags;
+  Point2DAppendable points[ARRAY_LENGTH];
+  long shapesize;
+};
+
+@mutable
+struct Shape7Mutable {
+  @key
+  string<STR_LEN_MAX> color;
+  @try_construct(TRIM)
+  @optional string<STR_LEN_MAX> description;
+  @try_construct(DISCARD)
+  sequence<string<SMALL_STR_LEN_MAX>,SMALL_TAG_MAX> tags;
+  Point2DAppendable points[ARRAY_LENGTH];
+  long shapesize;
+};
+
+/* -------------- Shape8 -----------------------------*/
+@final
+struct Shape8Final {
+  @key
+  string<STR_LEN_MAX> color;
+  @try_construct(TRIM)
+  @optional string<STR_LEN_MAX> description;
+  @try_construct(DISCARD)
+  sequence<string<SMALL_STR_LEN_MAX>,TAG_MAX> tags;
+  Point2DFinal puntos[ARRAY_LENGTH];
+  long shapesize;
+};
+
+@appendable
+struct Shape8Appendable {
+  @key
+  string<STR_LEN_MAX> color;
+  @try_construct(TRIM)
+  @optional string<STR_LEN_MAX> description;
+  @try_construct(DISCARD)
+  sequence<string<SMALL_STR_LEN_MAX>,TAG_MAX> tags;
+  Point2DAppendable puntos[ARRAY_LENGTH];
+  long shapesize;
+};
+
+@mutable
+struct Shape8Mutable {
+  @key
+  string<STR_LEN_MAX> color;
+  @try_construct(TRIM)
+  @optional string<STR_LEN_MAX> description;
+  @try_construct(DISCARD)
+  sequence<string<SMALL_STR_LEN_MAX>,TAG_MAX> tags;
+  Point2DAppendable puntos[ARRAY_LENGTH];
+  long shapesize;
+};
+
+/* -------------- Shape9 -----------------------------*/
+@final
+struct Shape9Final {
+  @key
+  string<STR_LEN_MAX> color;
+  @try_construct(TRIM)
+  @optional string<STR_LEN_MAX> description;
+  @try_construct(DISCARD)
+  sequence<string<SMALL_STR_LEN_MAX>,TAG_MAX> tags;
+  Point2DFinal points[ARRAY_LENGTH];
+  long long shapesize;
+};
+
+@appendable
+struct Shape9Appendable {
+  @key
+  string<STR_LEN_MAX> color;
+  @try_construct(TRIM)
+  @optional string<STR_LEN_MAX> description;
+  @try_construct(DISCARD)
+  sequence<string<SMALL_STR_LEN_MAX>,TAG_MAX> tags;
+  Point2DAppendable points[ARRAY_LENGTH];
+  long long shapesize;
+};
+
+@mutable
+struct Shape9Mutable {
+  @key
+  string<STR_LEN_MAX> color;
+  @try_construct(TRIM)
+  @optional string<STR_LEN_MAX> description;
+  @try_construct(DISCARD)
+  sequence<string<SMALL_STR_LEN_MAX>,TAG_MAX> tags;
+  Point2DAppendable points[ARRAY_LENGTH];
+  long long shapesize;
+};
+
+/* -------------- Shape10 -----------------------------*/
+@final
+struct Shape10Final {
+  @key
+  string<STR_LEN_MAX> color;
+  @try_construct(TRIM)
+  @optional string<STR_LEN_MAX> description;
+  @try_construct(DISCARD)
+  sequence<string<SMALL_STR_LEN_MAX>,TAG_MAX> tags;
+  Point2DFinal points[SMALL_ARRAY_LENGTH];
+  long shapesize;
+};
+
+@appendable
+struct Shape10Appendable {
+  @key
+  string<STR_LEN_MAX> color;
+  @try_construct(TRIM)
+  @optional string<STR_LEN_MAX> description;
+  @try_construct(DISCARD)
+  sequence<string<SMALL_STR_LEN_MAX>,TAG_MAX> tags;
+  Point2DAppendable points[SMALL_ARRAY_LENGTH];
+  long shapesize;
+};
+
+@mutable
+struct Shape10Mutable {
+  @key
+  string<STR_LEN_MAX> color;
+  @try_construct(TRIM)
+  @optional string<STR_LEN_MAX> description;
+  @try_construct(DISCARD)
+  sequence<string<SMALL_STR_LEN_MAX>,TAG_MAX> tags;
+  Point2DAppendable points[SMALL_ARRAY_LENGTH];
+  long shapesize;
+};
+
+/* -------------- Shape11 -----------------------------*/
+
+@final
+struct Shape11Final {
+  @key
+  string<STR_LEN_MAX> color;
+  @try_construct(TRIM)
+  string<STR_LEN_MAX> description;
+  @try_construct(DISCARD)
+  sequence<string<SMALL_STR_LEN_MAX>,TAG_MAX> tags;
+  Point2DFinal points[ARRAY_LENGTH];
+  long shapesize;
+};
+
+@appendable
+struct Shape11Appendable {
+  @key
+  string<STR_LEN_MAX> color;
+  @try_construct(TRIM)
+  string<STR_LEN_MAX> description;
+  @try_construct(DISCARD)
+  sequence<string<SMALL_STR_LEN_MAX>,TAG_MAX> tags;
+  Point2DAppendable points[ARRAY_LENGTH];
+  long shapesize;
+};
+
+@mutable
+struct Shape11Mutable {
+  @key
+  string<STR_LEN_MAX> color;
+  @try_construct(TRIM)
+  string<STR_LEN_MAX> description;
+  @try_construct(DISCARD)
+  sequence<string<SMALL_STR_LEN_MAX>,TAG_MAX> tags;
+  Point2DAppendable points[ARRAY_LENGTH];
+  long shapesize;
+};
+
+/* -------------- Parameter1 -----------------------------*/
+@final
+union Parameter1Final switch (/*@try_construct*/ IntKind::ParameterIntKind) {
+case IntKind::SHORT_PARAM:
+    short val_s;
+case IntKind::USHORT_PARAM:
+    short val_us;
+};
+
+@appendable
+union Parameter1Appendable switch (/*@try_construct*/IntKind::ParameterIntKind) {
+case IntKind::SHORT_PARAM:
+    @id(100)
+    short val_s;
+case IntKind::USHORT_PARAM:
+    @id(101)
+    short val_us;
+};
+
+@mutable
+union Parameter1Mutable switch (/*@try_construct*/ IntKind::ParameterIntKind) {
+case IntKind::SHORT_PARAM:
+    @id(100)
+    short val_s;
+case IntKind::USHORT_PARAM:
+    @id(101)
+    short val_us;
+};
+
+/* -------------- Parameter2 -----------------------------*/
+@final
+union Parameter2Final switch (IntKind::ParameterIntKind) {
+case IntKind::LONG_PARAM:
+    short val_l;
+case IntKind::SHORT_PARAM:
+    short val_s;
+case IntKind::USHORT_PARAM:
+    short val_us;
+};
+
+@appendable
+union Parameter2Appendable switch (IntKind::ParameterIntKind) {
+case IntKind::LONG_PARAM:
+    @id(102)
+    short val_l;
+case IntKind::SHORT_PARAM:
+    @id(100)
+    short val_s;
+case IntKind::USHORT_PARAM:
+    @id(101)
+    short val_us;
+};
+
+@mutable
+union Parameter2Mutable switch (IntKind::ParameterIntKind) {
+case IntKind::LONG_PARAM:
+    @id(102)
+    short val_l;
+case IntKind::SHORT_PARAM:
+    @id(100)
+    short val_s;
+case IntKind::USHORT_PARAM:
+    @id(101)
+    short val_us;
+};
+
+/* -------------- Parameter3 -----------------------------*/
+@final
+union Parameter3Final switch (IntKind::ParameterIntKind) {
+case IntKind::USHORT_PARAM:
+    short val_us;
+case IntKind::SHORT_PARAM:
+    short val_s;
+};
+
+@appendable
+union Parameter3Appendable switch (IntKind::ParameterIntKind) {
+case IntKind::USHORT_PARAM:
+    short val_us;
+case IntKind::SHORT_PARAM:
+    short val_s;
+};
+
+@mutable
+union Parameter3Mutable switch (IntKind::ParameterIntKind) {
+case IntKind::USHORT_PARAM:
+    short val_us;
+case IntKind::SHORT_PARAM:
+    short val_s;
+};
+
+/* -------------- Parameter4 -----------------------------*/
+@final
+union Parameter4Final switch (IntKind::ParameterIntKind) {
+case IntKind::SHORT_PARAM:
+    short val_s;
+case IntKind::USHORT_PARAM:
+    short val_us;
+default:
+    long val_l;
+};
+
+@appendable
+union Parameter4Appendable switch (IntKind::ParameterIntKind) {
+case IntKind::SHORT_PARAM:
+    @id(100)
+    short val_s;
+case IntKind::USHORT_PARAM:
+    @id(101)
+    short val_us;
+default:
+    @id(102)
+    long val_l;
+};
+
+@mutable
+union Parameter4Mutable switch (IntKind::ParameterIntKind) {
+case IntKind::SHORT_PARAM:
+    @id(100)
+    short val_s;
+case IntKind::USHORT_PARAM:
+    @id(101)
+    short val_us;
+default:
+    @id(102)
+    long val_l;
+};
+
+/* -------------- Parameter5 -----------------------------*/
+@final
+union Parameter5Final switch (IntKind::ParameterIntKind) {
+case IntKind::SHORT_PARAM:
+    short val_s;
+case IntKind::USHORT_PARAM:
+    short val_us;
+case IntKind::LONG_PARAM:
+    long val_l;
+default:
+    long default_val;
+};
+
+@appendable
+union Parameter5Appendable switch (IntKind::ParameterIntKind) {
+case IntKind::SHORT_PARAM:
+    short val_s;
+case IntKind::USHORT_PARAM:
+    short val_us;
+case IntKind::LONG_PARAM:
+    long val_l;
+default:
+    long default_val;
+};
+
+@mutable
+union Parameter5Mutable switch (IntKind::ParameterIntKind) {
+case IntKind::SHORT_PARAM:
+    short val_s;
+case IntKind::USHORT_PARAM:
+    short val_us;
+case IntKind::LONG_PARAM:
+    long val_l;
+default:
+    long default_val;
+};
+
+/* -------------- Parameter6 -----------------------------*/
+@final
+union Parameter6Final switch (IntKind::ParameterIntKind) {
+case IntKind::SHORT_PARAM:
+    short val_s;
+case IntKind::USHORT_PARAM:
+    short val_us;
+case IntKind::ULONG_PARAM:
+    long val_ul;
+default:
+    long default_val;
+};
+
+@appendable
+union Parameter6Appendable switch (IntKind::ParameterIntKind) {
+case IntKind::SHORT_PARAM:
+    short val_s;
+case IntKind::USHORT_PARAM:
+    short val_us;
+case IntKind::ULONG_PARAM:
+    long val_ul;
+default:
+    long default_val;
+};
+
+@mutable
+union Parameter6Mutable switch (IntKind::ParameterIntKind) {
+case IntKind::SHORT_PARAM:
+    short val_s;
+case IntKind::USHORT_PARAM:
+    short val_us;
+case IntKind::ULONG_PARAM:
+    long val_ul;
+default:
+    long default_val;
+};
+
+/* -------------- Parameter7 -----------------------------*/
+@final
+union Parameter7Final switch (/*@try_construct*/ LongIntKind::ParameterLongIntKind) {
+case LongIntKind::ULONG_PARAM:
+    short val_l;
+case LongIntKind::SHORT_PARAM:
+    short val_s;
+case LongIntKind::USHORT_PARAM:
+    short val_us;
+};
+
+@appendable
+union Parameter7Appendable switch (/*@try_construct*/ LongIntKind::ParameterLongIntKind) {
+case LongIntKind::ULONG_PARAM:
+    @id(102)
+    short val_l;
+case LongIntKind::SHORT_PARAM:
+    @id(100)
+    short val_s;
+case LongIntKind::USHORT_PARAM:
+    @id(101)
+    short val_us;
+};
+
+@mutable
+union Parameter7Mutable switch (/*@try_construct*/ LongIntKind::ParameterLongIntKind) {
+case LongIntKind::ULONG_PARAM:
+    short val_l;
+case LongIntKind::SHORT_PARAM:
+    short val_s;
+case LongIntKind::USHORT_PARAM:
+    short val_us;
+};
