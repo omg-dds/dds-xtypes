@@ -134,12 +134,12 @@ TypeConsistencEnforcementQosPolicy.prevent_type_widening set to 0
 
 TypeConsistencEnforcementQosPolicy.prevent_type_widening set to 0
 
-| TestCode   | Publisher Type   | Subscriber Type   |
----|---|---|---  
-| #SER3A | Shape1Appendable | Shape3Appendable | V2  |
-| #SER3B | Shape1Mutable | Shape3Mutable | V1 and V2 |
-| #SER3C | Shape3Appendable | Shape1Appendable | V2  |
-| #SER3D | Shape3Mutable | Shape1Mutable | V1 and V2 |
+| TestCode | Publisher Type   | Subscriber Type   | Representation Id |
+|----------|------------------|-------------------|-------------------| 
+| #SER3A   | Shape1Appendable | Shape3Appendable  | V2                |
+| #SER3B   | Shape1Mutable    | Shape3Mutable     | V1 and V2         |
+| #SER3C   | Shape3Appendable | Shape1Appendable  | V2                |
+| #SER3D   | Shape3Mutable    | Shape1Mutable     | V1 and V2         |
   
 #### 
 
