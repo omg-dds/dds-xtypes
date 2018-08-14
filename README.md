@@ -151,7 +151,6 @@ To start, paste above code into `<your_dds_vendor_name>.cmake` and start impleme
 cd objs/
 ./xtype-interop
 ```
-Where `arch` must be the same string you give to `cmake` when building the project.
 
 It is important that you `cd` into the `xtype-interop`'s directory first. Otherwise `xtype-interop` will not be able to find its helper executables.
 
