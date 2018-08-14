@@ -88,7 +88,10 @@ Also, to reduce the amount of information in a row, we have extracted the Publis
 #### 
 <table>
  <tbody>
-  <tr><th>Published Sample</th><th>Received Sample</th></tr>
+  <tr>
+    <th>Published Sample</th>
+    <th>Received Sample</th>
+  </tr>
   <tr> <td> <pre><pre><code>{
     "RED",
     "REDA SHAPE DESC",
@@ -121,11 +124,11 @@ The previous two tables are equivalent to:
 <table>
   <tbody>
     <tr>
-      <td>Publisher Type</td>
-      <td>Subscriber Type</td>
-      <td>Representation Id</td>
-      <td>Published Sample</td>
-      <td>Received Sample</td>
+      <th>Publisher Type</th>
+      <th>Subscriber Type</th>
+      <th>Representation Id</th>
+      <th>Published Sample</th>
+      <th>Received Sample</th>
     <tr>
       <td>Shape1Final</td>
       <td>Shape1Final</td>
@@ -208,8 +211,12 @@ The previous two tables are equivalent to:
 #### 
 <table>
  <tbody>
-<tr><td>Published Sample </td><td>Received Sample</td></tr>
-<tr><td><pre><pre><code>{ 
+  <tr>
+    <th>Published Sample</th>
+    <th>Received Sample</th>
+  </tr>
+  <tr>
+    <td><pre><pre><code>{ 
     "RED", 
     "RED SHAPE DESC", 
     {"Tag_1"}, 
@@ -248,8 +255,13 @@ TypeConsistencEnforcementQosPolicy.prevent_type_widening set to 0
 
 <table>
   <tbody>
-<tr> <td> Publishing Type   </td> <td> Subscribing Type   </td> <td> Published Sample   </td> <td> Received Sample </td> </tr>
-<tr> <td> Shape1.. </td> <td> Shape2.. </td> <td>
+    <tr>
+      <th>Publishing Type</th>
+      <th>Subscribing Type</th>
+      <th>Published Sample</th>
+      <th>Received Sample</th>
+    </tr>
+    <tr><td> Shape1.. </td> <td> Shape2.. </td> <td>
  <pre><pre><code>{
     "RED",
     "RED SHAPE DESC",
@@ -312,8 +324,14 @@ TypeConsistencEnforcementQosPolicy.prevent_type_widening set to 0
   
 #### 
 
-<table><tbody>
-<tr> <td>Publishing Type   </td><td> Subscribing Type   </td><td> Published Sample   </td><td> Received Sample </td></tr>
+<table>
+  <tbody>
+    <tr>
+      <th>Publishing Type</th>
+      <th>Subscribing Type</th>
+      <th>Published Sample</th>
+      <th>Received Sample</th>
+    </tr>
 <tr><td>Shape1.. </td> <td>Shape3.. </td> <td><pre><code>{    "RED",
     "RED SHAPE DESC",
     {"Tag_1"},
@@ -372,8 +390,13 @@ TypeConsistencEnforcementQosPolicy.prevent_type_widening set to 0
 #### 
 
 <table><tbody>
-<tr><td>Publishing Type   </td><td> Subscribing Type   </td><td> Published Sample   </td><td> Received Sample </tr>
-<tr><td> Shape1.. </td><td> Shape4.. </td><td><pre><code>{<br>    "RED",
+  <tr>
+    <th>Publishing Type</th>
+    <th>Subscribing Type</th>
+    <th>Published Sample</th>
+    <th>Received Sample</th>
+  </tr>
+  <tr><td> Shape1.. </td><td> Shape4.. </td><td><pre><code>{<br>    "RED",
     "RED SHAPE DESC",
     {"Tag_1"},
     {
@@ -437,10 +460,10 @@ TypeConsistencEnforcementQosPolicy.prevent_type_widening set to 0
 
 <table><tbody>
 	<tr>
-		<td>Publishing Type</td>
-		<td>Subscribing Type</td>
-		<td>Published Sample</td>
-		<td>Received Sample</td>
+		<th>Publishing Type</th>
+		<th>Subscribing Type</th>
+		<th>Published Sample</th>
+		<th>Received Sample</th>
 	</tr>
 	<tr>
 		<td>Shape2.. </td>
@@ -514,7 +537,12 @@ TypeConsistencyEnforcement.ignore_string_bounds to 1
 #### 
 
 <table><tbody>
-<tr><td> Publishing Type </td><td> Subscribing Type   </td><td> Published Sample  </td><td> Received Sample </td></tr>
+  <tr>
+    <th>Publishing Type</th>
+    <th>Subscribing Type</th>
+    <th>Published Sample</th>
+    <th>Received Sample</th>
+  </tr>
 <tr><td> Shape1.. </td><td> Shape6..</td><td> <pre><code>{
     "RED",
     "RED SHAPE DESC",
@@ -575,7 +603,12 @@ TypeConsistencyEnforcement.ignore_sequence_bounds to 1
 #### 
 
 <table><tbody>
-<tr><td> Publishing Type </td><td> Subscribing Type   </td><td> Published Sample </td><td> Received Sample </td></tr>
+  <tr>
+    <th>Publishing Type</th>
+    <th>Subscribing Type</th>
+    <th>Published Sample</th>
+    <th>Received Sample</th>
+  </tr>
 <tr><td> Shape1.. </td><td> Shape6.. </td><td> <pre><code>{
     "RED",
     "RED SHAPE DESC",
@@ -634,13 +667,18 @@ TypeConsistencyEnforcement.ignore_sequence_bounds to 1
 #### 
 
 <table><tbody>
-<tr><td>Published Sample </td><td> Received Sample </td></tr><td>
-<pre><code>{
+  <tr>
+    <th>Published Sample</th>
+    <th>Received Sample</th>
+  </tr>
+  <tr><td>
+  <pre><code>{
     _d: USHORT_PARAM,
     {
         val_us: 34
     }
-};</code></pre></td><td><pre><code>{
+};</code></pre></td>
+<td><pre><code>{
     _d: USHORT_PARAM,
     {
         val_us: 34
@@ -660,8 +698,13 @@ TypeConsistencyEnforcement.ignore_sequence_bounds to 1
 #### 
 
 <table><tbody>
-<tr><td> Publishing Type </td><td> Subscribing Type </td><td> Published Sample </td><td> Representation Id </td></tr>
-<tr><td> Parameter1.. </td><td> Parameter2.. </td><td> <pre><code>{
+  <tr>
+    <th>Publishing Type</th>
+    <th>Subscribing Type</th>
+    <th>Published Sample</th>
+    <th>Representation Id</th>
+  </tr>
+  <tr><td> Parameter1.. </td><td> Parameter2.. </td><td> <pre><code>{
     _d: USHORT_PARAM,
     {
         val_us: 34
@@ -695,10 +738,10 @@ TypeConsistencyEnforcement.ignore_sequence_bounds to 1
 
 <table><tbody>
 <tr>
-	<td>Publishing Type</td>
-	<td>Subscribing Type</td>
-	<td>Published Sample</td>
-	<td> Received Sample</td>
+	<th>Publishing Type</th>
+	<th>Subscribing Type</th>
+	<th>Published Sample</th>
+	<th>Received Sample</th>
 </tr> 
 <tr><td> Parameter1..</td> <td>Parameter7.. </td> <td> <pre><code>{
     _d: USHORT_PARAM,
@@ -736,7 +779,12 @@ TypeConsistencyEnforcement.ignore_sequence_bounds to 1
 #### 
 
 <table><tbody>
-<tr><td> Publishing Type </td><td> Subscribing Type  </td><td> Published Sample  </td><td> Representation Id </td></tr>
+  <tr>
+    <th>Publishing Type</th>
+    <th>Subscribing Type</th>
+    <th>Published Sample</th>
+    <th>Representation Id</th>
+  </tr>
 <tr><td> Parameter1.. </td><td> Parameter4.. </td><td> <pre><code>{
     _d: USHORT_PARAM,
     {
@@ -769,7 +817,12 @@ TypeConsistencyEnforcement.ignore_sequence_bounds to 1
 #### 
 
 <table><tbody>
-<tr><td> Publishing Type </td><td> Subscribing Type </td><td> Published Sample </td><td> Received Sample </td></tr>
+  <tr>
+    <th>Publishing Type</th>
+    <th>Subscribing Type</th>
+    <th>Published Sample</th>
+    <th>Received Sample</th>
+  </tr>
 <tr><td> Shape1.. </td><td> Shape1.. </td><td><pre><code>{
     "RED",
     "NULL",
@@ -804,7 +857,12 @@ TypeConsistencyEnforcement.ignore_sequence_bounds to 1
 #### 
 
 <table><tbody>
-<tr><td> Publishing Type </td><td> Subscribing Type </td><td> Published Sample </td><td> Received Sample </td></tr>
+  <tr>
+    <th>Publishing Type</th>
+    <th>Subscribing Type</th>
+    <th>Published Sample</th>
+    <th>Received Sample</th>
+  </tr>
 <tr><td>Shape1.. (optional not set) </td><td> Shape11.. </td><td><pre><code>{
     "RED",
     "NULL",
