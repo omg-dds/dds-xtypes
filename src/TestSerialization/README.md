@@ -513,9 +513,9 @@ TypeConsistencyEnforcement.ignore_string_bounds to 1
   
 #### 
 
-| Publishing Type   | Subscribing Type   | Published Sample   | Received Sample |
----|---|---|---  
-| Shape1.. | Shape6.. |<pre><code>{
+<table><tbody>
+<tr><td> Publishing Type </td><td> Subscribing Type   </td><td> Published Sample  </td><td> Received Sample </td></tr>
+<tr><td> Shape1.. </td><td> Shape6..</td><td> <pre><code>{
     "RED",
     "RED SHAPE DESC",
     {"Tag_1"},
@@ -525,7 +525,7 @@ TypeConsistencyEnforcement.ignore_string_bounds to 1
         {20,25}
     },
     10
-};</code></pre> |<pre><code>{
+};</code></pre></td><td><pre><code>{
     "RED",
     "RED SHAPE",
     {"Tag_1"},
@@ -535,8 +535,8 @@ TypeConsistencyEnforcement.ignore_string_bounds to 1
         {20,25},
     },
     10
-};  </code></pre>
-| Shape6.. | Shape1.. | <pre><code>{
+};  </code></pre></tr></td>
+<tr><td> Shape6.. </td><td> Shape1.. </td><td> <pre><code>{
     "RED",
     "RED SHAPE",
     {"Tag_1"},
@@ -546,7 +546,7 @@ TypeConsistencyEnforcement.ignore_string_bounds to 1
         {20,25}
     },
     10
-};</code></pre> |<pre><code>{
+};</code></pre> </td><td> <pre><code>{
     "RED",
     "RED SHAPE",
     {"Tag_1"},
@@ -556,7 +556,8 @@ TypeConsistencyEnforcement.ignore_string_bounds to 1
         {20,25}
     },
     10,
-};  </code></pre>
+};  </code></pre></td></tr>
+</tbody></table>
   
 ### 5.2.7 Different Maximum Sequence Length in Publisher and Subscriber Type with try_construct DISCARD(#SER7) <a id="5.2.7"></a>
 
