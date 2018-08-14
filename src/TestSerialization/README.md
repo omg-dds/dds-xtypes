@@ -89,7 +89,7 @@ Also, to reduce the amount of information in a row, we have extracted the Publis
 <table>
  <tbody>
   <tr><th>Published Sample</th><th>Received Sample</th></tr>
-  <tr> <td> <pre><code>{
+  <tr> <td> <pre><pre><code>{
     "RED",
     "REDA SHAPE DESC",
     {"Tag_1"},
@@ -100,8 +100,8 @@ Also, to reduce the amount of information in a row, we have extracted the Publis
     },
     10
 };
-</code></pre> </td>
-   <td><pre><code>
+</code></pre></pre> </td>
+   <td><pre><pre><code>
 {
     "RED",
     "REDA SHAPE DESC",
@@ -113,7 +113,7 @@ Also, to reduce the amount of information in a row, we have extracted the Publis
     },
     10
 };
-</code></pre></td></tr>
+</code></pre></pre></td></tr>
  </tbody>
 </table>
 
@@ -131,7 +131,7 @@ The previous two tables are equivalent to:
       <td>Shape1Final</td>
       <td>V1</td>
       <td>
-        <pre><code>
+        <pre><pre><code>
 {
     "RED",
     "RED SHAPE DESC",
@@ -143,10 +143,10 @@ The previous two tables are equivalent to:
     },
     10
 };
-</code></pre>
+</code></pre></pre>
       </td>
       <td>
-       <pre><code>
+       <pre><pre><code>
 {
     "RED",
     "RED SHAPE DESC",
@@ -158,12 +158,12 @@ The previous two tables are equivalent to:
     },
     10
 };
-</code></pre></td>
+</code></pre></pre></td>
     </tr>
     <tr>
      <td>Shape1Final </td>  <td> Shape1Final </td>
      <td>V2</td>
-     <td><pre><code>
+     <td><pre><pre><code>
 {
     "RED",
     "REDA SHAPE DESC",
@@ -175,10 +175,10 @@ The previous two tables are equivalent to:
     },
     10
 };
-       </code></pre>
+       </code></pre></pre>
      </td>
      <td>
-      <pre><code>
+      <pre><pre><code>
 {
     "RED",
     "REDA SHAPE DESC",
@@ -190,7 +190,7 @@ The previous two tables are equivalent to:
     },
     10
 };
-   </code></pre>
+   </code></pre></pre>
   </td>
  </tr>
 </tbody>
@@ -209,7 +209,7 @@ The previous two tables are equivalent to:
 <table>
  <tbody>
 <tr><td>Published Sample </td><td>Received Sample</td></tr>
-<tr><td><pre><code>{ 
+<tr><td><pre><pre><code>{ 
     "RED", 
     "RED SHAPE DESC", 
     {"Tag_1"}, 
@@ -219,7 +219,7 @@ The previous two tables are equivalent to:
         {20,25} 
     }, 
     10 
-};</code></pre></td><td><pre><code>{ 
+};</code></pre></pre></td><td><pre><pre><code>{ 
     "RED", 
     "RED SHAPE DESC", 
     {"Tag_1"}, 
@@ -229,7 +229,7 @@ The previous two tables are equivalent to:
         {20,25} 
     }, 
     10 
-};</code></pre></td></tr>
+};</code></pre></pre></td></tr>
  </tbody>
  </table>
 
@@ -247,10 +247,10 @@ TypeConsistencEnforcementQosPolicy.prevent_type_widening set to 0
 #### 
 
 <table>
-	<tbody>
+  <tbody>
 <tr> <td> Publishing Type   </td> <td> Subscribing Type   </td> <td> Published Sample   </td> <td> Received Sample </td> </tr>
 <tr> <td> Shape1.. </td> <td> Shape2.. </td> <td>
- <pre><code>{
+ <pre><pre><code>{
     "RED",
     "RED SHAPE DESC",
     {"Tag_1"},
@@ -260,9 +260,9 @@ TypeConsistencEnforcementQosPolicy.prevent_type_widening set to 0
         {20,25}
     },
     10,
-};</code>
+};</code></pre>
 </pre></td>
- <td><pre><code>{
+ <td><pre><pre><code>{
     "RED",
     "RED SHAPE DESC",
     {"Tag_1"},
@@ -273,8 +273,8 @@ TypeConsistencEnforcementQosPolicy.prevent_type_widening set to 0
     },
     10,
     90
-};</code></pre></td> </tr>
-<tr> <td> Shape2.. </td> <td> Shape1.. </td> <td> <pre><code>{
+};</code></pre></pre></td> </tr>
+<tr> <td> Shape2.. </td> <td> Shape1.. </td> <td> <pre><pre><code>{
     "RED",
     "RED SHAPE DESC",
     {"Tag_1"},
@@ -285,7 +285,7 @@ TypeConsistencEnforcementQosPolicy.prevent_type_widening set to 0
     },
     10,
     180
-};</code></pre></td> <td><pre><code>{
+};</code></pre></pre></td> <td><pre><pre><code>{
     "RED",
     "RED SHAPE DESC",
     {"Tag_1"},
@@ -295,7 +295,7 @@ TypeConsistencEnforcementQosPolicy.prevent_type_widening set to 0
         {20,25}
     },
     10,
-};  </code></pre></td> </tr>
+};  </code></pre></pre></td> </tr>
 </tbody>
 </table>
 
@@ -312,11 +312,53 @@ TypeConsistencEnforcementQosPolicy.prevent_type_widening set to 0
   
 #### 
 
-| Publishing Type   | Subscribing Type   | Published Sample   | Received Sample |
-|-------------------|--------------------|--------------------|-----------------|
-| Shape1.. | Shape3.. |<code>{&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED&nbsp;SHAPE&nbsp;DESC",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25}<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10,<br/>};</code>|<code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED&nbsp;SHAPE&nbsp;DESC",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5,10},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15,10},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25,10}<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10<br/>};</code>
-| Shape3.. | Shape1.. |<code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED&nbsp;SHAPE&nbsp;DESC",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5,20},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15,90},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25,33}<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10<br/>};</code>|<code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED&nbsp;SHAPE&nbsp;DESC",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25}<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10,<br/>};&nbsp;&nbsp;
-</code>
+<table><tbody>
+<tr> <td>Publishing Type   </td><td> Subscribing Type   </td><td> Published Sample   </td><td> Received Sample </td></tr>
+<tr><td>Shape1.. </td> <td>Shape3.. </td> <td><pre><code>{    "RED",
+    "RED SHAPE DESC",
+    {"Tag_1"},
+    {
+        {1,5},
+        {10,15},
+        {20,25}
+    },
+    10,
+};</code></pre></td> <td><pre><code>{
+    "RED",
+    "RED SHAPE DESC",
+    {"Tag_1"},
+    {
+        {1,5,10},
+        {10,15,10},
+        {20,25,10}
+    },
+    10
+};</code></pre></td></tr>
+
+<tr><td>Shape3.. </td> <td>Shape1.. </td> <td><pre><code>{
+    "RED",
+    "RED SHAPE DESC",
+    {"Tag_1"},
+    {
+        {1,5,20},
+        {10,15,90},
+        {20,25,33}
+    },
+    10
+};</code></pre> </td><td> <pre><code>{
+    "RED",
+    "RED SHAPE DESC",
+    {"Tag_1"},
+    {
+        {1,5},
+        {10,15},
+        {20,25}
+    },
+    10,
+};  
+</code></pre> </td>
+</tr>
+</table></tbody>
   
 ### 5.2.4 Add Member in the Middle of a Type With Default Value(#SER4) <a id="5.2.4"></a>
 
@@ -331,8 +373,49 @@ TypeConsistencEnforcementQosPolicy.prevent_type_widening set to 0
 
 | Publishing Type   | Subscribing Type   | Published Sample   | Received Sample |
 ---|---|---|--- 
-| Shape1.. | Shape4.. |<code>{<br>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED&nbsp;SHAPE&nbsp;DESC",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25}<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10,<br/>};</code> |<code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED&nbsp;SHAPE&nbsp;DESC",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;90,<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25}<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10<br/>};</code> |
-| Shape4.. | Shape1.. |<code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED&nbsp;SHAPE&nbsp;DESC",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;22,<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25}<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10<br/>};</code> | <code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED&nbsp;SHAPE&nbsp;DESC",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25}<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10<br/>};</code>|
+| Shape1.. | Shape4.. |<pre><code>{<br>    "RED",
+    "RED SHAPE DESC",
+    {"Tag_1"},
+    {
+        {1,5},
+        {10,15},
+        {20,25}
+    },
+    10,
+};</code></pre> |<pre><code>{
+    "RED",
+    "RED SHAPE DESC",
+    {"Tag_1"},
+    90,
+    {
+        {1,5},
+        {10,15},
+        {20,25}
+    },
+    10
+};</code></pre> |
+| Shape4.. | Shape1.. |<pre><code>{
+    "RED",
+    "RED SHAPE DESC",
+    {"Tag_1"},
+    22,
+    {
+        {1,5},
+        {10,15},
+        {20,25}
+    },
+    10
+};</code></pre> | <pre><code>{
+    "RED",
+    "RED SHAPE DESC",
+    {"Tag_1"},
+    {
+        {1,5},
+        {10,15},
+        {20,25}
+    },
+    10
+};</code></pre>|
 
   
 ### 5.2.5 Type Refactoring Using Inheritance(#SER5) <a id="5.2.5"></a>
@@ -350,8 +433,56 @@ TypeConsistencEnforcementQosPolicy.prevent_type_widening set to 0
 
 | Publishing Type   | Subscribing Type   | Published Sample   |  |
 ---|---|---|---  
-| Shape2.. | Shape5.. |<code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED&nbsp;SHAPE&nbsp;DESC",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5}[ad],<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25}<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10,<br/>&nbsp;&nbsp;&nbsp;&nbsp;90[ae][af][ag],<br/>};</code> |<code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"RED&nbsp;SHAPE&nbsp;DESC",<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25}<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;10<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;90<br/>};&nbsp;</code> 
-| Shape5.. | Shape2.. | <code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"RED&nbsp;SHAPE&nbsp;DESC",<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25}<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;10<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;90<br/>};</code>|<code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED&nbsp;SHAPE&nbsp;DESC",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25}<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10,<br/>&nbsp;&nbsp;&nbsp;&nbsp;90,<br/>};</code>
+| Shape2.. | Shape5.. |<pre><code>{
+    "RED",
+    "RED SHAPE DESC",
+    {"Tag_1"},
+    {
+        {1,5}[ad],
+        {10,15},
+        {20,25}
+    },
+    10,
+    90[ae][af][ag],
+};</code></pre> |<pre><code>{
+    {
+        "RED",
+        "RED SHAPE DESC",
+        {"Tag_1"},
+        {
+            {1,5},
+            {10,15},
+            {20,25}
+        },
+        10
+    },
+    90
+}; </code></pre> 
+| Shape5.. | Shape2.. | <pre><code>{
+    {
+        "RED",
+        "RED SHAPE DESC",
+        {"Tag_1"},
+        {
+            {1,5},
+            {10,15},
+            {20,25}
+        },
+        10
+    },
+    90
+};</code></pre>|<pre><code>{
+    "RED",
+    "RED SHAPE DESC",
+    {"Tag_1"},
+    {
+        {1,5},
+        {10,15},
+        {20,25}
+    },
+    10,
+    90,
+};</code></pre>
   
 ### 5.2.6 Different Maximum String Length in Publisher and Subscriber Type with try_construct TRIM(#SER6) <a id="5.2.6"></a>
 
@@ -370,8 +501,48 @@ TypeConsistencyEnforcement.ignore_string_bounds to 1
 
 | Publishing Type   | Subscribing Type   | Published Sample   | Received Sample |
 ---|---|---|---  
-| Shape1.. | Shape6.. |<code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED&nbsp;SHAPE&nbsp;DESC",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25}<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10<br/>};</code> |<code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED&nbsp;SHAPE",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25},<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10<br/>};&nbsp;&nbsp;</code>
-| Shape6.. | Shape1.. | <code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED&nbsp;SHAPE",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25}<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10<br/>};</code> |<code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED&nbsp;SHAPE",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25}<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10,<br/>};&nbsp;&nbsp;</code>
+| Shape1.. | Shape6.. |<pre><code>{
+    "RED",
+    "RED SHAPE DESC",
+    {"Tag_1"},
+    {
+        {1,5},
+        {10,15},
+        {20,25}
+    },
+    10
+};</code></pre> |<pre><code>{
+    "RED",
+    "RED SHAPE",
+    {"Tag_1"},
+    {
+        {1,5},
+        {10,15},
+        {20,25},
+    },
+    10
+};  </code></pre>
+| Shape6.. | Shape1.. | <pre><code>{
+    "RED",
+    "RED SHAPE",
+    {"Tag_1"},
+    {
+        {1,5},
+        {10,15},
+        {20,25}
+    },
+    10
+};</code></pre> |<pre><code>{
+    "RED",
+    "RED SHAPE",
+    {"Tag_1"},
+    {
+        {1,5},
+        {10,15},
+        {20,25}
+    },
+    10,
+};  </code></pre>
   
 ### 5.2.7 Different Maximum Sequence Length in Publisher and Subscriber Type with try_construct DISCARD(#SER7) <a id="5.2.7"></a>
 
@@ -390,8 +561,48 @@ TypeConsistencyEnforcement.ignore_sequence_bounds to 1
 
 | Publishing Type   | Subscribing Type   | Published Sample   | Received Sample |
 ---|---|---|---  
-| Shape1.. | Shape6.. | <code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED&nbsp;SHAPE&nbsp;DESC",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"Tag_1",<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"Tag_2",<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"Tag_3"<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25}<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10<br/>};</code>| Sample is dropped 
-| Shape6.. | Shape1.. | <code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED&nbsp;SHAPE&nbsp;DESC",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"Tag_1",<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"Tag_2"<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25}<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10<br/>};</code>| <code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED&nbsp;SHAPE&nbsp;DESC",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"Tag_1",<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"Tag_2"<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25}<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10<br/>};</code>
+| Shape1.. | Shape6.. | <pre><code>{
+    "RED",
+    "RED SHAPE DESC",
+    {
+        "Tag_1",
+        "Tag_2",
+        "Tag_3"
+    },
+    {
+        {1,5},
+        {10,15},
+        {20,25}
+    },
+    10
+};</code></pre>| Sample is dropped 
+| Shape6.. | Shape1.. | <pre><code>{
+    "RED",
+    "RED SHAPE DESC",
+    {
+        "Tag_1",
+        "Tag_2"
+    },
+    {
+        {1,5},
+        {10,15},
+        {20,25}
+    },
+    10
+};</code></pre>| <pre><code>{
+    "RED",
+    "RED SHAPE DESC",
+    {
+        "Tag_1",
+        "Tag_2"
+    },
+    {
+        {1,5},
+        {10,15},
+        {20,25}
+    },
+    10
+};</code></pre>
   
 ### 5.2.8 Reorder Members in a Union Type (#SER8) <a id="5.2.8"></a>
 
@@ -408,7 +619,17 @@ TypeConsistencyEnforcement.ignore_sequence_bounds to 1
 
 Published Sample | Received Sample  
 ---|--- 
-<code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;_d:&nbsp;USHORT_PARAM,<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;val_us:&nbsp;34<br/>&nbsp;&nbsp;&nbsp;&nbsp;}<br/>};</code>|<code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;_d:&nbsp;USHORT_PARAM,<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;val_us:&nbsp;34<br/>&nbsp;&nbsp;&nbsp;&nbsp;}<br/>};</code>
+<pre><code>{
+    _d: USHORT_PARAM,
+    {
+        val_us: 34
+    }
+};</code></pre>|<pre><code>{
+    _d: USHORT_PARAM,
+    {
+        val_us: 34
+    }
+};</code></pre>
   
 ### 5.2.9 Add Member with Non-Default Label to a Union Type without Default Label(#SER9) <a id="5.2.9"></a>
 
@@ -423,8 +644,25 @@ Published Sample | Received Sample
 
 | Publishing Type   | Subscribing Type   | Published Sample   | Representation Id |
 ---|---|---|---
-| Parameter1.. | Parameter2.. | <code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;_d:&nbsp;USHORT_PARAM,<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;val_us:&nbsp;34<br/>&nbsp;&nbsp;&nbsp;&nbsp;}<br/>};</code> | <code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;_d:&nbsp;USHORT_PARAM,<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;val_us:&nbsp;34<br/>&nbsp;&nbsp;&nbsp;&nbsp;}<br/>};</code>
-| Parameter2.. | Parameter1.. | <code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;_d:&nbsp;LONG_PARAM,<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;val_l:&nbsp;34<br/>&nbsp;&nbsp;&nbsp;&nbsp;}<br/>};</code>|<code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;_d:&nbsp;LONG_PARAM,<br/>};</code> 
+| Parameter1.. | Parameter2.. | <pre><code>{
+    _d: USHORT_PARAM,
+    {
+        val_us: 34
+    }
+};</code></pre> | <pre><code>{
+    _d: USHORT_PARAM,
+    {
+        val_us: 34
+    }
+};</code></pre>
+| Parameter2.. | Parameter1.. | <pre><code>{
+    _d: LONG_PARAM,
+    {
+        val_l: 34
+    }
+};</code></pre>|<pre><code>{
+    _d: LONG_PARAM,
+};</code></pre> 
   
 ### 5.2.10 Add Member with Out-of-Range Non-Default Label to a Union Type without Default. Discriminator uses try_construct DEFAULT(#SER10) <a id="5.2.10"></a>
 
@@ -439,8 +677,28 @@ Published Sample | Received Sample
 
 | Publishing Type   | Subscribing Type   | Published Sample   | Representation Id |
 ---|---|---|---    
-| Parameter1.. | Parameter7.. | <code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;_d:&nbsp;USHORT_PARAM,<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;val_us:&nbsp;34<br/>&nbsp;&nbsp;&nbsp;&nbsp;}<br/>};</code> | <code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;_d:&nbsp;USHORT_PARAM,<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;val_us:&nbsp;34<br/>&nbsp;&nbsp;&nbsp;&nbsp;}<br/>};</code> 
-|Parameter7..|Parameter1.|<code><br/>&nbsp;&nbsp;&nbsp;&nbsp;_d:&nbsp;LONGLONG_PARAM,<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;val_ll:&nbsp;128<br/>&nbsp;&nbsp;&nbsp;&nbsp;}<br/>};</code>|<code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;_d:&nbsp;SHORT_PARAM,<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;val_s:&nbsp;0<br/>&nbsp;&nbsp;&nbsp;&nbsp;}<br/>};</code>
+| Parameter1.. | Parameter7.. | <pre><code>{
+    _d: USHORT_PARAM,
+    {
+        val_us: 34
+    }
+};</code></pre> | <pre><code>{
+    _d: USHORT_PARAM,
+    {
+        val_us: 34
+    }
+};</code></pre> 
+|Parameter7..|Parameter1.|<pre><code>
+    _d: LONGLONG_PARAM,
+    {
+        val_ll: 128
+    }
+};</code></pre>|<pre><code>{
+    _d: SHORT_PARAM,
+    {
+        val_s: 0
+    }
+};</code></pre>
   
 ### 5.2.11 Add Member with Default Label to a Union Type without Default Label (#SER11) <a id="5.2.11"></a>
 
@@ -455,8 +713,25 @@ Published Sample | Received Sample
 
 | Publishing Type   | Subscribing Type   | Published Sample   | Representation Id |
 ---|---|---|---  
-| Parameter1.. | Parameter4.. | <code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;_d:&nbsp;USHORT_PARAM,<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;val_us:&nbsp;34<br/>&nbsp;&nbsp;&nbsp;&nbsp;}<br/>};</code> | <code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;_d:&nbsp;USHORT_PARAM,<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;val_us:&nbsp;34<br/>&nbsp;&nbsp;&nbsp;&nbsp;}<br/>};&nbsp;&nbsp;</code>
-| Parameter4.. | Parameter1.. | <code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;_d:&nbsp;LONG_PARAM,<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;val_l:&nbsp;34<br/>&nbsp;&nbsp;&nbsp;&nbsp;}<br/>};</code> | <code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;_d:&nbsp;LONG_PARAM,<br/>};</code>
+| Parameter1.. | Parameter4.. | <pre><code>{
+    _d: USHORT_PARAM,
+    {
+        val_us: 34
+    }
+};</code></pre> | <pre><code>{
+    _d: USHORT_PARAM,
+    {
+        val_us: 34
+    }
+};  </code></pre>
+| Parameter4.. | Parameter1.. | <pre><code>{
+    _d: LONG_PARAM,
+    {
+        val_l: 34
+    }
+};</code></pre> | <pre><code>{
+    _d: LONG_PARAM,
+};</code></pre>
   
 ### 5.2.12 Setting optional member to NULL(#SER12) <a id="5.2.12"></a>
 
@@ -470,7 +745,27 @@ Published Sample | Received Sample
 
 | Publishing Type   | Subscribing Type   | Published Sample   | Received Sample |
 |---|---|---|---|
-| Shape1.. | Shape1.. |<code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"NULL",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25}<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10<br/>};</code>|<code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"NULL",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25},<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10<br/>};</code>|
+| Shape1.. | Shape1.. |<pre><code>{
+    "RED",
+    "NULL",
+    {"Tag_1"},
+    {
+        {1,5},
+        {10,15},
+        {20,25}
+    },
+    10
+};</code></pre>|<pre><code>{
+    "RED",
+    "NULL",
+    {"Tag_1"},
+    {
+        {1,5},
+        {10,15},
+        {20,25},
+    },
+    10
+};</code></pre>|
   
 ### 5.2.13 Making an existing member optional(#SER13) <a id="5.2.13"></a>
 
@@ -484,9 +779,69 @@ Published Sample | Received Sample
 
 | Publishing Type   | Subscribing Type   | Published Sample   | Representation Id |
 |---|---|---|---|
-|Shape1.. (optional not set) | Shape11.. |<code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"NULL",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25}<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10<br/>};</code>|<code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"NULL",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25},<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10<br/>};</code>|
-|Shape1.. (optional set) | Shape11.. | <code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED&nbsp;SHAPE&nbsp;DESC",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25}<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10<br/>};</code>| <code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED&nbsp;SHAPE&nbsp;DESC",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25},<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10<br/>};</code>|
-| Shape 11 | Shape1  | <code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED&nbsp;SHAPE&nbsp;DESC",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25}[ar][as]<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10<br/>};</code>| <code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED&nbsp;SHAPE&nbsp;DESC",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25},<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10<br/>};</code>|
+|Shape1.. (optional not set) | Shape11.. |<pre><code>{
+    "RED",
+    "NULL",
+    {"Tag_1"},
+    {
+        {1,5},
+        {10,15},
+        {20,25}
+    },
+    10
+};</code></pre>|<pre><code>{
+    "RED",
+    "NULL",
+    {"Tag_1"},
+    {
+        {1,5},
+        {10,15},
+        {20,25},
+    },
+    10
+};</code></pre>|
+|Shape1.. (optional set) | Shape11.. | <pre><code>{
+    "RED",
+    "RED SHAPE DESC",
+    {"Tag_1"},
+    {
+        {1,5},
+        {10,15},
+        {20,25}
+    },
+    10
+};</code></pre>| <pre><code>{
+    "RED",
+    "RED SHAPE DESC",
+    {"Tag_1"},
+    {
+        {1,5},
+        {10,15},
+        {20,25},
+    },
+    10
+};</code></pre>|
+| Shape 11 | Shape1  | <pre><code>{
+    "RED",
+    "RED SHAPE DESC",
+    {"Tag_1"},
+    {
+        {1,5},
+        {10,15},
+        {20,25}[ar][as]
+    },
+    10
+};</code></pre>| <pre><code>{
+    "RED",
+    "RED SHAPE DESC",
+    {"Tag_1"},
+    {
+        {1,5},
+        {10,15},
+        {20,25},
+    },
+    10
+};</code></pre>|
   
 # 5 Missing Scenarios <a id="5"></a>
 
