@@ -735,27 +735,28 @@ TypeConsistencyEnforcement.ignore_sequence_bounds to 1
   
 #### 
 
-| Publishing Type   | Subscribing Type   | Published Sample   | Representation Id |
----|---|---|---  
-| Parameter1.. | Parameter4.. | <pre><code>{
+<table><tbody>
+<tr><td> Publishing Type </td><td> Subscribing Type  </td><td> Published Sample  </td><td> Representation Id </td></tr>
+<tr><td> Parameter1.. </td><td> Parameter4.. </td><td> <pre><code>{
     _d: USHORT_PARAM,
     {
         val_us: 34
     }
-};</code></pre> | <pre><code>{
+};</code></pre> </td><td> <pre><code>{
     _d: USHORT_PARAM,
     {
         val_us: 34
     }
-};  </code></pre>
-| Parameter4.. | Parameter1.. | <pre><code>{
+};  </code></pre></td></tr>
+<tr><td> Parameter4.. </td><td> Parameter1.. </td><td> <pre><code>{
     _d: LONG_PARAM,
     {
         val_l: 34
     }
-};</code></pre> | <pre><code>{
+};</code></pre> </td><td> <pre><code>{
     _d: LONG_PARAM,
-};</code></pre>
+};</code></pre></td></tr>
+</tbody></table>
   
 ### 5.2.12 Setting optional member to NULL(#SER12) <a id="5.2.12"></a>
 
