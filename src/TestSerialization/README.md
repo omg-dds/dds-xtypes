@@ -803,9 +803,9 @@ TypeConsistencyEnforcement.ignore_sequence_bounds to 1
   
 #### 
 
-| Publishing Type   | Subscribing Type   | Published Sample   | Representation Id |
-|---|---|---|---|
-|Shape1.. (optional not set) | Shape11.. |<pre><code>{
+<table><tbody>
+<tr><td> Publishing Type </td><td> Subscribing Type </td><td> Published Sample </td><td> Received Sample </td></tr>
+<tr><td>Shape1.. (optional not set) </td><td> Shape11.. </td><td><pre><code>{
     "RED",
     "NULL",
     {"Tag_1"},
@@ -815,7 +815,7 @@ TypeConsistencyEnforcement.ignore_sequence_bounds to 1
         {20,25}
     },
     10
-};</code></pre>|<pre><code>{
+};</code></pre></td><td><pre><code>{
     "RED",
     "NULL",
     {"Tag_1"},
@@ -825,8 +825,8 @@ TypeConsistencyEnforcement.ignore_sequence_bounds to 1
         {20,25},
     },
     10
-};</code></pre>|
-|Shape1.. (optional set) | Shape11.. | <pre><code>{
+};</code></pre></td></tr>
+<tr><td>Shape1.. (optional set) </td><td> Shape11.. </td><td> <pre><code>{
     "RED",
     "RED SHAPE DESC",
     {"Tag_1"},
@@ -836,7 +836,7 @@ TypeConsistencyEnforcement.ignore_sequence_bounds to 1
         {20,25}
     },
     10
-};</code></pre>| <pre><code>{
+};</code></pre> </td><td> <pre><code>{
     "RED",
     "RED SHAPE DESC",
     {"Tag_1"},
@@ -846,8 +846,8 @@ TypeConsistencyEnforcement.ignore_sequence_bounds to 1
         {20,25},
     },
     10
-};</code></pre>|
-| Shape 11 | Shape1  | <pre><code>{
+};</code></pre></td></tr>
+<tr><td> Shape 11 </td><td> Shape1 </td><td> <pre><code>{
     "RED",
     "RED SHAPE DESC",
     {"Tag_1"},
@@ -857,7 +857,7 @@ TypeConsistencyEnforcement.ignore_sequence_bounds to 1
         {20,25}[ar][as]
     },
     10
-};</code></pre>| <pre><code>{
+};</code></pre> </td><td> <pre><code>{
     "RED",
     "RED SHAPE DESC",
     {"Tag_1"},
@@ -867,7 +867,8 @@ TypeConsistencyEnforcement.ignore_sequence_bounds to 1
         {20,25},
     },
     10
-};</code></pre>|
+};</code></pre></td></tr>
+</tbody></table>
   
 # 5 Missing Scenarios <a id="5"></a>
 
