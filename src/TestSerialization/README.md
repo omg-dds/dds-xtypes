@@ -693,30 +693,36 @@ TypeConsistencyEnforcement.ignore_sequence_bounds to 1
   
 #### 
 
-| Publishing Type   | Subscribing Type   | Published Sample   | Representation Id |
----|---|---|---    
-| Parameter1.. | Parameter7.. | <pre><code>{
+<table><tbody>
+<tr>
+	<td>Publishing Type</td>
+	<td>Subscribing Type</td>
+	<td>Published Sample</td>
+	<td> Received Sample</td>
+</tr> 
+<tr><td> Parameter1..</td> <td>Parameter7.. </td> <td> <pre><code>{
     _d: USHORT_PARAM,
     {
         val_us: 34
     }
-};</code></pre> | <pre><code>{
+};</code></pre></td> <td><pre><code>{
     _d: USHORT_PARAM,
     {
         val_us: 34
     }
-};</code></pre> 
-|Parameter7..|Parameter1.|<pre><code>
+};</code></pre></td></tr>
+<tr><td>Parameter7..</td><td>Parameter1.</td><td><pre><code>
     _d: LONGLONG_PARAM,
     {
         val_ll: 128
     }
-};</code></pre>|<pre><code>{
+};</code></pre></td><td><pre><code>{
     _d: SHORT_PARAM,
     {
         val_s: 0
     }
-};</code></pre>
+};</code></pre></td></tr>
+</tbody></table>
   
 ### 5.2.11 Add Member with Default Label to a Union Type without Default Label (#SER11) <a id="5.2.11"></a>
 
