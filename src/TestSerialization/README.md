@@ -118,12 +118,84 @@ Also, to reduce the amount of information in a row, we have extracted the Publis
 </table>
 
 The previous two tables are equivalent to:
+<table>
+  <tbody>
+    <tr>
+      <td>Publisher Type</td>
+      <td>Subscriber Type</td>
+      <td>Representation Id</td>
+      <td>Published Sample</td>
+      <td>Received Sample</td>
+    <tr>
+      <td>Shape1Final</td>
+      <td>Shape1Final</td>
+      <td>V1</td>
+      <td>
+        <pre><code>
+{
+    "RED",
+    "RED SHAPE DESC",
+    {"Tag_1"},
+    {
+        {1,5},
+        {10,15},
+        {20,25}
+    },
+    10
+};
+</code></pre>
+      </td>
+      <td>
+       <pre><code>
+{
+    "RED",
+    "RED SHAPE DESC",
+    {"Tag_1"},
+    {
+        {1,5},
+        {10,15},
+        {20,25}
+    },
+    10
+};
+</code></pre></td>
+    </tr>
+    <tr>
+     <td>Shape1Final </td>  <td> Shape1Final </td>
+     <td>V2</td>
+     <td><pre><code>
+{
+    "RED",
+    "REDA SHAPE DESC",
+    {"Tag_1"},
+    {
+        {1,5},
+        {10,15},
+        {20,25} 
+    },
+    10
+};
+       </code></pre>
+     </td>
+     <td>
+      <pre><code>
+{
+    "RED",
+    "REDA SHAPE DESC",
+    {"Tag_1"},
+    {
+        {1,5},
+        {10,15},
+        {20,25}
+    },
+    10
+};
+   </code></pre>
+  </td>
+ </tr>
+</tbody>
+</table>
 
-| Publisher Type | Subscriber Type | Representation Id | Published Sample | Received Sample |  
-|---|---|---|---|---|
-| Shape1Final | Shape1Final | V1 |<code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED&nbsp;SHAPE&nbsp;DESC",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25}<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10<br/>};</code>|<code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED&nbsp;SHAPE&nbsp;DESC",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25}<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10<br/>};</code>|
-|Shape1Final | Shape1Final | V2 |<code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"REDA&nbsp;SHAPE&nbsp;DESC",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25}&nbsp;<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10<br/>};</code>|{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"REDA&nbsp;SHAPE&nbsp;DESC",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25}<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10<br/>};|
-  
 ### 5.2.1 Extensibility Kind (#SER1) <a id="5.2.1"></a>
 
 | TestCode | Publisher Type | Subscriber Type |Representation Id  
