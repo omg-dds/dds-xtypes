@@ -113,7 +113,7 @@ Also, to reduce the amount of information in a row, we have extracted the Publis
     },
     10
 };
-</code></pre></td> </tr>
+</code></pre></td></tr>
  </tbody>
 </table>
 
@@ -206,11 +206,33 @@ The previous two tables are equivalent to:
 | #SER1D | Shape1Mutable | Shape1Mutable | V1 and V2  |
   
 #### 
+<table>
+ <tbody>
+<tr><td>Published Sample </td><td>Received Sample</td></tr>
+<tr><td><pre><code>{ 
+    "RED", 
+    "RED SHAPE DESC", 
+    {"Tag_1"}, 
+    { 
+        {1,5}, 
+        {10,15}, 
+        {20,25} 
+    }, 
+    10 
+};</code></pre></td><td><pre><code>{ 
+    "RED", 
+    "RED SHAPE DESC", 
+    {"Tag_1"}, 
+    { 
+        {1,5}, 
+        {10,15}, 
+        {20,25} 
+    }, 
+    10 
+};</code></pre></td></tr>
+ </tbody>
+ </table>
 
-Published Sample | Received Sample  
----|---
-<code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED&nbsp;SHAPE&nbsp;DESC",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25}<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10<br/>};</code>|<code>{<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED",<br/>&nbsp;&nbsp;&nbsp;&nbsp;"RED&nbsp;SHAPE&nbsp;DESC",<br/>&nbsp;&nbsp;&nbsp;&nbsp;{"Tag_1"},<br/>&nbsp;&nbsp;&nbsp;&nbsp;{<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{1,5},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{10,15},<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{20,25}<br/>&nbsp;&nbsp;&nbsp;&nbsp;},<br/>&nbsp;&nbsp;&nbsp;&nbsp;10<br/>};</code<
-  
 ### 5.2.2 Add Member at the End of a Type with Default Value(#SER2) <a id="5.2.2"></a>
 
 TypeConsistencEnforcementQosPolicy.prevent_type_widening set to 0
