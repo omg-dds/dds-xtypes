@@ -633,19 +633,20 @@ TypeConsistencyEnforcement.ignore_sequence_bounds to 1
   
 #### 
 
-Published Sample | Received Sample  
----|--- 
+<table><tbody>
+<tr><td>Published Sample </td><td> Received Sample </td></tr><td>
 <pre><code>{
     _d: USHORT_PARAM,
     {
         val_us: 34
     }
-};</code></pre>|<pre><code>{
+};</code></pre></td><td><pre><code>{
     _d: USHORT_PARAM,
     {
         val_us: 34
     }
-};</code></pre>
+};</code></pre></td></tr>
+</tbody></table>
   
 ### 5.2.9 Add Member with Non-Default Label to a Union Type without Default Label(#SER9) <a id="5.2.9"></a>
 
