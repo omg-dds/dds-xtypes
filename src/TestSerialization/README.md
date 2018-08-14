@@ -371,9 +371,9 @@ TypeConsistencEnforcementQosPolicy.prevent_type_widening set to 0
   
 #### 
 
-| Publishing Type   | Subscribing Type   | Published Sample   | Received Sample |
----|---|---|--- 
-| Shape1.. | Shape4.. |<pre><code>{<br>    "RED",
+<table><tbody>
+<tr><td>Publishing Type   </td><td> Subscribing Type   </td><td> Published Sample   </td><td> Received Sample </tr>
+<tr><td> Shape1.. </td><td> Shape4.. </td><td><pre><code>{<br>    "RED",
     "RED SHAPE DESC",
     {"Tag_1"},
     {
@@ -382,7 +382,7 @@ TypeConsistencEnforcementQosPolicy.prevent_type_widening set to 0
         {20,25}
     },
     10,
-};</code></pre> |<pre><code>{
+};</code></pre> </td><td> <pre><code>{
     "RED",
     "RED SHAPE DESC",
     {"Tag_1"},
@@ -393,8 +393,11 @@ TypeConsistencEnforcementQosPolicy.prevent_type_widening set to 0
         {20,25}
     },
     10
-};</code></pre> |
-| Shape4.. | Shape1.. |<pre><code>{
+};</code></pre></td></tr>
+<tr>
+	<td>Shape4.. </td>
+	<td>Shape1.. </td>
+	<td><pre><code>{
     "RED",
     "RED SHAPE DESC",
     {"Tag_1"},
@@ -405,7 +408,7 @@ TypeConsistencEnforcementQosPolicy.prevent_type_widening set to 0
         {20,25}
     },
     10
-};</code></pre> | <pre><code>{
+};</code></pre> </td><td> <pre><code>{
     "RED",
     "RED SHAPE DESC",
     {"Tag_1"},
@@ -415,7 +418,8 @@ TypeConsistencEnforcementQosPolicy.prevent_type_widening set to 0
         {20,25}
     },
     10
-};</code></pre>|
+};</code></pre></td></tr>
+</table></tbody>
 
   
 ### 5.2.5 Type Refactoring Using Inheritance(#SER5) <a id="5.2.5"></a>
