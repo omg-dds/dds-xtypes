@@ -153,10 +153,10 @@ TypeConsistencEnforcementQosPolicy.prevent_type_widening set to 0
 
 TypeConsistencEnforcementQosPolicy.prevent_type_widening set to 0
 
-| TestCode   | Publisher Type   | Subscriber Type  |
----|---|---|---  
-| #SER4A | Shape1MutableExplicitID |Shape4MutableExplicitID | V1 and V2 |
-| #SER4B | Shape4MutableExplicitID | Shape1MutableExplicitID | V1 and V2  |
+| TestCode | Publisher Type          | Subscriber Type         | Representation Id |
+|----------|-------------------------|-------------------------|-------------------|
+| #SER4A   | Shape1MutableExplicitID |Shape4MutableExplicitID  | V1 and V2         |
+| #SER4B   | Shape4MutableExplicitID | Shape1MutableExplicitID | V1 and V2         |
   
 #### 
 
