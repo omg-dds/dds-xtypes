@@ -127,7 +127,7 @@ public:
             fprintf(stderr, "Failed to register type for topic \"%s\" retcode=%d\n", topic_name, (int)retcode);
             return false;
         }
-         
+
         Publisher *publisher = participant->create_publisher(
             PUBLISHER_QOS_DEFAULT, NULL /* listener */, STATUS_MASK_NONE);
         if (publisher == NULL) {
@@ -163,7 +163,7 @@ public:
 #if defined   RTI_CONNEXT_DDS
         _data = TSupport::create_data();
 #elif defined TWINOAKS_COREDX
-	_data = new T();
+        _data = new T();
 #endif
 
         return true;
@@ -171,10 +171,10 @@ public:
 
     virtual bool write_data(const char *color, int count) {
         _shapeFiller.fill_data(_data, color, count);
-        printf("Writing Topic \"%s\", type \"%s\", count %d, data:", 
+        printf("Writing Topic \"%s\", type \"%s\", count %d, data:",
                _writer->get_topic()->get_name(),
                _writer->get_topic()->get_type_name(), count);
-               
+
 #if   defined RTI_CONNEXT_DDS
         TSupport::print_data(_data);
         return _writer->write(*_data, HANDLE_NIL) == RETCODE_OK;
@@ -207,13 +207,13 @@ public:
 
 
 class TheReaderListener : public DataReaderListener {
-  public:    
+  public:
     virtual void on_requested_incompatible_qos(
         DataReader* reader,
         const RequestedIncompatibleQosStatus& status) {
            fprintf(stderr, "on_requested_incompatible_qos: topic \"%s\", type \"%s\" last_policy: %d, count: %d, change: %d\n",
                     reader->get_topicdescription()->get_name(),
-                    reader->get_topicdescription()->get_type_name(), 
+                    reader->get_topicdescription()->get_type_name(),
                     status.last_policy_id,
                     status.total_count, status.total_count_change);
     }
@@ -223,7 +223,7 @@ class TheReaderListener : public DataReaderListener {
         const SubscriptionMatchedStatus& status) {
              fprintf(stderr, "on_subscription_matched: topic \"%s\", type \"%s\", count: %d, change: %d\n",
                     reader->get_topicdescription()->get_name(),
-                    reader->get_topicdescription()->get_type_name(), 
+                    reader->get_topicdescription()->get_type_name(),
                     status.current_count, status.current_count_change);
     }
 };
@@ -239,7 +239,7 @@ public:
     virtual ~Reader() {
 
       _reader->set_listener(NULL, 0);
-      _topic->set_listener(NULL, 0);      
+      _topic->set_listener(NULL, 0);
 #if defined(TWINOAKS_COREDX)
       delete _reader_listener;
       delete _topic_listener;
@@ -253,7 +253,7 @@ public:
             fprintf(stderr, "Failed to register type for topic \"%s\" retcode=%d\n", topic_name, (int)retcode);
             return false;
         }
-         
+
         Subscriber *subscriber = participant->create_subscriber(
             SUBSCRIBER_QOS_DEFAULT, NULL /* listener */, STATUS_MASK_NONE);
         if (subscriber == NULL) {
@@ -271,7 +271,7 @@ public:
             return false;
         }
 
-        
+
         _reader_listener = new TheReaderListener();
         DataReader *reader = subscriber->create_datareader(
             _topic, DATAREADER_QOS_DEFAULT, _reader_listener,
@@ -287,9 +287,9 @@ public:
             return false;
         }
 
-       	ReadCondition  *cond = _reader->create_readcondition( ANY_SAMPLE_STATE, 
-                                            		      ANY_VIEW_STATE, 
-                                            		      ANY_INSTANCE_STATE);
+        ReadCondition  *cond = _reader->create_readcondition( ANY_SAMPLE_STATE,
+                                                              ANY_VIEW_STATE,
+                                                              ANY_INSTANCE_STATE);
         _waitset.attach_condition(cond);
 
 #if   defined(RTI_CONNEXT_DDS)
@@ -313,9 +313,9 @@ public:
 #elif defined(TWINOAKS_COREDX)
             retcode = _reader->take_next_sample(_data, &info);
 #endif
-  
+
             if ( (retcode == RETCODE_OK ) && info.valid_data ) {
-                printf("\nRead data for Topic %s", _reader->get_topicdescription()->get_name()); 
+                printf("\nRead data for Topic %s", _reader->get_topicdescription()->get_name());
                 ++sample_count;
 
 #if   defined(RTI_CONNEXT_DDS)
@@ -323,15 +323,15 @@ public:
 #elif defined(TWINOAKS_COREDX)
                 T::print(stdout, _data);
 #endif
-                
+
             }
             else if (retcode == RETCODE_NO_DATA) {
                 return sample_count; // all done
             }
         }
         while ( retcode == RETCODE_OK );
-        
-        fprintf(stderr, "Take error %d for Topic %s\n",(int)retcode,  _reader->get_topicdescription()->get_name()); 
+
+        fprintf(stderr, "Take error %d for Topic %s\n",(int)retcode,  _reader->get_topicdescription()->get_name());
         return sample_count; // done reading
     }
 
@@ -356,7 +356,7 @@ class ShapeTypeVariants {
 private:
     static const int TYPE_EXTENSIBILITY_KIND_COUNT=5;
     static const int TYPE_VERSION_COUNT=5;
- 
+
     static const char *extensibility_kind(int i) {
         static const char *TYPE_EXTENSIBILITY_KIND[5] = {
             "Default",
@@ -366,13 +366,13 @@ private:
             "MutableExplicitID"
 
         };
-        
+
         if ( i<0 || i >= 5) {
             return NULL;
         }
         return TYPE_EXTENSIBILITY_KIND[i];
     }
-    
+
 public:
     static void print_type_variants(FILE *fp) {
         for (int version=1; version<= TYPE_VERSION_COUNT; ++version) {
@@ -382,7 +382,7 @@ public:
             fprintf(fp, "\n");
         }
     }
-    
+
     static bool check_type_variant(const char *type_name) {
         char typename_buffer[64];
         for (int version=1; version<= TYPE_VERSION_COUNT; ++version) {
@@ -392,10 +392,10 @@ public:
                     return true;
                 }
             }
-        }     
+        }
         return false;
     }
-    
+
 
     static ReaderBase *create_reader(const char *type_name) {
         if ( strcmp(type_name, "Shape1Default") == 0 ) {
@@ -474,17 +474,17 @@ public:
             return new Reader<Shape5MutableExplicitID, Shape5MutableExplicitIDTypeSupport, Shape5MutableExplicitIDDataReader>();
         }
 
-        //  else 
+        //  else
         fprintf(stderr, "create_reader: Unrecognized type: \"%s\"\n", type_name);
         return NULL;
     }
 
     static WriterBase *create_writer(const char *type_name) {
         if ( strcmp(type_name, "Shape1Default") == 0 ) {
-	  return new Writer<Shape1Default, Shape1Filler<Shape1Default>, Shape1DefaultTypeSupport, Shape1DefaultDataWriter>();
+          return new Writer<Shape1Default, Shape1Filler<Shape1Default>, Shape1DefaultTypeSupport, Shape1DefaultDataWriter>();
         }
         else if ( strcmp(type_name, "Shape1Final") == 0 ) {
-	  return new Writer<Shape1Final, Shape1Filler<Shape1Final>, Shape1FinalTypeSupport, Shape1FinalDataWriter>();
+          return new Writer<Shape1Final, Shape1Filler<Shape1Final>, Shape1FinalTypeSupport, Shape1FinalDataWriter>();
         }
         else if ( strcmp(type_name, "Shape1Extensible") == 0 ) {
             return new Writer<Shape1Extensible, Shape1Filler<Shape1Extensible>, Shape1ExtensibleTypeSupport, Shape1ExtensibleDataWriter>();
@@ -557,7 +557,7 @@ public:
         }
 
 
-        //  else 
+        //  else
         fprintf(stderr, "create_Writer: Unrecognized type: \"%s\"\n", type_name);
         return NULL;
     }

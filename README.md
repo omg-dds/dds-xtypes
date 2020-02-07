@@ -7,10 +7,10 @@ These tests can be used to validate compliance with **OMG DDS-XTYPES** each DDS 
 
 The test uses 25 different "versions" of a data-type. These variations are obtained by adding, removing or reordering different attributes. They are also obtained by declaring different extensibility kinds for the data type (Final, Extensible [the default], and Mutable). These types are declared in the *ShapeTypes.idl* file or the equivalent *ShapeTypes.xml* file. The 25 types defined there are:
 
-Types with default extensibility  | Types with final extensibility  | Types with extensible extensibility  | Types with mutable extensibility  | Types with mutable extensibiity specifying explicit ID 
-------------- | ----------- | ---------------- | ------------- | ------------------------ 
+Types with default extensibility  | Types with final extensibility  | Types with extensible extensibility  | Types with mutable extensibility  | Types with mutable extensibiity specifying explicit ID
+------------- | ----------- | ---------------- | ------------- | ------------------------
 Shape1Default | Shape1Final | Shape1Extensible | Shape1Mutable | Shape1MutableExplicitID
-Shape2Default | Shape2Final | Shape2Extensible | Shape2Mutable | Shape2MutableExplicitID 
+Shape2Default | Shape2Final | Shape2Extensible | Shape2Mutable | Shape2MutableExplicitID
 Shape3Default | Shape3Final | Shape3Extensible | Shape3Mutable | Shape3MutableExplicitID
 Shape4Default | Shape4Final | Shape4Extensible | Shape4Mutable | Shape4MutableExplicitID
 Shape5Default | Shape5Final | Shape5Extensible | Shape5Mutable | Shape5MutableExplicitID
@@ -27,7 +27,7 @@ The following is an example execution:
 
 ON THE SUBSCRIBER COMPUTER:
 ```
-dds-xtypes$ ./rti_connext_dds_5.2_linux -sub -domain 0 -type Shape2Extensible 
+dds-xtypes$ ./rti_connext_dds_5.2_linux -sub -domain 0 -type Shape2Extensible
 Usage:  ./rti_connext_dds_5.2_linux [-pub | -sub] [-domain <domainId>] [-type <typeName>]
 Info: Starting subscribing application. Domain: 0, Type: Shape2Extensible
 
