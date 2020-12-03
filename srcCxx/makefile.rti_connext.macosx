@@ -1,0 +1,54 @@
+# To compile, type:
+# 	make -f makefile.rti_connext.macosx64
+#
+# This makefile assumes that your build environment is already correctly
+# configured. (For example, the correct version of your compiler and
+# linker should be on your PATH.)
+######################################################################
+
+DDS_PRODUCT = rti_connext_dds
+
+COMPILER       = clang++
+COMPILER_FLAGS = -m64 -Wno-return-type-c-linkage
+LINKER         = clang++
+LINKER_FLAGS   = -m64
+SYSLIBS        = -lm -lpthread -ldl
+DEFINES        = 
+
+INCLUDES      = -I. 
+SOURCES       = ShapeType_main.cxx
+EXEC           =  $(DDS_PRODUCT)_macosx64
+
+all: $(EXEC) 
+
+# These are for RTI Connext DDS
+ifndef NDDSHOME
+NDDSHOME := /Applications/rti_connext_dds-6.0.1
+endif
+
+TARGET_ARCH    = x64Darwin17clang9.0
+DEFINES       += -DRTI_CONNEXT_DDS -DRTI_UNIX -DRTI_DARWIN -DRTI_64BIT 
+
+IDLGEN_DIR     = idlgen_$(DDS_PRODUCT)
+IDLGEN_SOURCES = $(IDLGEN_DIR)/ShapeType.cxx  $(IDLGEN_DIR)/ShapeTypeSupport.cxx $(IDLGEN_DIR)/ShapeTypePlugin.cxx
+IDLGEN_HEADERS = $(IDLGEN_SOURCES:%.cxx=%.h) 
+SOURCES       +=   $(IDLGEN_SOURCES) 
+LIBS          +=  -L$(NDDSHOME)/lib/$(TARGET_ARCH) -lnddscppz -lnddscz -lnddscorez \
+                  $(SYSLIBS)
+INCLUDES      += -I$(IDLGEN_DIR) -I$(NDDSHOME)/include -I$(NDDSHOME)/include/ndds 
+
+$(IDLGEN_SOURCES) $(IDLGEN_HEADERS) :  ShapeType.idl
+	$(NDDSHOME)/bin/rtiddsgen ShapeType.idl -language C++ -update typefiles -d $(IDLGEN_DIR)
+#End of RTI
+
+# General build dependencies       
+OBJS    = $(SOURCES:%.cxx=%.o) 
+
+$(EXEC) : $(IDLGEN_DIR) $(OBJS) 
+	$(LINKER) $(LINKER_FLAGS)  -o $@ $(OBJS) $(LIBS)
+
+%.o : %.cxx $(IDLGEN_HEADERS)
+	$(COMPILER) $(COMPILER_FLAGS)  -o $@ $(DEFINES) $(INCLUDES) -c $<
+
+$(IDLGEN_DIR) :
+	mkdir -p $@

@@ -1,0 +1,205 @@
+
+const long STR_LEN_MAX=32;
+
+/* -------------- Shape1 -----------------------------*/
+struct Shape1Default {
+  @key string<STR_LEN_MAX> color; 
+  long x;
+  long y;
+  long shapesize;
+}; 
+
+@final
+struct Shape1Final {
+  @key string<STR_LEN_MAX> color; 
+  long x;
+  long y;
+  long shapesize;
+};
+
+@appendable
+struct Shape1Extensible {
+  @key string<STR_LEN_MAX> color; 
+  long x;
+  long y;
+  long shapesize;
+};  
+
+@mutable
+struct Shape1Mutable {
+  @key string<STR_LEN_MAX> color; 
+  long x;
+  long y;
+  long shapesize;
+};  
+
+@mutable
+struct Shape1MutableExplicitID {
+  @key @id(10) string<STR_LEN_MAX> color;  
+  @id(20) long x; 
+  long y; 
+  @id(30) long shapesize; 
+};  
+
+/* -------------- Shape2 -----------------------------*/
+
+struct Shape2Default {
+  @key string<STR_LEN_MAX> color; 
+  long x;
+  long y;
+  long shapesize;
+  float angle;
+};
+
+@final
+struct Shape2Final {
+  @key string<STR_LEN_MAX> color; 
+  long x;
+  long y;
+  long shapesize;
+  float angle;
+};  
+
+@appendable
+struct Shape2Extensible {
+  @key string<STR_LEN_MAX> color;  
+  long x;
+  long y;
+  long shapesize;
+  float angle;
+};  
+
+@mutable
+struct Shape2Mutable {
+  @key string<STR_LEN_MAX> color;  
+  long x;
+  long y;
+  long shapesize;
+  float angle;
+};  
+
+@mutable
+struct Shape2MutableExplicitID {
+  @key @id(10) string<STR_LEN_MAX> color;
+  @id(20) long x;
+  long y;
+  @id(30) long shapesize;
+  @id(40) float angle;
+};                             
+
+
+/* -------------- Shape3 -----------------------------*/
+struct Shape3Default {
+  @key string<STR_LEN_MAX> color; 
+  long x;
+  long y;
+  long z;
+  long shapesize;
+}; 
+
+@final
+struct Shape3Final {
+  @key string<STR_LEN_MAX> color; 
+  long x;
+  long y;
+  long z;
+  long shapesize;
+};  
+
+
+@appendable
+struct Shape3Extensible {
+  @key string<STR_LEN_MAX> color; 
+  long x;
+  long y;
+  long z;
+  long shapesize;
+};  
+
+@mutable
+struct Shape3Mutable {
+  @key string<STR_LEN_MAX> color; 
+  long x;
+  long y;
+  long z;
+  long shapesize;
+};  
+
+
+@mutable
+struct Shape3MutableExplicitID {
+  @key @id(10) string<STR_LEN_MAX> color;
+  @id(20) long x;
+  long y; 
+  @id(15) long z;
+  @id(30) long shapesize;
+};  
+
+
+/* -------------- Shape4 -----------------------------*/
+struct Shape4Default {
+  @key string<STR_LEN_MAX> color; 
+  long shapesize;
+  long x;
+  long y;
+}; 
+
+@final
+struct Shape4Final {
+  @key string<STR_LEN_MAX> color; 
+  long shapesize;
+  long x;
+  long y;
+};  
+
+
+@appendable
+struct Shape4Extensible {
+  @key string<STR_LEN_MAX> color; 
+  long shapesize;
+  long x;
+  long y;
+};  
+
+@mutable
+struct Shape4Mutable {
+  @key string<STR_LEN_MAX> color; 
+  long shapesize;
+  long x;
+  long y;
+};  
+
+@mutable
+struct Shape4MutableExplicitID {
+  @key @id(10) string<STR_LEN_MAX> color;
+  @id(30) long shapesize;
+  @id(20) long x;
+  long y; 
+};  
+
+/* -------------- Shape5 -----------------------------*/
+struct Shape5Default : Shape1Default {
+  float angle;
+};  
+
+@final
+struct Shape5Final : Shape1Final {
+  float angle;
+};  
+
+@appendable
+struct Shape5Extensible : Shape1Extensible {
+  float angle;
+};  
+
+@mutable
+struct Shape5Mutable : Shape1Mutable {
+  float angle;
+};  
+
+@mutable
+struct Shape5MutableExplicitID : Shape1MutableExplicitID {
+  @id(40) float angle;
+};  
+
+
