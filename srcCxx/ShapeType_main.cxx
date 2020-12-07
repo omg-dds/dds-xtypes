@@ -6,16 +6,27 @@
  * The possibilities are:
  *    RTI_CONNEXT_DDS
  *    TWINOAKS_COREDX
- *    PRISMTECH_OPENSPLICE
  */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <csignal>
+#include <climits>
+#include <strings.h>
+#include <time.h>
 
 #include "ShapeType_variants.h"
 
 using namespace DDS;
+
+const long INVALID_LONG = -1L;
+const long NOT_SET = -2L;
+enum ExitStatus: int {
+    OK        =  0,
+    ERROR     = -1,
+    INTERRUPT = -2,
+    TIMEOUT   = -3
+};
 
 // Keeps main thread iterating until a signal changes its value to false
 bool exit_application = false;
@@ -55,9 +66,10 @@ DomainParticipant *create_participant(int domain_id)
     return participant;
 }
 
-int publish(DomainParticipant *participant, const char *type_name)
+ExitStatus publish(DomainParticipant *participant, const char *type_name, const long samples, const long seconds)
 {
-    int count = 0;  
+    ExitStatus status = ExitStatus::OK;
+    long count = 0;
     Duration_t send_period;
     send_period.sec     = 1;
     send_period.nanosec = 0;
@@ -65,33 +77,50 @@ int publish(DomainParticipant *participant, const char *type_name)
     WriterBase *writer = ShapeTypeVariants::create_writer(type_name);
 
     if ( ( writer == NULL ) || (!writer->initialize(participant, "XTYPESTestTopic")) ) {
-       return -1;
+       return ExitStatus::ERROR;
     }
 
+    time_t start_time = time(NULL);
     /* Main loop */
     WaitSet *wait_set = new WaitSet();
     ConditionSeq active_cond;
     for (count=0; exit_application == false ; ++count) {
-        writer->write_data("BLUE", count);
         wait_set->wait(active_cond, send_period);
+        writer->write_data("BLUE", count);
+        if (samples != NOT_SET && count+1 >= samples) {
+            fprintf(stderr, "reached %ld samples, exiting\n", samples);
+            status = ExitStatus::OK;
+            break;
+        }
+        if (seconds != NOT_SET && time(NULL) > start_time + seconds) {
+            fprintf(stderr, "reached %ld seconds, exiting\n", seconds);
+            status = ExitStatus::TIMEOUT;
+            break;
+        }
     }
     delete wait_set;
     delete writer;
-    return 0;
+    if (exit_application) {
+        status = ExitStatus::INTERRUPT;
+    }
+    return status;
 }
 
 
-int subscribe(DomainParticipant *participant, const char *type_name)
+ExitStatus subscribe(DomainParticipant *participant, const char *type_name, const long samples, const long seconds)
 {
+    ExitStatus exit_status = ExitStatus::OK;
     Duration_t receive_period;
     receive_period.sec     = 1;
     receive_period.nanosec = 0;
     
-    ReaderBase *reader = ShapeTypeVariants::create_reader(type_name);;
+    ReaderBase *reader = ShapeTypeVariants::create_reader(type_name);
     if ( (reader == NULL) || (!reader->initialize(participant, "XTYPESTestTopic")) ) {
-        return -1;
+        return ExitStatus::ERROR;
     }
 
+    long total = 0L;  
+    time_t start_time = time(NULL);
     /* Main loop */
     printf("Waiting for data on topic \"%s\", type \"%s\"\n", 
         reader->get_topic()->get_name(),
@@ -99,40 +128,106 @@ int subscribe(DomainParticipant *participant, const char *type_name)
   
     while (exit_application == false) {
         reader->wait_for_data(receive_period);
-        reader->take_data();
+        int count = reader->take_data();
+        if (count > 0) {
+            total += count;
+            if (samples != NOT_SET && total >= samples) {
+                fprintf(stderr, "reached %ld samples, exiting\n", samples);
+                break;
+            }
+        }
+        if (seconds != NOT_SET && time(NULL) > start_time + seconds) {
+            fprintf(stderr, "reached %ld seconds, exiting\n", seconds);
+            break;
+        }
     }
     
     delete reader;
 
-    return 0;
+    return exit_status;
 }
 
  
-int run(int domain_id, const char *type_name, bool is_publisher)
+ExitStatus run(int domain_id, const char *type_name, bool is_publisher, long samples, long seconds)
 {
-    int exit_value = 0;
+    ExitStatus exit_status = ExitStatus::OK;
     DomainParticipant *participant = create_participant(domain_id);
     if (participant == NULL) {
         printf("create_participant error\n");
-        return -1;
+        return ExitStatus::ERROR;
     }
 
     fprintf(stderr, "Info: Starting %s application. Domain: %d, Type: %s\n\n",
             is_publisher?"publishing":"subscribing",
             domain_id, type_name);
-    
+    if (seconds != NOT_SET) {
+        fprintf(stderr, "Info: will stop after %ld seconds\n", seconds);
+    }
+    if (samples != NOT_SET) {
+        fprintf(stderr, "Info: will stop after %ld samples\n", samples);
+    }
+ 
     if ( is_publisher == true) {
-        exit_value = publish(participant, type_name);
+        exit_status = publish(participant, type_name, samples, seconds);
     } 
     else {
-        exit_value = subscribe(participant, type_name);
+        exit_status = subscribe(participant, type_name, samples, seconds);
     } 
 
     /* Delete all entities */
     participant->delete_contained_entities();
     DomainParticipantFactory::get_instance()->delete_participant(participant);
 
-    return exit_value;
+    return exit_status;
+}
+
+long validate_long(const char* str, const char* msg="", long min=0, long max=LONG_MAX)
+{
+    char * endptr = NULL;
+    const int BASE = 10;
+
+    long value = strtol(str, &endptr, BASE);
+    if (str == endptr) {
+        fprintf(stderr, "%s %s contains no digits\n", msg, str);
+        return INVALID_LONG;
+    }
+    if (errno == ERANGE) {
+        fprintf(stderr, "%s %s out of range\n", msg, str);
+        return INVALID_LONG;
+    }
+    if (errno == EINVAL) {
+        fprintf(stderr, "%s %s invalid\n", msg, str);
+        return INVALID_LONG;
+    }
+
+    if (value < min || value > max) {
+        fprintf(stderr, "%s Value %ld not in range %ld - %ld\n", 
+                msg, value, min, max);
+        return INVALID_LONG;
+    }
+    return value;
+}
+
+void show_usage(const char* iam, int status=0, bool quit=true, bool brief=false)
+{
+    char cmd[] = 
+    "[-pub | -sub] [-domain <domainId>] [-type <typeName>]"
+    "[-seconds N] [-samples M]"
+    ;
+    fprintf(stderr, "Usage: %s %s\n\n", iam, cmd);
+
+    char desc[] = 
+    "-pub       -- run as a publisher [default]\n"
+    "-sub       -- run as a subscriber\n"
+    "-samples M -- specify number of samples after which to successfully exit\n"
+    "-seconds N -- specify number of seconds after which to exit with error\n"
+    ;
+    if (! brief) {
+        fprintf(stderr, "%s", desc);
+    }
+    if (quit) {
+        exit(status);
+    }
 }
 
 int main(int argc, char *argv[])
@@ -146,29 +241,62 @@ int main(int argc, char *argv[])
     int pubsub_mode       = UNDEFINED;
     int domain_id         = -1;
     const char *type_name = NULL;
+    long samples           = NOT_SET;
+    long seconds           = NOT_SET;
 
-    if ( argc != 5 ) {
-        fprintf(stderr, "Usage:  %s [-pub | -sub] [-domain <domainId>] [-type <typeName>]\n", argv[0]);
-    }
-    
-    for (int i=0; i<argc; ++i) {
+    if ( argc != 4 ) {
+        show_usage(argv[0], 0, false, true);
+    } 
+    for (int i=1; i<argc; ++i) {
+
         if ( strcmp(argv[i], "-pub") == 0 ) {
             pubsub_mode = 1;
         } else if ( strcmp(argv[i], "-sub") == 0 ) {
             pubsub_mode = 2;
         } else if ( strcmp(argv[i], "-domain") == 0 ) {
-            if ( ++i == argc) {
+            if ( ++i >= argc) {
                 fprintf(stderr, "Error: missing <domainId> after \"-domain\"\n");
-                return -1;
+                return ExitStatus::ERROR;
             }
-            domain_id = atoi(argv[i]);
+            long domain_id_long = validate_long(argv[i], "domainId:", 0, 255);
+            if (domain_id_long != INVALID_LONG) {
+                domain_id = domain_id_long;
+            } else {
+                fprintf(stderr, "Error: invalid domainId");
+                return ExitStatus::ERROR;
+            }
         } else if ( strcmp(argv[i], "-type") == 0 ) {
-            if ( ++i == argc) {
+            if ( ++i >= argc) {
                 fprintf(stderr, "Error: missing <typeName> after \"-type\"\n");
-                return -1;
+                return ExitStatus::ERROR;
             }
             type_name = argv[i];
-        }       
+        } else if ( strcmp(argv[i], "-samples") == 0 ) {
+            if ( ++i >= argc ) {
+                fprintf(stderr, "Error: missing <M> after \"-samples\"\n");
+                return ExitStatus::ERROR;
+            }
+            samples = validate_long(argv[i], "samples:", 1, 100);
+            if ( samples == INVALID_LONG) {
+                fprintf(stderr, "Error: invalid samples\n");
+                return ExitStatus::ERROR;
+            }
+        } else if ( strcmp(argv[i], "-seconds") == 0 ) {
+            if ( ++i >= argc ) {
+                fprintf(stderr, "Error: missing <N> after \"-seconds\"\n");
+                return ExitStatus::ERROR;
+            }
+            seconds = validate_long(argv[i], "seconds:", 2);
+            if ( seconds == INVALID_LONG) {
+                fprintf(stderr, "Error: invalid seconds\n");
+                return ExitStatus::ERROR;
+            }
+        } else if ( strcasecmp(argv[i], "-h") == 0 ) {
+            show_usage(argv[0], 0);
+        } else {
+            fprintf(stderr, "Error: unrecognized option: %s\n", argv[i]);
+            return ExitStatus::ERROR;
+        }
     }
 
     if ( type_name == NULL ) {
@@ -179,7 +307,7 @@ int main(int argc, char *argv[])
     if ( !ShapeTypeVariants::check_type_variant(type_name) ) {
         fprintf(stderr, "Error: Type \"%s\" is not a valid type. The possible types are:\n", type_name);
         ShapeTypeVariants::print_type_variants(stderr);
-        return -1;
+        return ExitStatus::ERROR;
     }
     
     if ( domain_id == -1 ) {
@@ -194,6 +322,6 @@ int main(int argc, char *argv[])
  
     setup_signal_handler();
     
-    return run(domain_id, type_name, pubsub_mode == PUBLISH);
+    return run(domain_id, type_name, pubsub_mode == PUBLISH, samples, seconds);
 }
 
