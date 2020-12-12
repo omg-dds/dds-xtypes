@@ -9,14 +9,14 @@
 DDS_PRODUCT = rti_connext_dds
 
 COMPILER       = clang++
-COMPILER_FLAGS = -m64 -Wno-return-type-c-linkage
+COMPILER_FLAGS = -m64 -Wno-return-type-c-linkage -std=c++11
 LINKER         = clang++
 LINKER_FLAGS   = -m64
 SYSLIBS        = -lm -lpthread -ldl
 DEFINES        = 
 
-INCLUDES      = -I. 
-SOURCES       = ShapeType_main.cxx
+INCLUDES       = -I. 
+SOURCES        = ShapeType_main.cxx
 EXEC           =  $(DDS_PRODUCT)_macosx64
 
 all: $(EXEC) 
@@ -26,7 +26,11 @@ ifndef NDDSHOME
 NDDSHOME := /Applications/rti_connext_dds-6.0.1
 endif
 
-TARGET_ARCH    = x64Darwin17clang9.0
+# Defaults to macOS Mojave 10.14.6 (Darwin 18.7.0)
+ifndef TARGET_ARCH
+TARGET_ARCH := x64Darwin17clang9.0
+endif
+
 DEFINES       += -DRTI_CONNEXT_DDS -DRTI_UNIX -DRTI_DARWIN -DRTI_64BIT 
 
 IDLGEN_DIR     = idlgen_$(DDS_PRODUCT)
@@ -47,7 +51,7 @@ OBJS    = $(SOURCES:%.cxx=%.o)
 $(EXEC) : $(IDLGEN_DIR) $(OBJS) 
 	$(LINKER) $(LINKER_FLAGS)  -o $@ $(OBJS) $(LIBS)
 
-%.o : %.cxx $(IDLGEN_HEADERS)
+%.o : %.cxx $(IDLGEN_HEADERS) ShapeType_variants.h
 	$(COMPILER) $(COMPILER_FLAGS)  -o $@ $(DEFINES) $(INCLUDES) -c $<
 
 $(IDLGEN_DIR) :

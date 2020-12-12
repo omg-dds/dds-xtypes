@@ -200,7 +200,7 @@ class ReaderBase {
 public:
     virtual ~ReaderBase() {}
     virtual bool initialize(DomainParticipant *participant, const char *topic_name) = 0;
-    virtual bool take_data() = 0;
+    virtual int take_data() = 0;
     virtual Topic *get_topic() = 0;
     virtual bool wait_for_data(Duration_t timeout) = 0;
 };
@@ -301,9 +301,10 @@ public:
         return true;
     }
 
-    bool take_data() {
+    int take_data() {
         SampleInfo info;
         ReturnCode_t retcode;
+        int sample_count = 0;
 
         do {
 
@@ -315,7 +316,8 @@ public:
   
             if ( (retcode == RETCODE_OK ) && info.valid_data ) {
                 printf("\nRead data for Topic %s", _reader->get_topicdescription()->get_name()); 
-                
+                ++sample_count;
+
 #if   defined(RTI_CONNEXT_DDS)
                 TSupport::print_data(_data);
 #elif defined(TWINOAKS_COREDX)
@@ -324,13 +326,13 @@ public:
                 
             }
             else if (retcode == RETCODE_NO_DATA) {
-                return true; // all done reading return success
+                return sample_count; // all done
             }
         }
         while ( retcode == RETCODE_OK );
         
         fprintf(stderr, "Take error %d for Topic %s\n",(int)retcode,  _reader->get_topicdescription()->get_name()); 
-        return false; // done reading but return error
+        return sample_count; // done reading
     }
 
     Topic *get_topic() { return _topic;  }

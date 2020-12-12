@@ -21,7 +21,7 @@ using namespace DDS;
 
 const long INVALID_LONG = -1L;
 const long NOT_SET = -2L;
-enum ExitStatus: int {
+enum ExitStatus {
     OK        =  0,
     ERROR     = -1,
     INTERRUPT = -2,
@@ -66,7 +66,7 @@ DomainParticipant *create_participant(int domain_id)
     return participant;
 }
 
-ExitStatus publish(DomainParticipant *participant, const char *type_name, const long samples, const long seconds)
+ExitStatus publish(DomainParticipant *participant, const char *topic_name, const char *type_name, const long samples, const long seconds)
 {
     ExitStatus status = ExitStatus::OK;
     long count = 0;
@@ -76,7 +76,7 @@ ExitStatus publish(DomainParticipant *participant, const char *type_name, const 
     
     WriterBase *writer = ShapeTypeVariants::create_writer(type_name);
 
-    if ( ( writer == NULL ) || (!writer->initialize(participant, "XTYPESTestTopic")) ) {
+    if ( ( writer == NULL ) || (!writer->initialize(participant, topic_name)) ) {
        return ExitStatus::ERROR;
     }
 
@@ -84,6 +84,7 @@ ExitStatus publish(DomainParticipant *participant, const char *type_name, const 
     /* Main loop */
     WaitSet *wait_set = new WaitSet();
     ConditionSeq active_cond;
+
     for (count=0; exit_application == false ; ++count) {
         wait_set->wait(active_cond, send_period);
         writer->write_data("BLUE", count);
@@ -107,7 +108,7 @@ ExitStatus publish(DomainParticipant *participant, const char *type_name, const 
 }
 
 
-ExitStatus subscribe(DomainParticipant *participant, const char *type_name, const long samples, const long seconds)
+ExitStatus subscribe(DomainParticipant *participant, const char *topic_name, const char *type_name, const long samples, const long seconds)
 {
     ExitStatus exit_status = ExitStatus::OK;
     Duration_t receive_period;
@@ -115,7 +116,7 @@ ExitStatus subscribe(DomainParticipant *participant, const char *type_name, cons
     receive_period.nanosec = 0;
     
     ReaderBase *reader = ShapeTypeVariants::create_reader(type_name);
-    if ( (reader == NULL) || (!reader->initialize(participant, "XTYPESTestTopic")) ) {
+    if ( (reader == NULL) || (!reader->initialize(participant, topic_name)) ) {
         return ExitStatus::ERROR;
     }
 
@@ -148,7 +149,7 @@ ExitStatus subscribe(DomainParticipant *participant, const char *type_name, cons
 }
 
  
-ExitStatus run(int domain_id, const char *type_name, bool is_publisher, long samples, long seconds)
+ExitStatus run(int domain_id, const char *topic_name, const char *type_name, bool is_publisher, long samples, long seconds)
 {
     ExitStatus exit_status = ExitStatus::OK;
     DomainParticipant *participant = create_participant(domain_id);
@@ -168,10 +169,10 @@ ExitStatus run(int domain_id, const char *type_name, bool is_publisher, long sam
     }
  
     if ( is_publisher == true) {
-        exit_status = publish(participant, type_name, samples, seconds);
+        exit_status = publish(participant, topic_name, type_name, samples, seconds);
     } 
     else {
-        exit_status = subscribe(participant, type_name, samples, seconds);
+        exit_status = subscribe(participant, topic_name, type_name, samples, seconds);
     } 
 
     /* Delete all entities */
@@ -211,16 +212,23 @@ long validate_long(const char* str, const char* msg="", long min=0, long max=LON
 void show_usage(const char* iam, int status=0, bool quit=true, bool brief=false)
 {
     char cmd[] = 
-    "[-pub | -sub] [-domain <domainId>] [-type <typeName>]"
-    "[-seconds N] [-samples M]"
+    "[-help] [help-type] "
+    "[-pub | -sub] [-domain <domainId>] "
+    "[-topic <topicName>] [-type <typeName>] "
+    "[-timeout <seconds>] [-samples M]"
     ;
     fprintf(stderr, "Usage: %s %s\n\n", iam, cmd);
 
     char desc[] = 
-    "-pub       -- run as a publisher [default]\n"
-    "-sub       -- run as a subscriber\n"
-    "-samples M -- specify number of samples after which to successfully exit\n"
-    "-seconds N -- specify number of seconds after which to exit with error\n"
+    "-help              -- display this help\n"
+    "-help-types        -- list <typeNames> available for \"-type\" option\n"
+    "-pub               -- run as a publisher [default]\n"
+    "-sub               -- run as a subscriber\n"
+    "-domain <domainId> -- publish or subscribe on the DDS domain with id <domainId> [default: 0]\n"
+    "-topic <topicName> -- publish or subscribe topic <topicName> [default: XTYPESTestTopic]\n"
+    "-type  <typeName>  -- publish or subscribe the data type <typeName> [default: Shape1Default]\n"
+    "-samples <count>   -- exit (successfuly) after sending or receiving <count> samples [default: unlimited]\n"
+    "-timeout <seconds> -- exit (with error) after <seconds> seconds [default: unlimited]\n"
     ;
     if (! brief) {
         fprintf(stderr, "%s", desc);
@@ -238,17 +246,14 @@ int main(int argc, char *argv[])
         SUBSCRIBE = 2
     };
     
-    int pubsub_mode       = UNDEFINED;
-    int domain_id         = -1;
-    const char *type_name = NULL;
+    int pubsub_mode        = UNDEFINED;
+    int domain_id          = -1;
+    const char *type_name  = NULL;
+    const char *topic_name = NULL;
     long samples           = NOT_SET;
     long seconds           = NOT_SET;
 
-    if ( argc != 4 ) {
-        show_usage(argv[0], 0, false, true);
-    } 
     for (int i=1; i<argc; ++i) {
-
         if ( strcmp(argv[i], "-pub") == 0 ) {
             pubsub_mode = 1;
         } else if ( strcmp(argv[i], "-sub") == 0 ) {
@@ -265,6 +270,12 @@ int main(int argc, char *argv[])
                 fprintf(stderr, "Error: invalid domainId");
                 return ExitStatus::ERROR;
             }
+        } else if ( strcmp(argv[i], "-topic") == 0 ) {
+            if ( ++i >= argc) {
+                fprintf(stderr, "Error: missing <topicName> after \"-topic\"\n");
+                return ExitStatus::ERROR;
+            }
+            topic_name = argv[i];
         } else if ( strcmp(argv[i], "-type") == 0 ) {
             if ( ++i >= argc) {
                 fprintf(stderr, "Error: missing <typeName> after \"-type\"\n");
@@ -281,20 +292,25 @@ int main(int argc, char *argv[])
                 fprintf(stderr, "Error: invalid samples\n");
                 return ExitStatus::ERROR;
             }
-        } else if ( strcmp(argv[i], "-seconds") == 0 ) {
+        } else if ( strcmp(argv[i], "-timeout") == 0 ) {
             if ( ++i >= argc ) {
                 fprintf(stderr, "Error: missing <N> after \"-seconds\"\n");
                 return ExitStatus::ERROR;
             }
-            seconds = validate_long(argv[i], "seconds:", 2);
+            seconds = validate_long(argv[i], "timeout:", 2);
             if ( seconds == INVALID_LONG) {
                 fprintf(stderr, "Error: invalid seconds\n");
                 return ExitStatus::ERROR;
             }
-        } else if ( strcasecmp(argv[i], "-h") == 0 ) {
+        } else if ( strcmp(argv[i], "-help-types") == 0 ) {
+            ShapeTypeVariants::print_type_variants(stderr);
+            return ExitStatus::OK;
+        } else if ( strcmp(argv[i], "-help") == 0 ) {
             show_usage(argv[0], 0);
+            return ExitStatus::OK;
         } else {
-            fprintf(stderr, "Error: unrecognized option: %s\n", argv[i]);
+            fprintf(stderr, "Error: unrecognized option: \"%s\"\n", argv[i]);
+            show_usage(argv[0], 0);
             return ExitStatus::ERROR;
         }
     }
@@ -315,6 +331,11 @@ int main(int argc, char *argv[])
         fprintf(stderr, "Info: \"-domain\" was not specified. Defaulting to: %d\n", domain_id);
     }
     
+    if ( topic_name == NULL ) {
+        topic_name = "XTYPESTestTopic";
+        fprintf(stderr, "Info: \"-topic\" was not specified. Defaulting to: \"%s\"\n", topic_name);
+    }
+
     if ( pubsub_mode == UNDEFINED ) {
         pubsub_mode = PUBLISH;
         fprintf(stderr, "Info: Neither \"-pub\"  nor \"-sub\" was specified. Defaulting to: publish\n");
@@ -322,6 +343,6 @@ int main(int argc, char *argv[])
  
     setup_signal_handler();
     
-    return run(domain_id, type_name, pubsub_mode == PUBLISH, samples, seconds);
+    return run(domain_id, topic_name, type_name, pubsub_mode == PUBLISH, samples, seconds);
 }
 
