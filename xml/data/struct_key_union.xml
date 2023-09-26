@@ -1,0 +1,11 @@
+<struct_key_union>
+  <x1>
+    <discriminator>
+      0x01
+    </discriminator>
+    <x1>
+      1234
+    </x1>
+  </x1>
+</struct_key_union>
+  

@@ -1,0 +1,140 @@
+<module name="Test">
+
+  <!-- names match, ids don't -->
+  <struct name="struct_1"   extensibility="mutable">
+    <member name="x1" type="int32" id="1"  />
+    <member name="x5" type="int32" id="5"  />  <!-- so we have a member in common -->
+  </struct>
+
+  <struct name="struct_2"   extensibility="mutable">
+    <member name="x1" type="int32" id="2"  />
+    <member name="x5" type="int32" id="5"  /> 
+  </struct>
+
+
+  <!-- ids match, names don't -->
+  <struct name="struct_3"   extensibility="final">
+    <member name="x1" type="int32" id="1"  />
+  </struct>
+
+  <struct name="struct_4"   extensibility="final">
+    <member name="x2" type="int32" id="1"  />
+  </struct>
+
+  <!-- no id in common -->
+  <struct name="struct_5"   extensibility="mutable">
+    <member name="x1" type="int32" id="1"  />
+  </struct>
+
+  <struct name="struct_6"   extensibility="mutable">
+    <member name="x2" type="int32" id="2"  />
+  </struct>
+
+  <!-- member assignability  -->
+  <struct name="struct_primitive_uint8"   extensibility="final">
+    <member name="x1" type="byte"/>
+  </struct>
+  
+  <struct name="struct_primitive_uint16"   extensibility="final">
+    <member name="x1"  type="uint16"/>
+  </struct>
+
+  <!-- member mustUnderstand  -->
+  <struct name="struct_grok_1"   extensibility="appendable">
+    <member name="x1"                       type="int32"/>
+    <member name="x2" mustUnderstand="true" type="int32"/>
+  </struct>
+  
+  <struct name="struct_grok_2"   extensibility="appendable">
+    <member name="x1" type="int32"/>
+  </struct>
+
+  <!-- member key  -->
+  <struct name="struct_key_1"   extensibility="appendable">
+    <member name="x1"             type="int32"/>
+    <member name="x2" key="true"  type="int32"/>
+  </struct>
+  
+  <struct name="struct_key_2"   extensibility="appendable">
+    <member name="x1"             type="int32"/>
+  </struct>
+
+  <!-- key string bounds  -->
+  <struct name="struct_key_string_1"   extensibility="appendable">
+    <member name="x1" key="true"  type="string" stringMaxLength="10" />
+  </struct>
+  
+  <struct name="struct_key_string_2"   extensibility="appendable">
+    <member name="x1" key="true"  type="string" stringMaxLength="20" />
+  </struct>
+
+  <!-- key enum literals match  -->
+  <enum name="E1" bitBound="32" extensibility="appendable">
+    <enumerator name="VAL0" value="0"/>
+    <enumerator name="VAL1" value="1"/>
+    <enumerator name="VAL2" value="2"/>
+  </enum>
+  
+  <enum name="E2" bitBound="32" extensibility="appendable">
+    <enumerator name="VAL0" value="0"/>
+    <enumerator name="VAL1" value="1"/>
+    <enumerator name="VAL2" value="2"/>
+    <enumerator name="VAL3" value="3"/> 
+  </enum>
+  
+  <struct name="struct_key_enum_1"   extensibility="mutable">
+    <member name="x1" key="true"  type="nonBasic" nonBasicTypeName="E1" />
+  </struct>
+  
+  <struct name="struct_key_enum_2"   extensibility="mutable">
+    <member name="x1" key="true"  type="nonBasic" nonBasicTypeName="E2" />
+  </struct>
+
+  <!-- key seq bounds  -->
+  <struct name="struct_key_seq_1"   extensibility="appendable">
+    <member name="x1" key="true"  type="int32" sequenceMaxLength="10" />
+  </struct>
+  
+  <struct name="struct_key_seq_2"   extensibility="appendable">
+    <member name="x1" key="true"  type="int32" sequenceMaxLength="20" />
+  </struct>
+
+  <!-- key struct member is_assignable  -->
+  <struct name="key_1"   extensibility="appendable">
+    <member name="k1" key="true"  type="string" stringMaxLength="10" />
+    <member name="x2"             type="string" stringMaxLength="20" />
+  </struct>
+  <struct name="key_2"   extensibility="appendable">
+    <member name="k1" key="true"  type="string" stringMaxLength="20" />
+    <member name="x2"             type="string" stringMaxLength="10" />
+  </struct>
+  
+   <struct name="struct_key_struct_1"   extensibility="appendable">
+    <member name="x1" key="true"  type="nonBasic" nonBasicTypeName="key_1" />
+  </struct>
+  
+  <struct name="struct_key_struct_2"   extensibility="appendable">
+    <member name="x1" key="true"  type="nonBasic" nonBasicTypeName="key_2" />
+  </struct>
+
+  <!-- key union member is_assignable  -->
+  <union name="u_1"  extensibility="mutable"><discriminator type="byte"/>
+    <case><caseDiscriminator value="1"/><member name="x1" type="int16"/></case>
+    <case><caseDiscriminator value="2"/><member name="x2" type="int32"/></case>
+  </union>
+  <union name="u_2"  extensibility="mutable"><discriminator type="byte"/>
+    <case><caseDiscriminator value="1"/><member name="x1" type="int16"/></case>
+    <case><caseDiscriminator value="2"/><member name="x2" type="int32"/></case>
+    <case><caseDiscriminator value="3"/><member name="x3" type="int64"/></case>
+  </union>
+  
+  <struct name="struct_key_union_1"   extensibility="mutable">
+    <member name="x1" key="true"  type="nonBasic" nonBasicTypeName="u_1" />
+  </struct>
+  
+  <struct name="struct_key_union_2"   extensibility="mutable">
+    <member name="x1" key="true"  type="nonBasic" nonBasicTypeName="u_2" />
+  </struct>
+
+  
+</module>

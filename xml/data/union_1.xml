@@ -1,0 +1,4 @@
+<union_1>
+  <discriminator>0x01</discriminator>
+  <x1>123</x1>
+</union_1>

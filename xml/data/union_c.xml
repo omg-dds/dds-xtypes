@@ -1,0 +1,4 @@
+<union_c>
+  <discriminator>13</discriminator>
+  <x13>12345678</x13>
+</union_c>

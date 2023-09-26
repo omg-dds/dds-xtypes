@@ -1,0 +1,4 @@
+<union_primitives>
+  <discriminator>0x05</discriminator>
+  <x5>A</x5>
+</union_primitives>
