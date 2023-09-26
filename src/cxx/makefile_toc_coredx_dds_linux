@@ -1,0 +1,83 @@
+##########################################################
+#
+# This Makefile uses the following environment variables:
+#  COREDX_TOP
+#  COREDX_HOST
+#  COREDX_TARGET
+# These variables can be set manually, or determined by
+# running the script  coredx/scripts/cdxenv.sh or cdxenv.bat
+#
+# We assume both toolchain (eg, g++) and coredx_ddl are in
+# your path.
+#
+##########################################################
+
+##########################################################
+# SECURITY:
+# If you have the security plugin, and want to enable
+# security, uncomment the following two lines:
+#SEC_CFLAGS  = -DDO_SECURITY -I../security
+#SEC_CSRCS   = ../security/set_sec_props_cpp.cc
+
+# Define our sources and objects
+EXECUTABLE        = toc_coredx_dds-${COREDX_VERSION}-test_main_linux
+
+# Publisher sources and objects
+test_main_coredx_CSRCS   = test_main.cxx
+test_main_coredx_COBJS   = ${test_main_coredx_CSRCS:.cxx=.o} ${SEC_CSRCS:.cc=.o}
+
+test_main_coredx_OBJS    = ${test_main_coredx_COBJS} 
+
+##########################################################
+# Setup Compile Environment
+
+CXX        = g++
+DDL        = ${COREDX_TOP}/host/${COREDX_HOST}/bin/coredx_ddl
+
+INC_PATH   = -I${COREDX_TOP}/target/include
+LIB_PATH   = -L${COREDX_TOP}/target/${COREDX_TARGET}/lib
+LIBS       =					\
+-no-pie						\
+-Wl,-Bstatic					\
+-ldds_cpp_dyntype_xml_log			\
+-ldds_cpp_dyntype_log				\
+-ldds_cpp_cf_log				\
+-ldds_dyntype_xml_log				\
+-ldds_dyntype_log				\
+-ldds_xml_log					\
+-ldds_cf_log					\
+-Wl,-Bdynamic 
+
+CXXFLAGS   = -DTWINOAKS_COREDX -Wall -O2 -g ${INC_PATH} ${SEC_CFLAGS} -pthread
+LDFLAGS    = ${LIB_PATH} ${LIBS} -ldl -lnsl -lrt -pthread
+
+
+##########################################################
+
+all: ${EXECUTABLE}
+
+%.o: %.cxx
+	${CXX} ${CPPFLAGS} ${CXXFLAGS} -o $@ -c $<
+
+${EXECUTABLE}: ${test_main_coredx_OBJS}
+	${CXX} -o $@ ${test_main_coredx_OBJS} ${LDFLAGS} 
+
+##########################################################
+# Rules for generating code from DDL
+#%.cc %TypeSupport.cc %DataWriter.cc %DataReader.cc: %.idl
+#	${DDL} -F -l cpp -o y -f $<
+
+##########################################################
+# Rules for cleaning
+
+clean:
+	\rm -f ${test_main_coredx_OBJS}  ${EXECUTABLE}
+
+reallyclean: clean
+	\echo ""
+
+
+##########################################################
+# Additional Dependencies
+
+test_main.o: test_main.cxx variant_toc_coredx_dds.hh
