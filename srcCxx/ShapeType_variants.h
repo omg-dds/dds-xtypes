@@ -16,12 +16,79 @@
 #    error X-Types support requires CoreDX DDS v4.0 or newer
 #  endif
 
+#elif defined(OCI_OPENDDS)
+#  include "ShapeTypeTypeSupportImpl.h"
+#  include <dds/DdsDcpsC.h>
+#  include <dds/DCPS/Service_Participant.h>
+#  include <dds/DCPS/WaitSet.h>
+#  include <dds/DCPS/Marked_Default_Qos.h>
+#  include <dds/DCPS/Printer.h>
+#  include <dds/DCPS/transport/framework/TransportRegistry.h>
+#  include <dds/DCPS/transport/framework/TransportConfig.h>
+#  include <dds/DCPS/transport/framework/TransportInst.h>
+#  include <iostream>
+
 #else
 #  error No DDS vendor -define was provided. No DDS header files included.  Compilation will fail
-#  error Please configure the makefile to define one for the following variables: RTI_CONNEXT_DDS, TWINOAKS_COREDX, or PRISMTECH_OPENSPLICE
+#  error Please configure the makefile to define one for the following variables: RTI_CONNEXT_DDS, TWINOAKS_COREDX, or OCI_OPENDDS
 #endif
 
 using namespace DDS;
+
+#ifdef OCI_OPENDDS
+const StatusMask STATUS_MASK_NONE = OpenDDS::DCPS::NO_STATUS_MASK;
+
+template <typename T>
+class StaticTypeSupport {
+public:
+    static ReturnCode_t register_type(DomainParticipant* participant, const char* type_name)
+    {
+        return instance()->register_type(participant, type_name);
+    }
+
+    static const char* get_type_name()
+    {
+        return instance()->get_type_name();
+    }
+
+private:
+    typedef typename OpenDDS::DCPS::DDSTraits<T> Traits;
+    typedef typename Traits::TypeSupportType TypeSupport;
+    typedef typename Traits::TypeSupportTypeImpl TypeSupportImpl;
+
+    static TypeSupport* instance() {
+        static TypeSupportImpl tsimpl;
+        return dynamic_cast<TypeSupport*>(&tsimpl);
+    }
+};
+
+void setup_rtps()
+{
+    TheServiceParticipant->set_default_discovery(
+        OpenDDS::DCPS::Discovery::DEFAULT_RTPS);
+    OpenDDS::DCPS::TransportConfig_rch transport_config =
+        TheTransportRegistry->create_config("default_rtps_transport_config");
+    OpenDDS::DCPS::TransportInst_rch transport_inst =
+        TheTransportRegistry->create_inst("default_rtps_transport", "rtps_udp");
+    transport_config->instances_.push_back(transport_inst);
+    TheTransportRegistry->global_config(transport_config);
+    OpenDDS::DCPS::DCPS_debug_level = 4;
+}
+
+void strcpy(TAO::String_Manager_T<char>& dst, const char* src)
+{
+    dst = src;
+}
+#endif
+
+DomainParticipantFactory* get_domain_participant_factory()
+{
+#ifdef OCI_OPENDDS
+    return TheParticipantFactory;
+#else
+    return DomainParticipantFactory::get_instance();
+#endif
+}
 
 class TheTopicListener : public TopicListener {
 public:
@@ -53,7 +120,7 @@ public:
         data->x = count % 250;;
         data->y = 2*count %250;
         data->shapesize = 30;
-        data->angle = (float)((5*count)%360);
+        /* data->angle = (float)((5*count)%360); */
     };
 };
 
@@ -78,6 +145,7 @@ public:
     }
 };
 
+#ifndef OCI_OPENDDS
 template <typename T> class Shape5Filler {
 public:
     static void fill_data(T *data, const char *color, int count) {
@@ -88,6 +156,7 @@ public:
         data->angle = (float)((5*count)%360);
     }
 };
+#endif
 
 template <typename TData, typename TDataFiller> class GenericFiller {
 public:
@@ -107,22 +176,28 @@ public:
 template <typename T, typename TFiller, typename TSupport, typename TDataWriter>
 class Writer : public WriterBase {
 public:
-    typedef T data_type;
-    typedef TSupport type_support;
-    typedef TDataWriter data_writer;
+#ifdef OCI_OPENDDS
+    typedef StaticTypeSupport<T> TypeSupport;
+#else
+    typedef TSupport TypeSupport;
+#endif
 
-  public:
     virtual ~Writer() {
       _topic->set_listener(NULL, 0);
-#if defined(TWINOAKS_COREDX)
+#if defined(TWINOAKS_COREDX) || defined(OCI_OPENDDS)
       delete _data;
+#endif
+#ifdef TWINOAKS_COREDX
       delete _topic_listener;
+#elif defined OCI_OPENDDS
+      TopicListener_var tl = _topic_listener;
+      tl = 0;
 #endif
     }
 
     virtual bool initialize(DomainParticipant *participant, const char *topic_name) {
-        ReturnCode_t retcode;
-        retcode = TSupport::register_type(participant, TSupport::get_type_name());
+        ReturnCode_t retcode = TypeSupport::register_type(
+            participant, TypeSupport::get_type_name());
         if ( retcode != RETCODE_OK) {
             fprintf(stderr, "Failed to register type for topic \"%s\" retcode=%d\n", topic_name, (int)retcode);
             return false;
@@ -138,7 +213,7 @@ public:
         _topic_listener = new TheTopicListener();
 
         _topic = participant->create_topic(
-            topic_name, TSupport::get_type_name(),
+            topic_name, TypeSupport::get_type_name(),
             TOPIC_QOS_DEFAULT, _topic_listener,
             INCONSISTENT_TOPIC_STATUS);
         if (_topic == NULL) {
@@ -154,7 +229,11 @@ public:
             return false;
         }
 
+#ifdef OCI_OPENDDS
+        _writer = TDataWriter::_narrow(writer);
+#else
         _writer = TDataWriter::narrow(writer);
+#endif
         if (_writer == NULL) {
             printf("DataWriter narrow error for topic \"%s\"\n", topic_name);
             return false;
@@ -162,7 +241,7 @@ public:
 
 #if defined   RTI_CONNEXT_DDS
         _data = TSupport::create_data();
-#elif defined TWINOAKS_COREDX
+#elif defined TWINOAKS_COREDX || defined OCI_OPENDDS
         _data = new T();
 #endif
 
@@ -177,13 +256,17 @@ public:
 
 #if   defined RTI_CONNEXT_DDS
         TSupport::print_data(_data);
-        return _writer->write(*_data, HANDLE_NIL) == RETCODE_OK;
-
 #elif defined TWINOAKS_COREDX
         T::print(stdout, _data);
-        return _writer->write(_data, HANDLE_NIL) == RETCODE_OK;
+#elif defined OCI_OPENDDS
+        std::cout << '\n' << OpenDDS::DCPS::Printer() << *_data;
 #endif
 
+#ifdef TWINOAKS_COREDX
+        return _writer->write(_data, HANDLE_NIL) == RETCODE_OK;
+#else
+        return _writer->write(*_data, HANDLE_NIL) == RETCODE_OK;
+#endif
     }
 
     virtual Topic *get_topic() { return _topic;  }
@@ -207,7 +290,7 @@ public:
 
 
 class TheReaderListener : public DataReaderListener {
-  public:
+public:
     virtual void on_requested_incompatible_qos(
         DataReader* reader,
         const RequestedIncompatibleQosStatus& status) {
@@ -226,29 +309,49 @@ class TheReaderListener : public DataReaderListener {
                     reader->get_topicdescription()->get_type_name(),
                     status.current_count, status.current_count_change);
     }
+
+#ifdef OCI_OPENDDS
+    void on_requested_deadline_missed(
+        DataReader*, const RequestedDeadlineMissedStatus&) {}
+    void on_sample_rejected(
+        DataReader*, const SampleRejectedStatus&) {}
+    void on_liveliness_changed(
+        DataReader*, const LivelinessChangedStatus&) {}
+    void on_data_available(DataReader*) {}
+    void on_sample_lost(DataReader*, const SampleLostStatus&) {}
+#endif
 };
 
 template <typename T, typename TSupport, typename TDataReader>
 class Reader : public ReaderBase {
 public:
-    typedef T data_type;
-    typedef TSupport type_support_type;
-    typedef TDataReader data_reader_type;
+#ifdef OCI_OPENDDS
+    typedef StaticTypeSupport<T> TypeSupport;
+#else
+    typedef TSupport TypeSupport;
+#endif
 
-  public:
     virtual ~Reader() {
 
       _reader->set_listener(NULL, 0);
       _topic->set_listener(NULL, 0);
-#if defined(TWINOAKS_COREDX)
-      delete _reader_listener;
-      delete _topic_listener;
+#if defined(TWINOAKS_COREDX) || defined(OCI_OPENDDS)
       delete _data;
 #endif
+#ifdef TWINOAKS_COREDX
+      delete _reader_listener;
+      delete _topic_listener;
+#elif defined OCI_OPENDDS
+      TopicListener_var tl = _topic_listener;
+      tl = 0;
+      DataReaderListener_var rl = _reader_listener;
+      rl = 0;
+#endif
     }
+
     bool initialize(DomainParticipant *participant, const char *topic_name) {
         ReturnCode_t retcode;
-        retcode = TSupport::register_type(participant, TSupport::get_type_name());
+        retcode = TypeSupport::register_type(participant, TypeSupport::get_type_name());
         if ( retcode != RETCODE_OK) {
             fprintf(stderr, "Failed to register type for topic \"%s\" retcode=%d\n", topic_name, (int)retcode);
             return false;
@@ -263,7 +366,7 @@ public:
 
         _topic_listener = new TheTopicListener();
         _topic = participant->create_topic(
-            topic_name, TSupport::get_type_name(),
+            topic_name, TypeSupport::get_type_name(),
             TOPIC_QOS_DEFAULT, _topic_listener,
             INCONSISTENT_TOPIC_STATUS );
         if (_topic == NULL) {
@@ -281,7 +384,11 @@ public:
             return false;
         }
 
+#ifdef OCI_OPENDDS
+        _reader = TDataReader::_narrow(reader);
+#else
         _reader = TDataReader::narrow(reader);
+#endif
         if (_reader == NULL) {
             printf("DataWriter narrow error for topic \"%s\"\n", topic_name);
             return false;
@@ -294,7 +401,7 @@ public:
 
 #if   defined(RTI_CONNEXT_DDS)
         _data = TSupport::create_data();
-#elif defined(TWINOAKS_COREDX)
+#elif defined(TWINOAKS_COREDX) || defined(OCI_OPENDDS)
         _data = new T();
 #endif
 
@@ -308,20 +415,28 @@ public:
 
         do {
 
-#if   defined(RTI_CONNEXT_DDS)
+#if   defined(RTI_CONNEXT_DDS) || defined(OCI_OPENDDS)
             retcode = _reader->take_next_sample(*_data, info);
 #elif defined(TWINOAKS_COREDX)
             retcode = _reader->take_next_sample(_data, &info);
 #endif
 
             if ( (retcode == RETCODE_OK ) && info.valid_data ) {
-                printf("\nRead data for Topic %s", _reader->get_topicdescription()->get_name());
+              printf(
+#if defined(RTI_CONNEXT_DDS) || defined(TWINOAKS_COREDX)
+                "\n"
+#endif
+                "Reading Topic \"%s\", type \"%s\", data:",
+                 _reader->get_topicdescription()->get_name(),
+                 _reader->get_topicdescription()->get_type_name());
                 ++sample_count;
 
 #if   defined(RTI_CONNEXT_DDS)
                 TSupport::print_data(_data);
 #elif defined(TWINOAKS_COREDX)
                 T::print(stdout, _data);
+#elif defined(OCI_OPENDDS)
+                std::cout << '\n' << OpenDDS::DCPS::Printer() << *_data;
 #endif
 
             }
@@ -458,6 +573,7 @@ public:
         else if (strcmp(type_name, "Shape4MutableExplicitID") == 0 ) {
             return new Reader<Shape4MutableExplicitID, Shape4MutableExplicitIDTypeSupport, Shape4MutableExplicitIDDataReader>();
         }
+#ifndef OCI_OPENDDS
         else if (strcmp(type_name, "Shape5Default") == 0 ) {
             return new Reader<Shape5Default, Shape5DefaultTypeSupport, Shape5DefaultDataReader>();
         }
@@ -473,6 +589,7 @@ public:
         else if (strcmp(type_name, "Shape5MutableExplicitID") == 0 ) {
             return new Reader<Shape5MutableExplicitID, Shape5MutableExplicitIDTypeSupport, Shape5MutableExplicitIDDataReader>();
         }
+#endif
 
         //  else
         fprintf(stderr, "create_reader: Unrecognized type: \"%s\"\n", type_name);
@@ -540,6 +657,7 @@ public:
         else if (strcmp(type_name, "Shape4MutableExplicitID") == 0 ) {
             return new Writer<Shape4MutableExplicitID, Shape4Filler<Shape4MutableExplicitID>, Shape4MutableExplicitIDTypeSupport, Shape4MutableExplicitIDDataWriter>();
         }
+#ifndef OCI_OPENDDS
         else if (strcmp(type_name, "Shape5Default") == 0 ) {
             return new Writer<Shape5Default, Shape5Filler<Shape5Default>, Shape5DefaultTypeSupport, Shape5DefaultDataWriter>();
         }
@@ -555,6 +673,7 @@ public:
         else if (strcmp(type_name, "Shape5MutableExplicitID") == 0 ) {
             return new Writer<Shape5MutableExplicitID, Shape5Filler<Shape5MutableExplicitID>, Shape5MutableExplicitIDTypeSupport, Shape5MutableExplicitIDDataWriter>();
         }
+#endif
 
 
         //  else
