@@ -19,14 +19,22 @@
 #elif defined(OCI_OPENDDS)
 #  include "ShapeTypeTypeSupportImpl.h"
 #  include <dds/DdsDcpsC.h>
+#  include <dds/DCPS/Marked_Default_Qos.h>
+#  include <dds/DCPS/PrinterValueWriter.h>
 #  include <dds/DCPS/Service_Participant.h>
 #  include <dds/DCPS/WaitSet.h>
-#  include <dds/DCPS/Marked_Default_Qos.h>
-#  include <dds/DCPS/Printer.h>
-#  include <dds/DCPS/transport/framework/TransportRegistry.h>
 #  include <dds/DCPS/transport/framework/TransportConfig.h>
 #  include <dds/DCPS/transport/framework/TransportInst.h>
+#  include <dds/DCPS/transport/framework/TransportRegistry.h>
 #  include <iostream>
+
+template <typename T>
+void print(std::ostream& out, const T& data)
+{
+    OpenDDS::DCPS::PrinterValueWriter pvw;
+    vwrite(pvw, data);
+    out << '\n' << pvw.str() << '\n';
+}
 
 #else
 #  error No DDS vendor -define was provided. No DDS header files included.  Compilation will fail
@@ -54,7 +62,7 @@ public:
 private:
     typedef typename OpenDDS::DCPS::DDSTraits<T> Traits;
     typedef typename Traits::TypeSupportType TypeSupport;
-    typedef typename Traits::TypeSupportTypeImpl TypeSupportImpl;
+    typedef typename Traits::TypeSupportImplType TypeSupportImpl;
 
     static TypeSupport* instance() {
         static TypeSupportImpl tsimpl;
@@ -150,7 +158,7 @@ template <typename T> class Shape5Filler {
 public:
     static void fill_data(T *data, const char *color, int count) {
         strcpy(data->color, color);
-        data->x = count % 250;;
+        data->x = count % 250;
         data->y = 2*count %250;
         data->shapesize = 30;
         data->angle = (float)((5*count)%360);
@@ -259,7 +267,7 @@ public:
 #elif defined TWINOAKS_COREDX
         T::print(stdout, _data);
 #elif defined OCI_OPENDDS
-        std::cout << '\n' << OpenDDS::DCPS::Printer() << *_data;
+        print(std::cout, *_data);
 #endif
 
 #ifdef TWINOAKS_COREDX
@@ -310,7 +318,8 @@ public:
                     status.current_count, status.current_count_change);
     }
 
-#ifdef OCI_OPENDDS
+    // Some implementations require all overrides to be defined (they are pure virtual in the base class).
+    // For other implementations it won't hurt to have them here
     void on_requested_deadline_missed(
         DataReader*, const RequestedDeadlineMissedStatus&) {}
     void on_sample_rejected(
@@ -319,7 +328,6 @@ public:
         DataReader*, const LivelinessChangedStatus&) {}
     void on_data_available(DataReader*) {}
     void on_sample_lost(DataReader*, const SampleLostStatus&) {}
-#endif
 };
 
 template <typename T, typename TSupport, typename TDataReader>
@@ -423,9 +431,7 @@ public:
 
             if ( (retcode == RETCODE_OK ) && info.valid_data ) {
               printf(
-#if defined(RTI_CONNEXT_DDS) || defined(TWINOAKS_COREDX)
                 "\n"
-#endif
                 "Reading Topic \"%s\", type \"%s\", data:",
                  _reader->get_topicdescription()->get_name(),
                  _reader->get_topicdescription()->get_type_name());
@@ -436,7 +442,7 @@ public:
 #elif defined(TWINOAKS_COREDX)
                 T::print(stdout, _data);
 #elif defined(OCI_OPENDDS)
-                std::cout << '\n' << OpenDDS::DCPS::Printer() << *_data;
+                print(std::cout, *_data);
 #endif
 
             }
@@ -675,9 +681,8 @@ public:
         }
 #endif
 
-
         //  else
-        fprintf(stderr, "create_Writer: Unrecognized type: \"%s\"\n", type_name);
+        fprintf(stderr, "create_writer: Unrecognized type: \"%s\"\n", type_name);
         return NULL;
     }
 };
