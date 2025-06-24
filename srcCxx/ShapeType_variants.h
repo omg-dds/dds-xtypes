@@ -28,14 +28,6 @@
 #  include <dds/DCPS/transport/framework/TransportRegistry.h>
 #  include <iostream>
 
-template <typename T>
-void print(std::ostream& out, const T& data)
-{
-    OpenDDS::DCPS::PrinterValueWriter pvw;
-    vwrite(pvw, data);
-    out << '\n' << pvw.str() << '\n';
-}
-
 #else
 #  error No DDS vendor -define was provided. No DDS header files included.  Compilation will fail
 #  error Please configure the makefile to define one for the following variables: RTI_CONNEXT_DDS, TWINOAKS_COREDX, or OCI_OPENDDS
@@ -45,6 +37,14 @@ using namespace DDS;
 
 #ifdef OCI_OPENDDS
 const StatusMask STATUS_MASK_NONE = OpenDDS::DCPS::NO_STATUS_MASK;
+
+template <typename T>
+void print(std::ostream& out, const T& data)
+{
+    OpenDDS::DCPS::PrinterValueWriter pvw;
+    vwrite(pvw, data);
+    out << '\n' << pvw.str() << '\n';
+}
 
 template <typename T>
 class StaticTypeSupport {
@@ -87,6 +87,9 @@ void strcpy(TAO::String_Manager_T<char>& dst, const char* src)
 {
     dst = src;
 }
+
+#else
+const StatusMask STATUS_MASK_NONE = DDS_STATUS_MASK_NONE;
 #endif
 
 DomainParticipantFactory* get_domain_participant_factory()
@@ -115,7 +118,7 @@ template <typename T> class Shape1Filler {
 public:
     static void fill_data(T *data, const char *color, int count) {
         strcpy(data->color, color);
-        data->x = count % 250;;
+        data->x = count % 250;
         data->y = 2*count %250;
         data->shapesize = 30;
      }
@@ -125,10 +128,10 @@ template <typename T> class Shape2Filler {
 public:
     static void fill_data(T *data, const char *color, int count) {
         strcpy(data->color, color);
-        data->x = count % 250;;
+        data->x = count % 250;
         data->y = 2*count %250;
         data->shapesize = 30;
-        /* data->angle = (float)((5*count)%360); */
+        data->angle = (float)((5*count)%360);
     };
 };
 
@@ -136,7 +139,7 @@ template <typename T> class Shape3Filler {
 public:
     static void fill_data(T *data, const char *color, int count) {
         strcpy(data->color, color);
-        data->x = count % 250;;
+        data->x = count % 250;
         data->y = 2*count %250;
         data->shapesize = 30;
         data->z = 3*count %250;
@@ -147,7 +150,7 @@ template <typename T> class Shape4Filler {
 public:
     static void fill_data(T *data, const char *color, int count) {
         strcpy(data->color, color);
-        data->x = count % 250;;
+        data->x = count % 250;
         data->y = 2*count %250;
         data->shapesize = 30;
     }

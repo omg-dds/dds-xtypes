@@ -6,6 +6,7 @@
  * The possibilities are:
  *    RTI_CONNEXT_DDS
  *    TWINOAKS_COREDX
+ *    OCI_OPENDDS
  */
 
 #include <stdio.h>
@@ -52,16 +53,22 @@ void setup_signal_handler()
 
 DomainParticipant *create_participant(int domain_id) 
 {
+#ifdef OCI_OPENDDS
+    setup_rtps();
+    /* OpenDDS::DCPS::set_DCPS_debug_level(10); */
+    /* OpenDDS::DCPS::Transport_debug_level = 6; */
+#endif
+
     DomainParticipantQos pQos;
-    DomainParticipantFactory::get_instance()->get_default_participant_qos(pQos);
+    get_domain_participant_factory()->get_default_participant_qos(pQos);
  
 #if defined(RTI_CONNEXT_DDS)
     pQos.discovery_config.participant_message_reader_reliability_kind = DDS_RELIABLE_RELIABILITY_QOS;
 #endif
     
-    DomainParticipant *participant = DomainParticipantFactory::get_instance()->create_participant(
+    DomainParticipant *participant = get_domain_participant_factory()->create_participant(
         domain_id, pQos,             
-        NULL /* listener */, DDS_STATUS_MASK_NONE);
+        NULL /* listener */, STATUS_MASK_NONE);
     
     return participant;
 }
@@ -177,7 +184,7 @@ ExitStatus run(int domain_id, const char *topic_name, const char *type_name, boo
 
     /* Delete all entities */
     participant->delete_contained_entities();
-    DomainParticipantFactory::get_instance()->delete_participant(participant);
+    get_domain_participant_factory()->delete_participant(participant);
 
     return exit_status;
 }
