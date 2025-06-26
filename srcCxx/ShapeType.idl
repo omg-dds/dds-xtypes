@@ -177,7 +177,16 @@ struct Shape4MutableExplicitID {
   long y; 
 };  
 
-#ifndef __TAO_IDL // OpenDDS doesn't have struct inheritance
+// Specific to OpenDDS
+#ifdef __TAO_IDL_FEATURES
+#  include __TAO_IDL_FEATURES
+#  if defined TAO_IDL_HAS_STRUCT_INHERITANCE && TAO_IDL_HAS_STRUCT_INHERITANCE
+#    define STRUCT_INHERITANCE TAO_IDL_HAS_STRUCT_INHERITANCE
+#  endif
+#else
+#  define STRUCT_INHERITANCE 1
+#endif
+#if STRUCT_INHERITANCE
 
 /* -------------- Shape5 -----------------------------*/
 struct Shape5Default : Shape1Default {

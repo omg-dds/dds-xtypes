@@ -33,6 +33,13 @@
 #  error Please configure the makefile to define one for the following variables: RTI_CONNEXT_DDS, TWINOAKS_COREDX, or OCI_OPENDDS
 #endif
 
+#ifdef OCI_OPENDDS
+#  include <tao/idl_features.h>
+#  define HAS_SHAPE5_IDL TAO_IDL_HAS_STRUCT_INHERITANCE
+#else
+#  define HAS_SHAPE5_IDL 1
+#endif
+
 using namespace DDS;
 
 #ifdef OCI_OPENDDS
@@ -156,7 +163,7 @@ public:
     }
 };
 
-#ifndef OCI_OPENDDS
+#if HAS_SHAPE5_IDL
 template <typename T> class Shape5Filler {
 public:
     static void fill_data(T *data, const char *color, int count) {
@@ -582,7 +589,7 @@ public:
         else if (strcmp(type_name, "Shape4MutableExplicitID") == 0 ) {
             return new Reader<Shape4MutableExplicitID, Shape4MutableExplicitIDTypeSupport, Shape4MutableExplicitIDDataReader>();
         }
-#ifndef OCI_OPENDDS
+#if HAS_SHAPE5_IDL
         else if (strcmp(type_name, "Shape5Default") == 0 ) {
             return new Reader<Shape5Default, Shape5DefaultTypeSupport, Shape5DefaultDataReader>();
         }
@@ -666,7 +673,7 @@ public:
         else if (strcmp(type_name, "Shape4MutableExplicitID") == 0 ) {
             return new Writer<Shape4MutableExplicitID, Shape4Filler<Shape4MutableExplicitID>, Shape4MutableExplicitIDTypeSupport, Shape4MutableExplicitIDDataWriter>();
         }
-#ifndef OCI_OPENDDS
+#if HAS_SHAPE5_IDL
         else if (strcmp(type_name, "Shape5Default") == 0 ) {
             return new Writer<Shape5Default, Shape5Filler<Shape5Default>, Shape5DefaultTypeSupport, Shape5DefaultDataWriter>();
         }
