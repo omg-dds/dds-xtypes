@@ -177,6 +177,17 @@ struct Shape4MutableExplicitID {
   long y; 
 };  
 
+// Specific to OpenDDS
+#ifdef __TAO_IDL_FEATURES
+#  include __TAO_IDL_FEATURES
+#  if defined TAO_IDL_HAS_STRUCT_INHERITANCE && TAO_IDL_HAS_STRUCT_INHERITANCE
+#    define STRUCT_INHERITANCE TAO_IDL_HAS_STRUCT_INHERITANCE
+#  endif
+#else
+#  define STRUCT_INHERITANCE 1
+#endif
+#if STRUCT_INHERITANCE
+
 /* -------------- Shape5 -----------------------------*/
 struct Shape5Default : Shape1Default {
   float angle;
@@ -202,4 +213,4 @@ struct Shape5MutableExplicitID : Shape1MutableExplicitID {
   @id(40) float angle;
 };  
 
-
+#endif

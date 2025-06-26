@@ -16,12 +16,97 @@
 #    error X-Types support requires CoreDX DDS v4.0 or newer
 #  endif
 
+#elif defined(OCI_OPENDDS)
+#  include "ShapeTypeTypeSupportImpl.h"
+#  include <dds/DdsDcpsC.h>
+#  include <dds/DCPS/Marked_Default_Qos.h>
+#  include <dds/DCPS/PrinterValueWriter.h>
+#  include <dds/DCPS/Service_Participant.h>
+#  include <dds/DCPS/WaitSet.h>
+#  include <dds/DCPS/transport/framework/TransportConfig.h>
+#  include <dds/DCPS/transport/framework/TransportInst.h>
+#  include <dds/DCPS/transport/framework/TransportRegistry.h>
+#  include <iostream>
+
 #else
 #  error No DDS vendor -define was provided. No DDS header files included.  Compilation will fail
-#  error Please configure the makefile to define one for the following variables: RTI_CONNEXT_DDS, TWINOAKS_COREDX, or PRISMTECH_OPENSPLICE
+#  error Please configure the makefile to define one for the following variables: RTI_CONNEXT_DDS, TWINOAKS_COREDX, or OCI_OPENDDS
+#endif
+
+#ifdef OCI_OPENDDS
+#  include <tao/idl_features.h>
+#  define HAS_SHAPE5_IDL TAO_IDL_HAS_STRUCT_INHERITANCE
+#else
+#  define HAS_SHAPE5_IDL 1
 #endif
 
 using namespace DDS;
+
+#ifdef OCI_OPENDDS
+const StatusMask STATUS_MASK_NONE = OpenDDS::DCPS::NO_STATUS_MASK;
+
+template <typename T>
+void print(std::ostream& out, const T& data)
+{
+    OpenDDS::DCPS::PrinterValueWriter pvw;
+    vwrite(pvw, data);
+    out << '\n' << pvw.str() << '\n';
+}
+
+template <typename T>
+class StaticTypeSupport {
+public:
+    static ReturnCode_t register_type(DomainParticipant* participant, const char* type_name)
+    {
+        return instance()->register_type(participant, type_name);
+    }
+
+    static const char* get_type_name()
+    {
+        return instance()->get_type_name();
+    }
+
+private:
+    typedef typename OpenDDS::DCPS::DDSTraits<T> Traits;
+    typedef typename Traits::TypeSupportType TypeSupport;
+    typedef typename Traits::TypeSupportImplType TypeSupportImpl;
+
+    static TypeSupport* instance() {
+        static TypeSupportImpl tsimpl;
+        return dynamic_cast<TypeSupport*>(&tsimpl);
+    }
+};
+
+void setup_rtps()
+{
+    TheServiceParticipant->set_default_discovery(
+        OpenDDS::DCPS::Discovery::DEFAULT_RTPS);
+    OpenDDS::DCPS::TransportConfig_rch transport_config =
+        TheTransportRegistry->create_config("default_rtps_transport_config");
+    OpenDDS::DCPS::TransportInst_rch transport_inst =
+        TheTransportRegistry->create_inst("default_rtps_transport", "rtps_udp");
+    transport_config->instances_.push_back(transport_inst);
+    TheTransportRegistry->global_config(transport_config);
+    OpenDDS::DCPS::DCPS_debug_level = 4;
+}
+
+void strcpy(TAO::String_Manager_T<char>& dst, const char* src)
+{
+    dst = src;
+}
+
+#else
+const StatusMask STATUS_MASK_NONE = DDS_STATUS_MASK_NONE;
+#endif
+
+DomainParticipantFactory* get_domain_participant_factory()
+{
+#ifdef OCI_OPENDDS
+    return TheParticipantFactory;
+#else
+    return DomainParticipantFactory::get_instance();
+#endif
+}
 
 class TheTopicListener : public TopicListener {
 public:
@@ -40,7 +125,7 @@ template <typename T> class Shape1Filler {
 public:
     static void fill_data(T *data, const char *color, int count) {
         strcpy(data->color, color);
-        data->x = count % 250;;
+        data->x = count % 250;
         data->y = 2*count %250;
         data->shapesize = 30;
      }
@@ -50,7 +135,7 @@ template <typename T> class Shape2Filler {
 public:
     static void fill_data(T *data, const char *color, int count) {
         strcpy(data->color, color);
-        data->x = count % 250;;
+        data->x = count % 250;
         data->y = 2*count %250;
         data->shapesize = 30;
         data->angle = (float)((5*count)%360);
@@ -61,7 +146,7 @@ template <typename T> class Shape3Filler {
 public:
     static void fill_data(T *data, const char *color, int count) {
         strcpy(data->color, color);
-        data->x = count % 250;;
+        data->x = count % 250;
         data->y = 2*count %250;
         data->shapesize = 30;
         data->z = 3*count %250;
@@ -72,22 +157,24 @@ template <typename T> class Shape4Filler {
 public:
     static void fill_data(T *data, const char *color, int count) {
         strcpy(data->color, color);
-        data->x = count % 250;;
+        data->x = count % 250;
         data->y = 2*count %250;
         data->shapesize = 30;
     }
 };
 
+#if HAS_SHAPE5_IDL
 template <typename T> class Shape5Filler {
 public:
     static void fill_data(T *data, const char *color, int count) {
         strcpy(data->color, color);
-        data->x = count % 250;;
+        data->x = count % 250;
         data->y = 2*count %250;
         data->shapesize = 30;
         data->angle = (float)((5*count)%360);
     }
 };
+#endif
 
 template <typename TData, typename TDataFiller> class GenericFiller {
 public:
@@ -107,27 +194,33 @@ public:
 template <typename T, typename TFiller, typename TSupport, typename TDataWriter>
 class Writer : public WriterBase {
 public:
-    typedef T data_type;
-    typedef TSupport type_support;
-    typedef TDataWriter data_writer;
+#ifdef OCI_OPENDDS
+    typedef StaticTypeSupport<T> TypeSupport;
+#else
+    typedef TSupport TypeSupport;
+#endif
 
-  public:
     virtual ~Writer() {
       _topic->set_listener(NULL, 0);
-#if defined(TWINOAKS_COREDX)
+#if defined(TWINOAKS_COREDX) || defined(OCI_OPENDDS)
       delete _data;
+#endif
+#ifdef TWINOAKS_COREDX
       delete _topic_listener;
+#elif defined OCI_OPENDDS
+      TopicListener_var tl = _topic_listener;
+      tl = 0;
 #endif
     }
 
     virtual bool initialize(DomainParticipant *participant, const char *topic_name) {
-        ReturnCode_t retcode;
-        retcode = TSupport::register_type(participant, TSupport::get_type_name());
+        ReturnCode_t retcode = TypeSupport::register_type(
+            participant, TypeSupport::get_type_name());
         if ( retcode != RETCODE_OK) {
             fprintf(stderr, "Failed to register type for topic \"%s\" retcode=%d\n", topic_name, (int)retcode);
             return false;
         }
-         
+
         Publisher *publisher = participant->create_publisher(
             PUBLISHER_QOS_DEFAULT, NULL /* listener */, STATUS_MASK_NONE);
         if (publisher == NULL) {
@@ -138,7 +231,7 @@ public:
         _topic_listener = new TheTopicListener();
 
         _topic = participant->create_topic(
-            topic_name, TSupport::get_type_name(),
+            topic_name, TypeSupport::get_type_name(),
             TOPIC_QOS_DEFAULT, _topic_listener,
             INCONSISTENT_TOPIC_STATUS);
         if (_topic == NULL) {
@@ -154,7 +247,11 @@ public:
             return false;
         }
 
+#ifdef OCI_OPENDDS
+        _writer = TDataWriter::_narrow(writer);
+#else
         _writer = TDataWriter::narrow(writer);
+#endif
         if (_writer == NULL) {
             printf("DataWriter narrow error for topic \"%s\"\n", topic_name);
             return false;
@@ -162,8 +259,8 @@ public:
 
 #if defined   RTI_CONNEXT_DDS
         _data = TSupport::create_data();
-#elif defined TWINOAKS_COREDX
-	_data = new T();
+#elif defined TWINOAKS_COREDX || defined OCI_OPENDDS
+        _data = new T();
 #endif
 
         return true;
@@ -171,19 +268,23 @@ public:
 
     virtual bool write_data(const char *color, int count) {
         _shapeFiller.fill_data(_data, color, count);
-        printf("Writing Topic \"%s\", type \"%s\", count %d, data:", 
+        printf("Writing Topic \"%s\", type \"%s\", count %d, data:",
                _writer->get_topic()->get_name(),
                _writer->get_topic()->get_type_name(), count);
-               
+
 #if   defined RTI_CONNEXT_DDS
         TSupport::print_data(_data);
-        return _writer->write(*_data, HANDLE_NIL) == RETCODE_OK;
-
 #elif defined TWINOAKS_COREDX
         T::print(stdout, _data);
-        return _writer->write(_data, HANDLE_NIL) == RETCODE_OK;
+#elif defined OCI_OPENDDS
+        print(std::cout, *_data);
 #endif
 
+#ifdef TWINOAKS_COREDX
+        return _writer->write(_data, HANDLE_NIL) == RETCODE_OK;
+#else
+        return _writer->write(*_data, HANDLE_NIL) == RETCODE_OK;
+#endif
     }
 
     virtual Topic *get_topic() { return _topic;  }
@@ -207,13 +308,13 @@ public:
 
 
 class TheReaderListener : public DataReaderListener {
-  public:    
+public:
     virtual void on_requested_incompatible_qos(
         DataReader* reader,
         const RequestedIncompatibleQosStatus& status) {
            fprintf(stderr, "on_requested_incompatible_qos: topic \"%s\", type \"%s\" last_policy: %d, count: %d, change: %d\n",
                     reader->get_topicdescription()->get_name(),
-                    reader->get_topicdescription()->get_type_name(), 
+                    reader->get_topicdescription()->get_type_name(),
                     status.last_policy_id,
                     status.total_count, status.total_count_change);
     }
@@ -223,37 +324,57 @@ class TheReaderListener : public DataReaderListener {
         const SubscriptionMatchedStatus& status) {
              fprintf(stderr, "on_subscription_matched: topic \"%s\", type \"%s\", count: %d, change: %d\n",
                     reader->get_topicdescription()->get_name(),
-                    reader->get_topicdescription()->get_type_name(), 
+                    reader->get_topicdescription()->get_type_name(),
                     status.current_count, status.current_count_change);
     }
+
+    // Some implementations require all overrides to be defined (they are pure virtual in the base class).
+    // For other implementations it won't hurt to have them here
+    void on_requested_deadline_missed(
+        DataReader*, const RequestedDeadlineMissedStatus&) {}
+    void on_sample_rejected(
+        DataReader*, const SampleRejectedStatus&) {}
+    void on_liveliness_changed(
+        DataReader*, const LivelinessChangedStatus&) {}
+    void on_data_available(DataReader*) {}
+    void on_sample_lost(DataReader*, const SampleLostStatus&) {}
 };
 
 template <typename T, typename TSupport, typename TDataReader>
 class Reader : public ReaderBase {
 public:
-    typedef T data_type;
-    typedef TSupport type_support_type;
-    typedef TDataReader data_reader_type;
+#ifdef OCI_OPENDDS
+    typedef StaticTypeSupport<T> TypeSupport;
+#else
+    typedef TSupport TypeSupport;
+#endif
 
-  public:
     virtual ~Reader() {
 
       _reader->set_listener(NULL, 0);
-      _topic->set_listener(NULL, 0);      
-#if defined(TWINOAKS_COREDX)
-      delete _reader_listener;
-      delete _topic_listener;
+      _topic->set_listener(NULL, 0);
+#if defined(TWINOAKS_COREDX) || defined(OCI_OPENDDS)
       delete _data;
 #endif
+#ifdef TWINOAKS_COREDX
+      delete _reader_listener;
+      delete _topic_listener;
+#elif defined OCI_OPENDDS
+      TopicListener_var tl = _topic_listener;
+      tl = 0;
+      DataReaderListener_var rl = _reader_listener;
+      rl = 0;
+#endif
     }
+
     bool initialize(DomainParticipant *participant, const char *topic_name) {
         ReturnCode_t retcode;
-        retcode = TSupport::register_type(participant, TSupport::get_type_name());
+        retcode = TypeSupport::register_type(participant, TypeSupport::get_type_name());
         if ( retcode != RETCODE_OK) {
             fprintf(stderr, "Failed to register type for topic \"%s\" retcode=%d\n", topic_name, (int)retcode);
             return false;
         }
-         
+
         Subscriber *subscriber = participant->create_subscriber(
             SUBSCRIBER_QOS_DEFAULT, NULL /* listener */, STATUS_MASK_NONE);
         if (subscriber == NULL) {
@@ -263,7 +384,7 @@ public:
 
         _topic_listener = new TheTopicListener();
         _topic = participant->create_topic(
-            topic_name, TSupport::get_type_name(),
+            topic_name, TypeSupport::get_type_name(),
             TOPIC_QOS_DEFAULT, _topic_listener,
             INCONSISTENT_TOPIC_STATUS );
         if (_topic == NULL) {
@@ -271,7 +392,7 @@ public:
             return false;
         }
 
-        
+
         _reader_listener = new TheReaderListener();
         DataReader *reader = subscriber->create_datareader(
             _topic, DATAREADER_QOS_DEFAULT, _reader_listener,
@@ -281,20 +402,24 @@ public:
             return false;
         }
 
+#ifdef OCI_OPENDDS
+        _reader = TDataReader::_narrow(reader);
+#else
         _reader = TDataReader::narrow(reader);
+#endif
         if (_reader == NULL) {
             printf("DataWriter narrow error for topic \"%s\"\n", topic_name);
             return false;
         }
 
-       	ReadCondition  *cond = _reader->create_readcondition( ANY_SAMPLE_STATE, 
-                                            		      ANY_VIEW_STATE, 
-                                            		      ANY_INSTANCE_STATE);
+        ReadCondition  *cond = _reader->create_readcondition( ANY_SAMPLE_STATE,
+                                                              ANY_VIEW_STATE,
+                                                              ANY_INSTANCE_STATE);
         _waitset.attach_condition(cond);
 
 #if   defined(RTI_CONNEXT_DDS)
         _data = TSupport::create_data();
-#elif defined(TWINOAKS_COREDX)
+#elif defined(TWINOAKS_COREDX) || defined(OCI_OPENDDS)
         _data = new T();
 #endif
 
@@ -308,30 +433,36 @@ public:
 
         do {
 
-#if   defined(RTI_CONNEXT_DDS)
+#if   defined(RTI_CONNEXT_DDS) || defined(OCI_OPENDDS)
             retcode = _reader->take_next_sample(*_data, info);
 #elif defined(TWINOAKS_COREDX)
             retcode = _reader->take_next_sample(_data, &info);
 #endif
-  
+
             if ( (retcode == RETCODE_OK ) && info.valid_data ) {
-                printf("\nRead data for Topic %s", _reader->get_topicdescription()->get_name()); 
+              printf(
+                "\n"
+                "Reading Topic \"%s\", type \"%s\", data:",
+                 _reader->get_topicdescription()->get_name(),
+                 _reader->get_topicdescription()->get_type_name());
                 ++sample_count;
 
 #if   defined(RTI_CONNEXT_DDS)
                 TSupport::print_data(_data);
 #elif defined(TWINOAKS_COREDX)
                 T::print(stdout, _data);
+#elif defined(OCI_OPENDDS)
+                print(std::cout, *_data);
 #endif
-                
+
             }
             else if (retcode == RETCODE_NO_DATA) {
                 return sample_count; // all done
             }
         }
         while ( retcode == RETCODE_OK );
-        
-        fprintf(stderr, "Take error %d for Topic %s\n",(int)retcode,  _reader->get_topicdescription()->get_name()); 
+
+        fprintf(stderr, "Take error %d for Topic %s\n",(int)retcode,  _reader->get_topicdescription()->get_name());
         return sample_count; // done reading
     }
 
@@ -356,7 +487,7 @@ class ShapeTypeVariants {
 private:
     static const int TYPE_EXTENSIBILITY_KIND_COUNT=5;
     static const int TYPE_VERSION_COUNT=5;
- 
+
     static const char *extensibility_kind(int i) {
         static const char *TYPE_EXTENSIBILITY_KIND[5] = {
             "Default",
@@ -366,13 +497,13 @@ private:
             "MutableExplicitID"
 
         };
-        
+
         if ( i<0 || i >= 5) {
             return NULL;
         }
         return TYPE_EXTENSIBILITY_KIND[i];
     }
-    
+
 public:
     static void print_type_variants(FILE *fp) {
         for (int version=1; version<= TYPE_VERSION_COUNT; ++version) {
@@ -382,7 +513,7 @@ public:
             fprintf(fp, "\n");
         }
     }
-    
+
     static bool check_type_variant(const char *type_name) {
         char typename_buffer[64];
         for (int version=1; version<= TYPE_VERSION_COUNT; ++version) {
@@ -392,10 +523,10 @@ public:
                     return true;
                 }
             }
-        }     
+        }
         return false;
     }
-    
+
 
     static ReaderBase *create_reader(const char *type_name) {
         if ( strcmp(type_name, "Shape1Default") == 0 ) {
@@ -458,6 +589,7 @@ public:
         else if (strcmp(type_name, "Shape4MutableExplicitID") == 0 ) {
             return new Reader<Shape4MutableExplicitID, Shape4MutableExplicitIDTypeSupport, Shape4MutableExplicitIDDataReader>();
         }
+#if HAS_SHAPE5_IDL
         else if (strcmp(type_name, "Shape5Default") == 0 ) {
             return new Reader<Shape5Default, Shape5DefaultTypeSupport, Shape5DefaultDataReader>();
         }
@@ -473,18 +605,19 @@ public:
         else if (strcmp(type_name, "Shape5MutableExplicitID") == 0 ) {
             return new Reader<Shape5MutableExplicitID, Shape5MutableExplicitIDTypeSupport, Shape5MutableExplicitIDDataReader>();
         }
+#endif
 
-        //  else 
+        //  else
         fprintf(stderr, "create_reader: Unrecognized type: \"%s\"\n", type_name);
         return NULL;
     }
 
     static WriterBase *create_writer(const char *type_name) {
         if ( strcmp(type_name, "Shape1Default") == 0 ) {
-	  return new Writer<Shape1Default, Shape1Filler<Shape1Default>, Shape1DefaultTypeSupport, Shape1DefaultDataWriter>();
+          return new Writer<Shape1Default, Shape1Filler<Shape1Default>, Shape1DefaultTypeSupport, Shape1DefaultDataWriter>();
         }
         else if ( strcmp(type_name, "Shape1Final") == 0 ) {
-	  return new Writer<Shape1Final, Shape1Filler<Shape1Final>, Shape1FinalTypeSupport, Shape1FinalDataWriter>();
+          return new Writer<Shape1Final, Shape1Filler<Shape1Final>, Shape1FinalTypeSupport, Shape1FinalDataWriter>();
         }
         else if ( strcmp(type_name, "Shape1Extensible") == 0 ) {
             return new Writer<Shape1Extensible, Shape1Filler<Shape1Extensible>, Shape1ExtensibleTypeSupport, Shape1ExtensibleDataWriter>();
@@ -540,6 +673,7 @@ public:
         else if (strcmp(type_name, "Shape4MutableExplicitID") == 0 ) {
             return new Writer<Shape4MutableExplicitID, Shape4Filler<Shape4MutableExplicitID>, Shape4MutableExplicitIDTypeSupport, Shape4MutableExplicitIDDataWriter>();
         }
+#if HAS_SHAPE5_IDL
         else if (strcmp(type_name, "Shape5Default") == 0 ) {
             return new Writer<Shape5Default, Shape5Filler<Shape5Default>, Shape5DefaultTypeSupport, Shape5DefaultDataWriter>();
         }
@@ -555,10 +689,10 @@ public:
         else if (strcmp(type_name, "Shape5MutableExplicitID") == 0 ) {
             return new Writer<Shape5MutableExplicitID, Shape5Filler<Shape5MutableExplicitID>, Shape5MutableExplicitIDTypeSupport, Shape5MutableExplicitIDDataWriter>();
         }
+#endif
 
-
-        //  else 
-        fprintf(stderr, "create_Writer: Unrecognized type: \"%s\"\n", type_name);
+        //  else
+        fprintf(stderr, "create_writer: Unrecognized type: \"%s\"\n", type_name);
         return NULL;
     }
 };
