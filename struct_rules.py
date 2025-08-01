@@ -1,4 +1,5 @@
-from test_util import ReturnCode, log_message
+from rtps_test_utilities import ReturnCode
+import test_suite_functions as tsf
 
 # FIRST: check a bunch of 'OK' combinations.
 #        these don't really 'prove' anything
@@ -9,65 +10,338 @@ from test_util import ReturnCode, log_message
 #       that a structure shouldn't be assignable.
 
     # TEST NAME (unique) : [ xml_filename, [PARAMS_1,  PARAMS_2, ... ],    [ EXPECTED OUTPUT_1, EXPECTED_OUTPUT_2, ... ] ]
-    
+
 
 xtypes_v2_struct_test_suite = {
 
-    # PRIMITIVES - struct primitive members assignable 
-    'primitives_struct_final'      : [ 'xml/types/primitives.xml', 'xml/data/struct_primitives.xml', ['-P -y Test::struct_primitives_final',      '-S -y Test::struct_primitives_final'     ], [ReturnCode.OK, ReturnCode.OK] ],
-    'primitives_struct_appendable' : [ 'xml/types/primitives.xml', 'xml/data/struct_primitives.xml', ['-P -y Test::struct_primitives_appendable', '-S -y Test::struct_primitives_appendable'], [ReturnCode.OK, ReturnCode.OK] ],
-    'primitives_struct_mutable'    : [ 'xml/types/primitives.xml', 'xml/data/struct_primitives.xml', ['-P -y Test::struct_primitives_mutable',    '-S -y Test::struct_primitives_mutable'   ], [ReturnCode.OK, ReturnCode.OK] ],
+    'primitives_struct_final' : {
+        'common_args' : ['-X xml/types/primitives.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::struct_primitives_final -V xml/data/struct_primitives.xml -J json/data/struct_primitives.json',
+                  'sub-exe -S -t test -y Test::struct_primitives_final -V xml/data/struct_primitives.xml -J json/data/struct_primitives.json'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'primitives_struct_appendable' : {
+        'common_args' : ['-X xml/types/primitives.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::struct_primitives_appendable -V xml/data/struct_primitives.xml -J json/data/struct_primitives.json',
+                  'sub-exe -S -t test -y Test::struct_primitives_appendable -V xml/data/struct_primitives.xml -J json/data/struct_primitives.json'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'primitives_struct_mutable': {
+        'common_args': ['-X xml/types/primitives.xml'],
+        'apps': ['pub-exe -P -t test -y Test::struct_primitives_mutable -V xml/data/struct_primitives.xml -J json/data/struct_primitives.json',
+                 'sub-exe -S -t test -y Test::struct_primitives_mutable -V xml/data/struct_primitives.xml -J json/data/struct_primitives.json'],
+        'expected_codes': [ReturnCode.OK, ReturnCode.OK],
+        'check_function': tsf.data_is_correct,
+        'title': '',
+        'description': ''
+    },
+    'struct_final_appendable': {
+        'common_args': ['-X xml/types/primitives.xml'],
+        'apps': ['pub-exe -P -t test -y Test::struct_primitives_final -V xml/data/struct_primitives.xml -J json/data/struct_primitives.json',
+                 'sub-exe -S -t test -y Test::struct_primitives_appendable -V xml/data/struct_primitives.xml -J json/data/struct_primitives.json'],
+        'expected_codes': [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
+        'check_function': tsf.data_is_correct,
+        'title': '',
+        'description': ''
+    },
+    'struct_final_mutable': {
+        'common_args': ['-X xml/types/primitives.xml'],
+        'apps': ['pub-exe -P -t test -y Test::struct_primitives_final -V xml/data/struct_primitives.xml -J json/data/struct_primitives.json',
+                 'sub-exe -S -t test -y Test::struct_primitives_mutable -V xml/data/struct_primitives.xml -J json/data/struct_primitives.json'],
+        'expected_codes': [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
+        'check_function': tsf.data_is_correct,
+        'title': '',
+        'description': ''
+    },
+    'struct_appendable_final': {
+        'common_args': ['-X xml/types/primitives.xml'],
+        'apps': ['pub-exe -P -t test -y Test::struct_primitives_appendable -V xml/data/struct_primitives.xml -J json/data/struct_primitives.json',
+                 'sub-exe -S -t test -y Test::struct_primitives_final -V xml/data/struct_primitives.xml -J json/data/struct_primitives.json'],
+        'expected_codes': [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
+        'check_function': tsf.data_is_correct,
+        'title': '',
+        'description': ''
+    },
+    'struct_appendable_mutable': {
+        'common_args': ['-X xml/types/primitives.xml'],
+        'apps': ['pub-exe -P -t test -y Test::struct_primitives_appendable -V xml/data/struct_primitives.xml -J json/data/struct_primitives.json',
+                 'sub-exe -S -t test -y Test::struct_primitives_mutable -V xml/data/struct_primitives.xml -J json/data/struct_primitives.json'],
+        'expected_codes': [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
+        'check_function': tsf.data_is_correct,
+        'title': '',
+        'description': ''
+    },
+    'struct_mutable_final': {
+        'common_args': ['-X xml/types/primitives.xml'],
+        'apps': ['pub-exe -P -t test -y Test::struct_primitives_mutable -V xml/data/struct_primitives.xml -J json/data/struct_primitives.json',
+                 'sub-exe -S -t test -y Test::struct_primitives_final -V xml/data/struct_primitives.xml -J json/data/struct_primitives.json'],
+        'expected_codes': [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
+        'check_function': tsf.data_is_correct,
+        'title': '',
+        'description': ''
+    },
+    'struct_mutable_appendable': {
+        'common_args': ['-X xml/types/primitives.xml'],
+        'apps': ['pub-exe -P -t test -y Test::struct_primitives_mutable -V xml/data/struct_primitives.xml -J json/data/struct_primitives.json',
+                 'sub-exe -S -t test -y Test::struct_primitives_appendable -V xml/data/struct_primitives.xml -J json/data/struct_primitives.json'],
+        'expected_codes': [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
+        'check_function': tsf.data_is_correct,
+        'title': '',
+        'description': ''
+    },
+    'struct_different_ids_ok': {
+        'common_args': ['-X xml/types/struct_names.xml'],
+        'apps': ['pub-exe -P -t test -y Test::struct_1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
+                 'sub-exe -S -t test -y Test::struct_2 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json'],
+        'expected_codes': [ReturnCode.OK, ReturnCode.OK],
+        'check_function': tsf.data_is_correct,
+        'title': '',
+        'description': ''
+    },
+    'struct_different_ids': {
+        'common_args': ['-X xml/types/struct_names.xml'],
+        'apps': ['pub-exe -P -t test -y Test::struct_1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
+                 'sub-exe -S -t test -y Test::struct_2 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --ignore-member-names f'
+        ],
+        'expected_codes': [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
+        'check_function': tsf.data_is_correct,
+        'title': '',
+        'description': ''
+    },
+    'struct_different_names_ok': {
+        'common_args': ['-X xml/types/struct_names.xml'],
+        'apps': ['pub-exe -P -t test -y Test::struct_3 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
+                 'sub-exe -S -t test -y Test::struct_4 -V xml/data/struct_1.xml -J json/data/struct_num_x2.json'],
+        'expected_codes': [ReturnCode.OK, ReturnCode.OK],
+        'check_function': tsf.data_is_correct,
+        'title': '',
+        'description': ''
+    },
+    'struct_different_names': {
+        'common_args': ['-X xml/types/struct_names.xml'],
+        'apps': ['pub-exe -P -t test -y Test::struct_3 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
+                 'sub-exe -S -t test -y Test::struct_4 -V xml/data/struct_1.xml -J json/data/struct_num_x2.json --ignore-member-names f'
+        ],
+        'expected_codes': [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
+        'check_function': tsf.data_is_correct,
+        'title': '',
+        'description': ''
+    },
+    'struct_no_common_ids': {
+        'common_args': ['-X xml/types/struct_names.xml'],
+        'apps': ['pub-exe -P -t test -y Test::struct_5 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
+                 'sub-exe -S -t test -y Test::struct_6 -V xml/data/struct_1.xml -J json/data/struct_num_x2.json'],
+        'expected_codes': [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
+        'check_function': tsf.data_is_correct,
+        'title': '',
+        'description': ''
+    },
+    'struct_members_assignable_1': {
+        'common_args': ['-X xml/types/struct_names.xml'],
+        'apps': ['pub-exe -P -t test -y Test::struct_primitive_uint8 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
+                 'sub-exe -S -t test -y Test::struct_primitive_uint16 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json'],
+        'expected_codes': [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
+        'check_function': tsf.data_is_correct,
+        'title': '',
+        'description': ''
+    },
+    'struct_grok_1': {
+        'common_args': ['-X xml/types/struct_names.xml'],
+        'apps': ['pub-exe -P -t test -y Test::struct_grok_1 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x2.json',
+                 'sub-exe -S -t test -y Test::struct_grok_2 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json'],
+        'expected_codes': [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
+        'check_function': tsf.data_is_correct,
+        'title': '',
+        'description': ''
+    },
+    'struct_grok_2': {
+        'common_args': ['-X xml/types/struct_names.xml'],
+        'apps': ['pub-exe -P -t test -y Test::struct_grok_2 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
+                 'sub-exe -S -t test -y Test::struct_grok_1 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x2.json'],
+        'expected_codes': [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
+        'check_function': tsf.data_is_correct,
+        'title': '',
+        'description': ''
+    },
+    'struct_key_1': {
+        'common_args': ['-X xml/types/struct_names.xml'],
+        'apps': ['pub-exe -P -t test -y Test::struct_key_1 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x2.json',
+                 'sub-exe -S -t test -y Test::struct_key_2 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json'],
+        'expected_codes': [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
+        'check_function': tsf.data_is_correct,
+        'title': '',
+        'description': ''
+    },
+    'struct_key_2': {
+        'common_args': ['-X xml/types/struct_names.xml'],
+        'apps': ['pub-exe -P -t test -y Test::struct_key_2 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
+                 'sub-exe -S -t test -y Test::struct_key_1 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x2.json'],
+        'expected_codes': [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
+        'check_function': tsf.data_is_correct,
+        'title': '',
+        'description': ''
+    },
+    'struct_key_string_1': {
+        'common_args': ['-X xml/types/struct_names.xml'],
+        'apps': ['pub-exe -P -t test -y Test::struct_key_string_1 -V xml/data/struct_str.xml -J json/data/struct_str_x1.json',
+                 'sub-exe -S -t test -y Test::struct_key_string_2 -V xml/data/struct_str.xml -J json/data/struct_str_x1.json'],
+        'expected_codes': [ReturnCode.OK, ReturnCode.OK],
+        'check_function': tsf.data_is_correct,
+        'title': '',
+        'description': ''
+    },
+    'struct_key_string_2': {
+        'common_args': ['-X xml/types/struct_names.xml'],
+        'apps': ['pub-exe -P -t test -y Test::struct_key_string_1 -V xml/data/struct_str.xml -J json/data/struct_str_x1.json',
+                 'sub-exe -S -t test -y Test::struct_key_string_1 -V xml/data/struct_str.xml -J json/data/struct_str_x1.json'],
+        'expected_codes': [ReturnCode.OK, ReturnCode.OK],
+        'check_function': tsf.data_is_correct,
+        'title': '',
+        'description': ''
+    },
+    'struct_key_string_3': {
+        'common_args': ['-X xml/types/struct_names.xml'],
+        'apps': ['pub-exe -P -t test -y Test::struct_key_string_2 -V xml/data/struct_str.xml -J json/data/struct_str_x1.json',
+                 'sub-exe -S -t test -y Test::struct_key_string_1 -V xml/data/struct_str.xml -J json/data/struct_str_x1.json'],
+        'expected_codes': [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
+        'check_function': tsf.data_is_correct,
+        'title': '',
+        'description': ''
+    },
+    'struct_key_enum_1': {
+        'common_args': ['-X xml/types/struct_names.xml'],
+        'apps': ['pub-exe -P -t test -y Test::struct_key_enum_1 -V xml/data/struct_enum.xml -J json/data/struct_enum.json',
+                 'sub-exe -S -t test -y Test::struct_key_enum_2 -V xml/data/struct_enum.xml -J json/data/struct_enum.json'],
+        'expected_codes': [ReturnCode.OK, ReturnCode.OK],
+        'check_function': tsf.data_is_correct,
+        'title': '',
+        'description': ''
+    },
+    'struct_key_enum_2': {
+        'common_args': ['-X xml/types/struct_names.xml'],
+        'apps': ['pub-exe -P -t test -y Test::struct_key_enum_2 -V xml/data/struct_enum.xml -J json/data/struct_enum.json',
+                 'sub-exe -S -t test -y Test::struct_key_enum_1 -V xml/data/struct_enum.xml -J json/data/struct_enum.json'],
+        'expected_codes': [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
+        'check_function': tsf.data_is_correct,
+        'title': '',
+        'description': ''
+    },
+    'struct_key_seq_1': {
+        'common_args': ['-X xml/types/struct_names.xml'],
+        'apps': ['pub-exe -P -t test -y Test::struct_key_seq_1 -V xml/data/struct_seq.xml -J json/data/struct_seq.json',
+                 'sub-exe -S -t test -y Test::struct_key_seq_2 -V xml/data/struct_seq.xml -J json/data/struct_seq.json'],
+        'expected_codes': [ReturnCode.OK, ReturnCode.OK],
+        'check_function': tsf.data_is_correct,
+        'title': '',
+        'description': ''
+    },
+    'struct_key_seq_2': {
+        'common_args': ['-X xml/types/struct_names.xml'],
+        'apps': ['pub-exe -P -t test -y Test::struct_key_seq_2 -V xml/data/struct_seq.xml -J json/data/struct_seq.json',
+                 'sub-exe -S -t test -y Test::struct_key_seq_1 -V xml/data/struct_seq.xml -J json/data/struct_seq.json'],
+        'expected_codes': [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
+        'check_function': tsf.data_is_correct,
+        'title': '',
+        'description': ''
+    },
+    'struct_key_struct_1': {
+        'common_args': ['-X xml/types/struct_names.xml'],
+        'apps': ['pub-exe -P -t test -y Test::struct_key_struct_1 -V xml/data/struct_key.xml -J json/data/struct_str_key.json',
+                 'sub-exe -S -t test -y Test::struct_key_struct_2 -V xml/data/struct_key.xml -J json/data/struct_str_key.json'],
+        'expected_codes': [ReturnCode.OK, ReturnCode.OK],
+        'check_function': tsf.data_is_correct,
+        'title': '',
+        'description': ''
+    },
+    'struct_key_struct_2': {
+        'common_args': ['-X xml/types/struct_names.xml'],
+        'apps': ['pub-exe -P -t test -y Test::struct_key_struct_2 -V xml/data/struct_key.xml -J json/data/struct_str_key.json',
+                 'sub-exe -S -t test -y Test::struct_key_struct_1 -V xml/data/struct_key.xml -J json/data/struct_str_key.json'],
+        'expected_codes': [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
+        'check_function': tsf.data_is_correct,
+        'title': '',
+        'description': ''
+    },
+    'struct_key_union_1': {
+        'common_args': ['-X xml/types/struct_names.xml'],
+        'apps': ['pub-exe -P -t test -y Test::struct_key_union_1 -V xml/data/struct_key_union.xml -J json/data/struct_key_union.json',
+                 'sub-exe -S -t test -y Test::struct_key_union_2 -V xml/data/struct_key_union.xml -J json/data/struct_key_union.json'],
+        'expected_codes': [ReturnCode.OK, ReturnCode.OK],
+        'check_function': tsf.data_is_correct,
+        'title': '',
+        'description': ''
+    },
+    'struct_key_union_2': {
+        'common_args': ['-X xml/types/struct_names.xml'],
+        'apps': ['pub-exe -P -t test -y Test::struct_key_union_2 -V xml/data/struct_key_union.xml -J json/data/struct_key_union.json',
+                 'sub-exe -S -t test -y Test::struct_key_union_1 -V xml/data/struct_key_union.xml -J json/data/struct_key_union.json'],
+        'expected_codes': [ReturnCode.OK, ReturnCode.OK],
+        'check_function': tsf.data_is_correct,
+        'title': '',
+        'description': ''
+    },
 
-    # EXTENSIBILITY MUST MATCH:
-    'struct_final_appendable'      : [ 'xml/types/primitives.xml', 'xml/data/struct_primitives.xml', ['-P -y Test::struct_primitives_final',      '-S -y Test::struct_primitives_appendable'], [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC] ],
-    'struct_final_mutable'         : [ 'xml/types/primitives.xml', 'xml/data/struct_primitives.xml', ['-P -y Test::struct_primitives_final',      '-S -y Test::struct_primitives_mutable'],    [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC] ],
-    'struct_appendable_final'      : [ 'xml/types/primitives.xml', 'xml/data/struct_primitives.xml', ['-P -y Test::struct_primitives_appendable', '-S -y Test::struct_primitives_final'],      [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC] ],
-    'struct_appendable_mutable'    : [ 'xml/types/primitives.xml', 'xml/data/struct_primitives.xml', ['-P -y Test::struct_primitives_appendable', '-S -y Test::struct_primitives_mutable'],    [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC] ],
-    'struct_mutable_final'         : [ 'xml/types/primitives.xml', 'xml/data/struct_primitives.xml', ['-P -y Test::struct_primitives_mutable',    '-S -y Test::struct_primitives_final'],      [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC] ],
-    'struct_mutable_appendable'    : [ 'xml/types/primitives.xml', 'xml/data/struct_primitives.xml', ['-P -y Test::struct_primitives_mutable',    '-S -y Test::struct_primitives_appendable'], [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC] ],
+    # # PRIMITIVES - struct primitive members assignable
+    # 'primitives_struct_final'      : [ 'xml/types/primitives.xml', 'xml/data/struct_primitives.xml', ['-P -y Test::struct_primitives_final',      '-S -y Test::struct_primitives_final'     ], [ReturnCode.OK, ReturnCode.OK] ],
+    # 'primitives_struct_appendable' : [ 'xml/types/primitives.xml', 'xml/data/struct_primitives.xml', ['-P -y Test::struct_primitives_appendable', '-S -y Test::struct_primitives_appendable'], [ReturnCode.OK, ReturnCode.OK] ],
+    # 'primitives_struct_mutable'    : [ 'xml/types/primitives.xml', 'xml/data/struct_primitives.xml', ['-P -y Test::struct_primitives_mutable',    '-S -y Test::struct_primitives_mutable'   ], [ReturnCode.OK, ReturnCode.OK] ],
 
-    # IF MEMBER NAME MATCHES, MEMBER ID MUST MATCH [can be bypassed with TypeConsistency.ignore_member_names] 
-    'struct_different_ids_ok'      : [ 'xml/types/struct_names.xml', 'xml/data/struct_1.xml', ['-P -y Test::struct_1',      '-S -y Test::struct_2'],                                  [ReturnCode.OK, ReturnCode.OK] ],
-    'struct_different_ids'         : [ 'xml/types/struct_names.xml', 'xml/data/struct_1.xml', ['-P -y Test::struct_1',      '-S -y Test::struct_2 --check-member-names'],             [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC] ],
-    
-    # IF MEMBER ID MATCHES, MEMBER NAME MUST MATCH [can be bypassed with TypeConsistency.ignore_member_names]
-    'struct_different_names_ok'    : [ 'xml/types/struct_names.xml', 'xml/data/struct_1.xml', ['-P -y Test::struct_3',      '-S -y Test::struct_4'],                                  [ReturnCode.OK, ReturnCode.OK] ],
-    'struct_different_names'       : [ 'xml/types/struct_names.xml', 'xml/data/struct_1.xml', ['-P -y Test::struct_3',      '-S -y Test::struct_4 --check-member-names'],             [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC] ],
+    # # EXTENSIBILITY MUST MATCH:
+    # 'struct_final_appendable'      : [ 'xml/types/primitives.xml', 'xml/data/struct_primitives.xml', ['-P -y Test::struct_primitives_final',      '-S -y Test::struct_primitives_appendable'], [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC] ],
+    # 'struct_final_mutable'         : [ 'xml/types/primitives.xml', 'xml/data/struct_primitives.xml', ['-P -y Test::struct_primitives_final',      '-S -y Test::struct_primitives_mutable'],    [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC] ],
+    # 'struct_appendable_final'      : [ 'xml/types/primitives.xml', 'xml/data/struct_primitives.xml', ['-P -y Test::struct_primitives_appendable', '-S -y Test::struct_primitives_final'],      [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC] ],
+    # 'struct_appendable_mutable'    : [ 'xml/types/primitives.xml', 'xml/data/struct_primitives.xml', ['-P -y Test::struct_primitives_appendable', '-S -y Test::struct_primitives_mutable'],    [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC] ],
+    # 'struct_mutable_final'         : [ 'xml/types/primitives.xml', 'xml/data/struct_primitives.xml', ['-P -y Test::struct_primitives_mutable',    '-S -y Test::struct_primitives_final'],      [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC] ],
+    # 'struct_mutable_appendable'    : [ 'xml/types/primitives.xml', 'xml/data/struct_primitives.xml', ['-P -y Test::struct_primitives_mutable',    '-S -y Test::struct_primitives_appendable'], [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC] ],
 
-    # AT LEAST ONE MEMBER IN COMMON [ same id ]
-    'struct_no_common_ids'         : [ 'xml/types/struct_names.xml', 'xml/data/struct_1.xml', ['-P -y Test::struct_5',      '-S -y Test::struct_6'],                                  [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC] ],
-    
-    # MEMBERS WITH MATCHING ID ARE ASSIGNABLE [KeyErased]
-    'struct_members_assignable_1'  : [ 'xml/types/struct_names.xml', 'xml/data/struct_1.xml', ['-P -y Test::struct_primitive_uint8',      '-S -y Test::struct_primitive_uint16'],     [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC] ],
+    # # IF MEMBER NAME MATCHES, MEMBER ID MUST MATCH [can be bypassed with TypeConsistency.ignore_member_names]
+    # 'struct_different_ids_ok'      : [ 'xml/types/struct_names.xml', 'xml/data/struct_1.xml', ['-P -y Test::struct_1',      '-S -y Test::struct_2'],                                  [ReturnCode.OK, ReturnCode.OK] ],
+    # 'struct_different_ids'         : [ 'xml/types/struct_names.xml', 'xml/data/struct_1.xml', ['-P -y Test::struct_1',      '-S -y Test::struct_2 --check-member-names'],             [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC] ],
 
-    # !OPTIONAL + MUST_UNDERSTAND MEMBER PRESENT IN ONE TYPE MUST APPEAR IN OTHER TYPE
-    'struct_grok_1'                : [ 'xml/types/struct_names.xml', 'xml/data/struct_1.xml', ['-P -y Test::struct_grok_1', '-S -y Test::struct_grok_2'],                             [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC] ],
-    'struct_grok_2'                : [ 'xml/types/struct_names.xml', 'xml/data/struct_1.xml', ['-P -y Test::struct_grok_2', '-S -y Test::struct_grok_1'],                             [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC] ],
+    # # IF MEMBER ID MATCHES, MEMBER NAME MUST MATCH [can be bypassed with TypeConsistency.ignore_member_names]
+    # 'struct_different_names_ok'    : [ 'xml/types/struct_names.xml', 'xml/data/struct_1.xml', ['-P -y Test::struct_3',      '-S -y Test::struct_4'],                                  [ReturnCode.OK, ReturnCode.OK] ],
+    # 'struct_different_names'       : [ 'xml/types/struct_names.xml', 'xml/data/struct_1.xml', ['-P -y Test::struct_3',      '-S -y Test::struct_4 --check-member-names'],             [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC] ],
 
-    # KEY MEMBERS PRESENT IN ONE TYPE APPEAR IN THE OTHER
-    'struct_key_1'                 : [ 'xml/types/struct_names.xml', 'xml/data/struct_1.xml', ['-P -y Test::struct_key_1', '-S -y Test::struct_key_2'],                               [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC] ],
-    'struct_key_2'                 : [ 'xml/types/struct_names.xml', 'xml/data/struct_1.xml', ['-P -y Test::struct_key_2', '-S -y Test::struct_key_1'],                               [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC] ],
+    # # AT LEAST ONE MEMBER IN COMMON [ same id ]
+    # 'struct_no_common_ids'         : [ 'xml/types/struct_names.xml', 'xml/data/struct_1.xml', ['-P -y Test::struct_5',      '-S -y Test::struct_6'],                                  [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC] ],
 
-    # STRING KEY MEMBER IN T2 BOUND CHECK [ not bypassed with TypeConsistency.ignore_string_bounds ]
-    'struct_key_string_1'          : [ 'xml/types/struct_names.xml', 'xml/data/struct_str.xml', ['-P -y Test::struct_key_string_1', '-S -y Test::struct_key_string_2'],                 [ReturnCode.OK, ReturnCode.OK] ],
-    'struct_key_string_2'          : [ 'xml/types/struct_names.xml', 'xml/data/struct_str.xml', ['-P -y Test::struct_key_string_1', '-S -y Test::struct_key_string_1'],                 [ReturnCode.OK, ReturnCode.OK] ],
-    'struct_key_string_3'          : [ 'xml/types/struct_names.xml', 'xml/data/struct_str.xml', ['-P -y Test::struct_key_string_2', '-S -y Test::struct_key_string_1'],                 [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC] ],
+    # # MEMBERS WITH MATCHING ID ARE ASSIGNABLE [KeyErased]
+    # 'struct_members_assignable_1'  : [ 'xml/types/struct_names.xml', 'xml/data/struct_1.xml', ['-P -y Test::struct_primitive_uint8',      '-S -y Test::struct_primitive_uint16'],     [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC] ],
 
-    # ENUM KEY MEMBER IN T2 HAVE SAME CONSTANTS
-    'struct_key_enum_1'            : [ 'xml/types/struct_names.xml', 'xml/data/struct_enum.xml', ['-P -y Test::struct_key_enum_1', '-S -y Test::struct_key_enum_2'],                     [ReturnCode.OK, ReturnCode.OK] ],
-    'struct_key_enum_2'            : [ 'xml/types/struct_names.xml', 'xml/data/struct_enum.xml', ['-P -y Test::struct_key_enum_2', '-S -y Test::struct_key_enum_1'],                     [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC] ],
+    # # !OPTIONAL + MUST_UNDERSTAND MEMBER PRESENT IN ONE TYPE MUST APPEAR IN OTHER TYPE
+    # 'struct_grok_1'                : [ 'xml/types/struct_names.xml', 'xml/data/struct_1.xml', ['-P -y Test::struct_grok_1', '-S -y Test::struct_grok_2'],                             [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC] ],
+    # 'struct_grok_2'                : [ 'xml/types/struct_names.xml', 'xml/data/struct_1.xml', ['-P -y Test::struct_grok_2', '-S -y Test::struct_grok_1'],                             [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC] ],
 
-    # SEQ KEY MEMBER IN T2 BOUND CHECK [ not bypassed with TypeConsistency.ignore_sequence_bounds ]
-    'struct_key_seq_1'             : [ 'xml/types/struct_names.xml', 'xml/data/struct_seq.xml', ['-P -y Test::struct_key_seq_1', '-S -y Test::struct_key_seq_2'],                       [ReturnCode.OK, ReturnCode.OK] ],
-    'struct_key_seq_2'             : [ 'xml/types/struct_names.xml', 'xml/data/struct_seq.xml', ['-P -y Test::struct_key_seq_2', '-S -y Test::struct_key_seq_1'],                       [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC] ],
-     
-    # STRUCT KEY MEMBER IN T2 CHECK KeyHolder(is-assignable-from)
-    'struct_key_struct_1'          : [ 'xml/types/struct_names.xml', 'xml/data/struct_key.xml', ['-P -y Test::struct_key_struct_1', '-S -y Test::struct_key_struct_2'],                 [ReturnCode.OK, ReturnCode.OK] ],
-    'struct_key_struct_2'          : [ 'xml/types/struct_names.xml', 'xml/data/struct_key.xml', ['-P -y Test::struct_key_struct_2', '-S -y Test::struct_key_struct_1'],                 [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC] ],
-    
-    # UNION KEY MEMBER IN T2 CHECK KeyHolder(is-assignable-from)
-    'struct_key_union_1'           : [ 'xml/types/struct_names.xml', 'xml/data/struct_key_union.xml', ['-P -y Test::struct_key_union_1', '-S -y Test::struct_key_union_2'],                   [ReturnCode.OK, ReturnCode.OK] ],
-    'struct_key_union_2'           : [ 'xml/types/struct_names.xml', 'xml/data/struct_key_union.xml', ['-P -y Test::struct_key_union_2', '-S -y Test::struct_key_union_1'],                   [ReturnCode.OK, ReturnCode.OK] ],
+    # # KEY MEMBERS PRESENT IN ONE TYPE APPEAR IN THE OTHER
+    # 'struct_key_1'                 : [ 'xml/types/struct_names.xml', 'xml/data/struct_1.xml', ['-P -y Test::struct_key_1', '-S -y Test::struct_key_2'],                               [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC] ],
+    # 'struct_key_2'                 : [ 'xml/types/struct_names.xml', 'xml/data/struct_1.xml', ['-P -y Test::struct_key_2', '-S -y Test::struct_key_1'],                               [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC] ],
+
+    # # STRING KEY MEMBER IN T2 BOUND CHECK [ not bypassed with TypeConsistency.ignore_string_bounds ]
+    # 'struct_key_string_1'          : [ 'xml/types/struct_names.xml', 'xml/data/struct_str.xml', ['-P -y Test::struct_key_string_1', '-S -y Test::struct_key_string_2'],                 [ReturnCode.OK, ReturnCode.OK] ],
+    # 'struct_key_string_2'          : [ 'xml/types/struct_names.xml', 'xml/data/struct_str.xml', ['-P -y Test::struct_key_string_1', '-S -y Test::struct_key_string_1'],                 [ReturnCode.OK, ReturnCode.OK] ],
+    # 'struct_key_string_3'          : [ 'xml/types/struct_names.xml', 'xml/data/struct_str.xml', ['-P -y Test::struct_key_string_2', '-S -y Test::struct_key_string_1'],                 [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC] ],
+
+    # # ENUM KEY MEMBER IN T2 HAVE SAME CONSTANTS
+    # 'struct_key_enum_1'            : [ 'xml/types/struct_names.xml', 'xml/data/struct_enum.xml', ['-P -y Test::struct_key_enum_1', '-S -y Test::struct_key_enum_2'],                     [ReturnCode.OK, ReturnCode.OK] ],
+    # 'struct_key_enum_2'            : [ 'xml/types/struct_names.xml', 'xml/data/struct_enum.xml', ['-P -y Test::struct_key_enum_2', '-S -y Test::struct_key_enum_1'],                     [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC] ],
+
+    # # SEQ KEY MEMBER IN T2 BOUND CHECK [ not bypassed with TypeConsistency.ignore_sequence_bounds ]
+    # 'struct_key_seq_1'             : [ 'xml/types/struct_names.xml', 'xml/data/struct_seq.xml', ['-P -y Test::struct_key_seq_1', '-S -y Test::struct_key_seq_2'],                       [ReturnCode.OK, ReturnCode.OK] ],
+    # 'struct_key_seq_2'             : [ 'xml/types/struct_names.xml', 'xml/data/struct_seq.xml', ['-P -y Test::struct_key_seq_2', '-S -y Test::struct_key_seq_1'],                       [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC] ],
+
+    # # STRUCT KEY MEMBER IN T2 CHECK KeyHolder(is-assignable-from)
+    # 'struct_key_struct_1'          : [ 'xml/types/struct_names.xml', 'xml/data/struct_key.xml', ['-P -y Test::struct_key_struct_1', '-S -y Test::struct_key_struct_2'],                 [ReturnCode.OK, ReturnCode.OK] ],
+    # 'struct_key_struct_2'          : [ 'xml/types/struct_names.xml', 'xml/data/struct_key.xml', ['-P -y Test::struct_key_struct_2', '-S -y Test::struct_key_struct_1'],                 [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC] ],
+
+    # # UNION KEY MEMBER IN T2 CHECK KeyHolder(is-assignable-from)
+    # 'struct_key_union_1'           : [ 'xml/types/struct_names.xml', 'xml/data/struct_key_union.xml', ['-P -y Test::struct_key_union_1', '-S -y Test::struct_key_union_2'],                   [ReturnCode.OK, ReturnCode.OK] ],
+    # 'struct_key_union_2'           : [ 'xml/types/struct_names.xml', 'xml/data/struct_key_union.xml', ['-P -y Test::struct_key_union_2', '-S -y Test::struct_key_union_1'],                   [ReturnCode.OK, ReturnCode.OK] ],
 
     # ad nauseam...
 }

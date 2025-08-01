@@ -1,0 +1,79 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+shape_main
+*shape_main_linux
+
+# Generated Makefiles
+.depend.*
+GNUmakefile*
+
+# Bin and Object directories
+bin/
+objs/
+
+# Other
+*~
+GeneratedCode
+
+# Python files
+.venv/
+*.pyc
+
+# Generated files
+srcCxx/shape.*
+srcCxx/shapePlugin.*
+srcCxx/shapeSupport.*
+
+# VSCode default folders
+.vscode/
+build/
+.cache/
+
+# Generated reports
+*.xlsx
+*.xml
+*.zip
+*.html
+
+# Do not ignore templates
+!doc/_templates/*.html
+
+# Do not ignore xml from types or data
+!xml/**/*.xml
+
+.DS_Store
+
+# Generated documentation files
+gdrive_url.py
+html/
+doc/detailed_report.rst
+doc/test_results.rst
+test_description.rst
+doc/test_description.rst

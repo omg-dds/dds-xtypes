@@ -4,53 +4,613 @@
 # subject to the OMG-DDS INTEROPERABILITY TESTING LICENSE found
 # at the following URL:
 #
-# https://github.com/omg-dds/dds-xtypes/blob/master/LICENSE.md
+# https://github.com/omg-dds/dds-rtps/blob/master/LICENSE.md
 #
 #################################################################
 
+import importlib
+import time
+import re
+import pexpect
 import argparse
 import junitparser
-import importlib
-import inspect
 import multiprocessing
-import tempfile
-import pexpect
-import signal
-
 from datetime import datetime
+import tempfile
 from os.path import exists
-from os import mkdir
+import inspect
+import platform
 
-from test_util import ReturnCode, log_message, no_check
+if __name__ == "__main__" and platform.system() == "Darwin":
+    multiprocessing.set_start_method('fork')
 
-############################################################
-#
+from rtps_test_utilities import ReturnCode, log_message, no_check, \
+        remove_ansi_colors, check_pub_sub_app_params
+
+# This parameter is used to save the samples the Publisher sends.
+# MAX_SAMPLES_SAVED is the maximum number of samples saved.
+MAX_SAMPLES_SAVED = 500
+
+def run_subscriber_test(
+        name_executable: str,
+        parameters: str,
+        produced_code: "list[int]",
+        produced_code_index: int,
+        subscriber_index: int,
+        samples_sent: "list[multiprocessing.Queue]",
+        last_sample_saved: "list[multiprocessing.Queue]",
+        verbosity: bool,
+        timeout: int,
+        file: tempfile.TemporaryFile,
+        subscriber_finished: multiprocessing.Event,
+        publishers_finished: "list[multiprocessing.Event]",
+        check_function: "function"):
+
+    """ This function runs the subscriber test application with
+        the specified parameters. Then it saves the
+        return code in the variable produced_code.
+
+        name_executable <<in>>: name of the test application to run
+                as a Subscriber.
+        parameters <<in>>: test application parameter list.
+        produced_code <<out>>: this variable will be overwritten with
+                the obtained ReturnCode.
+        produced_code_index <<in>>: index of the produced_code list
+                where the ReturnCode is saved.
+        subscriber_index <<in>>: index of the subscriber. For the first
+                subscriber it is 1, for the second 2, etc.
+        samples_sent <<in>>: list of multiprocessing Queues with the samples
+                the Publishers send. Element 1 of the list is for
+                Publisher 1, etc.
+        last_sample_saved <<in>>: list of multiprocessing Queues with the last
+                sample saved on samples_sent for each Publisher. Element 1 of
+                the list is for Publisher 1, etc.
+        verbosity <<in>>: print debug information.
+        timeout <<in>>: time pexpect waits until it matches a pattern.
+        file <<inout>>: temporal file to save test application output.
+        subscriber_finished <<inout>>: object event from multiprocessing
+                that is set when the subscriber is finished.
+        publishers_finished <<inout>>: list of events from multiprocessing
+                that are set when the publishers are finished.
+                Element 1 of the list is for Publisher 1, etc.
+        check_function <<in>>: function to check how the samples are received
+                by the Subscriber. By default it does not check anything.
+
+        The function runs the test application as a Subscriber
+        with the parameters defined.
+        The Subscriber test application follows the next steps:
+            * The topic is created.
+            * The Data Reader is created.
+            * The Data Reader matches with a Data Writer.
+            * The Data Reader detects the Data Writer as alive.
+            * The Data Reader receives data.
+
+        If the test application passes one step, it prints a specific
+        string pattern. This function matches that pattern and and waits
+        for the next input string from the test application. If the
+        test application stops at some step, it prints an error message.
+        When this function matches an error string (or doesn't match
+        an expected pattern in the specified timeout),
+        the corresponding ReturnCode is saved in
+        produced_code[produced_code_index] and the process finishes.
+    """
+    try:
+        # Step 1: run the executable
+        log_message(f'Running test application Subscriber {subscriber_index}',
+                verbosity)
+        child_sub = pexpect.spawnu(f'{name_executable} {parameters}')
+        child_sub.logfile = file
+
+        # Step 2: Check if the topic is created
+        log_message(f'Subscriber {subscriber_index}: Waiting for topic creation',
+                verbosity)
+        index = child_sub.expect(
+            [
+                'Create topic:', # index = 0
+                pexpect.TIMEOUT, # index = 1
+                pexpect.EOF # index = 2
+            ],
+            timeout
+        )
+
+        if index == 1 or index == 2:
+            produced_code[produced_code_index] = ReturnCode.TOPIC_NOT_CREATED
+        elif index == 0:
+            # Step 3: Check if the reader is created
+            log_message(f'Subscriber {subscriber_index}: Waiting for DataReader '
+                    'creation', verbosity)
+            index = child_sub.expect(
+                [
+                    'Create reader for topic:', # index = 0
+                    'failed to create content filtered topic', # index = 1
+                    pexpect.TIMEOUT, # index = 2
+                    pexpect.EOF # index = 2
+                ],
+                timeout
+            )
+
+            if index == 2 or index == 3:
+                produced_code[produced_code_index] = ReturnCode.READER_NOT_CREATED
+            elif index == 1:
+                produced_code[produced_code_index] = ReturnCode.FILTER_NOT_CREATED
+            elif index == 0:
+                # Step 4: Check if the reader matches the writer
+                log_message(f'Subscriber {subscriber_index}: Waiting for matching '
+                        'DataWriter', verbosity)
+                # the normal flow of the application is to find on_subscription_matched()
+                # and then on_liveliness_changed(). However, in some cases the
+                # situation is the opposite. This will handle those cases.
+                # pexpect searches the results in order, so a matching on
+                # on_subscription_matched() takes precedence over on_liveliness_changed()
+                index = child_sub.expect(
+                    [
+                        r'\[[0-9]+\]', # index = 0
+                        'on_requested_incompatible_qos()', # index = 1
+                        'on_requested_deadline_missed()', # index = 2
+                        'sample_received()', # index = 3
+                        'on_inconsistent_topic', # index = 4
+                        pexpect.TIMEOUT, # index = 5
+                        pexpect.EOF, # index = 6
+                    ],
+                    timeout
+                )
+
+                if index == 1:
+                    produced_code[produced_code_index] = ReturnCode.INCOMPATIBLE_QOS
+                elif index == 2:
+                    produced_code[produced_code_index] = ReturnCode.DEADLINE_MISSED
+                elif index == 4:
+                    produced_code[produced_code_index] = ReturnCode.INCONSISTENT_TOPIC
+                elif index == 5 or index == 6:
+                    produced_code[produced_code_index] = ReturnCode.DATA_NOT_RECEIVED
+                elif index == 0 or index == 3:
+                    # Step 5: Receiving samples
+                    log_message(f'Subscriber {subscriber_index}: Receiving samples',
+                        verbosity)
+
+                    # this is used to check how the samples are arriving
+                    # to the Subscriber. By default it does not check
+                    # anything and returns ReturnCode.OK.
+                    produced_code[produced_code_index] = check_function(
+                        child_sub, samples_sent, last_sample_saved, timeout)
+
+        subscriber_finished.set()   # set subscriber as finished
+        log_message(f'Subscriber {subscriber_index}: Waiting for Publishers to '
+                'finish', verbosity)
+        for element in publishers_finished:
+            element.wait()   # wait for all publishers to finish
+        # Send SIGINT to nicely close the application
+        child_sub.sendintr()
+    except OSError as e:
+        produced_code[produced_code_index] = ReturnCode.READER_UNEXPECTED_ERROR
+    return
+
+
+def run_publisher_test(
+        name_executable: str,
+        parameters: str,
+        produced_code: "list[int]",
+        produced_code_index: int,
+        publisher_index: int,
+        samples_sent: multiprocessing.Queue,
+        last_sample_saved: multiprocessing.Queue,
+        verbosity: bool,
+        timeout: int,
+        file: tempfile.TemporaryFile,
+        subscribers_finished: "list[multiprocessing.Event]",
+        publisher_finished: multiprocessing.Event):
+
+    """ This function runs the publisher test application with
+        the specified parameters. Then it saves the
+        return code in the variable produced_code.
+
+        name_executable: <<in>> name of the test application to run
+                as a Publisher.
+        parameters <<in>>: test application parameter list.
+        produced_code <<out>>: this variable will be overwritten with
+                the obtained ReturnCode.
+        produced_code_index <<in>>: index of the produced_code list
+                where the ReturnCode is saved.
+        publisher_index <<in>>: index of the publisher. For the first
+                publisher it is 1, for the second 2, etc.
+        samples_sent <<out>>: this variable contains the samples
+                the Publisher sends.
+        last_sample_saved <<out>>: this variable contains the last sample
+                saved on samples_sent.
+        verbosity <<in>>: print debug information.
+        timeout <<in>>: time pexpect waits until it matches a pattern.
+        file <<inout>>: temporal file to save test application output.
+        subscribers_finished <<inout>>: list of events from multiprocessing
+                that are set when the subscribers are finished.
+                Element 1 of the list is for Subscriber 1, etc.
+        publisher_finished <<inout>>: object event from multiprocessing
+                that is set when the publisher is finished.
+
+        The function runs the test application as a Publisher
+        with the parameters defined.
+        The Publisher test application follows the next steps:
+            * The topic is created.
+            * The Data Writer is created.
+            * The Data Writer matches with a Data Reader.
+            * The Data Writer sends data.
+
+        If the test application passes one step, it prints a specific
+        string pattern. This function matches that pattern and and waits
+        for the next input string from the test application. If the
+        test application stops at some step, it prints an error message.
+        When this function matches an error string (or doesn't match
+        an expected pattern in the specified timeout),
+        the corresponding ReturnCode is saved in
+        produced_code[produced_code_index] and the process finishes.
+    """
+
+    try:
+        # Step 1: run the executable
+        log_message(f'Running test application Publisher {publisher_index}',
+                verbosity)
+        child_pub = pexpect.spawnu(f'{name_executable} {parameters}')
+        child_pub.logfile = file
+
+        # Step 2: Check if the topic is created
+        log_message(f'Publisher {publisher_index}: Waiting for topic creation',
+                verbosity)
+        index = child_pub.expect(
+            [
+                'Create topic:', # index == 0
+                pexpect.TIMEOUT, # index == 1
+                pexpect.EOF # index == 2
+            ],
+            timeout
+        )
+
+        if index == 1 or index == 2:
+            produced_code[produced_code_index] = ReturnCode.TOPIC_NOT_CREATED
+        elif index == 0:
+            # Step 3: Check if the writer is created
+            log_message(f'Publisher {publisher_index}: Waiting for DataWriter '
+                    'creation', verbosity)
+            index = child_pub.expect(
+                [
+                    'Create writer for topic', # index = 0
+                    pexpect.TIMEOUT, # index = 1
+                    pexpect.EOF # index == 2
+                ],
+                timeout
+            )
+            if index == 1 or index == 2:
+                produced_code[produced_code_index] = ReturnCode.WRITER_NOT_CREATED
+            elif index == 0:
+                # Step 4: Check if the writer matches the reader
+                log_message(f'Publisher {publisher_index}: Waiting for matching '
+                        'DataReader', verbosity)
+                index = child_pub.expect(
+                    [
+                        'on_publication_matched()', # index = 0
+                        'on_offered_incompatible_qos', # index = 1
+                        'on_inconsistent_topic', # index = 2
+                        pexpect.TIMEOUT, # index = 3
+                        pexpect.EOF # index == 4
+                    ],
+                    timeout
+                )
+                if index == 3 or index == 4:
+                    produced_code[produced_code_index] = ReturnCode.READER_NOT_MATCHED
+                elif index == 1:
+                    produced_code[produced_code_index] = ReturnCode.INCOMPATIBLE_QOS
+                elif index == 2:
+                    produced_code[produced_code_index] = ReturnCode.INCONSISTENT_TOPIC
+                elif index == 0:
+                    # In the case that the option -w is selected, the Publisher
+                    # saves the samples sent in order, so the Subscriber can check
+                    # them. In this way, the script can check some functionality
+                    # such as reliability.
+                    # In the case that the option -w is not selected, the Publisher
+                    # will only save the ReturnCode OK.
+                    if '-w' in parameters:
+                        # Step 5: Check whether the writer sends the samples
+                        index = child_pub.expect([
+                                r'\[[0-9]+\]', # index = 0
+                                'on_offered_deadline_missed()', # index = 1
+                                pexpect.TIMEOUT, # index = 2
+                                pexpect.EOF, # index = 3
+                            ],
+                            timeout)
+                        if index == 1 or index == 3:
+                            produced_code[produced_code_index] = ReturnCode.DEADLINE_MISSED
+                        elif index == 2:
+                            produced_code[produced_code_index] = ReturnCode.DATA_NOT_SENT
+                        elif index == 0:
+                            produced_code[produced_code_index] = ReturnCode.OK
+                            log_message(f'Publisher {publisher_index}: Sending '
+                                    'samples', verbosity)
+                            last_sample = ''
+                            for x in range(0, MAX_SAMPLES_SAVED, 1):
+                                # At this point, at least one sample has been printed
+                                # Therefore, that sample is added to samples_sent.
+                                pub_string = re.search(r'[0-9]+ [0-9]+ \[[0-9]+\]',
+                                        child_pub.before + child_pub.after)
+                                last_sample = pub_string.group(0)
+                                samples_sent.put(last_sample)
+                                index = child_pub.expect([
+                                        r'\[[0-9]+\]', # index = 0
+                                        'on_offered_deadline_missed()', # index = 1
+                                        pexpect.TIMEOUT, # index = 2
+                                        pexpect.EOF, # index = 3
+                                    ],
+                                    timeout)
+                                if index == 1:
+                                    produced_code[produced_code_index] = ReturnCode.DEADLINE_MISSED
+                                    break
+                                elif index == 2 or index == 3:
+                                    produced_code[produced_code_index] = ReturnCode.DATA_NOT_SENT
+                                    break
+                            last_sample_saved.put(last_sample)
+                    else:
+                        produced_code[produced_code_index] = ReturnCode.OK
+
+        log_message(f'Publisher {publisher_index}: Waiting for Subscribers to finish',
+                verbosity)
+        for element in subscribers_finished:
+            element.wait() # wait for all subscribers to finish
+        publisher_finished.set()   # set publisher as finished
+        # Send SIGINT to nicely close the application
+        child_pub.sendintr()
+    except OSError as e:
+        produced_code[produced_code_index] = ReturnCode.WRITER_UNEXPECTED_ERROR
+    return
+
+
+def run_test(
+    name_executable_pub:str,
+    name_executable_sub:str,
+    test_case: junitparser.TestCase,
+    parameters: "list[str]",
+    expected_codes: "list[str]",
+    verbosity: bool,
+    timeout: int,
+    check_function: "function"):
+
+    """ Run the Publisher and the Subscriber applications and check
+        the actual and the expected ReturnCode.
+
+        name_executable_pub <<in>>: name of the test application to run
+                as a Publisher.
+        name_executable_sub <<in>>: name of the test application to run
+                as a Subscriber.
+        test_case <<inout>>: testCase object to test.
+        parameters <<in>>: list of test application parameters.
+        expected_codes <<in>>: list of ReturnCodes the Publishers and
+                the Subscribers would obtain in a non error situation.
+        verbosity <<in>>: print debug information.
+        timeout <<in>>: time pexpect waits until it matches a pattern.
+        check_function <<in>>: function to check how the samples are received
+                by the Subscriber. By default it does not check anything.
+
+        The function runs several different processes: one for each Publisher
+        and one for each Subscriber test application.
+        The number of processes depends on how many elements are in
+        the list of parameters.
+        Then it checks that the codes obtained are the expected ones.
+    """
+
+    log_message(f'run_test parameters:\n'
+            f'    name_executable_pub: {name_executable_pub}\n'
+            f'    name_executable_sub: {name_executable_sub}\n'
+            f'    test_case: {test_case.name}\n'
+            f'    parameters: {parameters}\n'
+            f'    expected_codes: {expected_codes}\n'
+            f'    verbosity: {verbosity}\n'
+            f'    timeout: {timeout}\n'
+            f'    check_function: {check_function.__name__}',
+            verbosity)
+
+    # numbers of publishers/subscriber we will have. It depends on how
+    # many strings of parameters we have.
+    num_entities = len(parameters)
+
+    # Manager is a shared memory section where all processes can access.
+    # 'return_codes' is a list of elements where the different processes
+    # (publishers and subscribers test applications) copy their ReturnCode.
+    # These ReturnCodes are identified by the index within the list,
+    # every index identifies one test application. Therefore, only one
+    # test application must modify one element of the list.
+    # Once all processes are finished, the list 'return_codes' contains
+    # the ReturnCode in the corresponding index. This index is set manually
+    # and we need it in order to use it later.
+    # Example: (1 Publisher and 1 Subscriber)
+    #   Processes:
+    #     - Publisher Process (index = 0)
+    #     - Subscriber Process (index = 1)
+    #   Code contains:
+    #     - return_codes[0] contains Publisher test application ReturnCode
+    #     - return_codes[1] contains Subscriber test application ReturnCode
+    manager = multiprocessing.Manager()
+    return_codes = manager.list(range(num_entities))
+    samples_sent = [] # used for storing the samples the Publishers send.
+                      # It is a list with one Queue for each Publisher.
+    last_sample_saved = [] # used for storing the last value sent by each Publisher.
+
+    # list of multiprocessing Events used as semaphores to control the end of
+    # the processes, one for each entity.
+    subscribers_finished = []
+    publishers_finished = []
+    publisher_number = 0
+    subscriber_number = 0
+    # entity_type defines the name of the entity: Publisher/Subscriber_<number>.
+    entity_type = []
+    # list of files to save the test output, one for each entity.
+    temporary_file = []
+    # list of test application outputs, one for each entity.
+    test_application_output = []
+    # list of processes, one for each entity
+    entity_process = []
+    # list of test application outputs, edited to use in the html code.
+    test_application_output_edited = []
+    # Create these elements earlier because they are needed
+    # to define the processes.
+    for element in parameters:
+        temporary_file.append(tempfile.TemporaryFile(mode='w+t'))
+        if ('-P ' in element or element.endswith('-P')):
+            publishers_finished.append(multiprocessing.Event())
+            samples_sent.append(multiprocessing.Queue())
+            last_sample_saved.append(multiprocessing.Queue())
+        elif ('-S ' in element or element.endswith('-S')):
+            subscribers_finished.append(multiprocessing.Event())
+        else:
+            raise RuntimeError('Error in the definition of test '
+                'application parameters. Neither Publisher or Subscriber '
+                'defined.')
+
+    # Create and run the processes for the different test applications
+    for i in range(0, num_entities):
+        if ('-P ' in parameters[i] or parameters[i].endswith('-P')):
+            entity_process.append(multiprocessing.Process(
+                    target=run_publisher_test,
+                    kwargs={
+                        'name_executable':name_executable_pub,
+                        'parameters':parameters[i],
+                        'produced_code':return_codes,
+                        'produced_code_index':i,
+                        'publisher_index':publisher_number+1,
+                        'samples_sent':samples_sent[publisher_number],
+                        'last_sample_saved':last_sample_saved[publisher_number],
+                        'verbosity':verbosity,
+                        'timeout':timeout,
+                        'file':temporary_file[i],
+                        'subscribers_finished':subscribers_finished,
+                        'publisher_finished':publishers_finished[publisher_number]}))
+            publisher_number += 1
+            entity_type.append(f'Publisher_{publisher_number}')
+            time.sleep(1)
+
+        elif('-S ' in parameters[i] or parameters[i].endswith('-S')):
+            # Wait 1 second before running the subscriber to avoid conflicts between
+            # the programs on startup
+            time.sleep(1)
+
+            entity_process.append(multiprocessing.Process(
+                    target=run_subscriber_test,
+                    kwargs={
+                        'name_executable':name_executable_sub,
+                        'parameters':parameters[i],
+                        'produced_code':return_codes,
+                        'produced_code_index':i,
+                        'subscriber_index':subscriber_number+1,
+                        'samples_sent':samples_sent,
+                        'last_sample_saved':last_sample_saved,
+                        'verbosity':verbosity,
+                        'timeout':timeout,
+                        'file':temporary_file[i],
+                        'subscriber_finished':subscribers_finished[subscriber_number],
+                        'publishers_finished':publishers_finished,
+                        'check_function':check_function}))
+            subscriber_number += 1
+            entity_type.append(f'Subscriber_{subscriber_number}')
+        else:
+            raise RuntimeError('Error in the definition of test '
+                'application parameters. Neither Publisher or Subscriber '
+                'defined.')
+
+        entity_process[i].start()
+
+    for element in entity_process:
+        element.join()     # Wait until the processes finish
+
+    log_message('Reading test application console output from '
+                'temporary files',
+                verbosity)
+    for element in temporary_file:
+        element.seek(0)
+        test_application_output.append(element.read())
+
+    # create an attribute for each entity that will contain their parameters
+    for i in range(0, num_entities):
+        junitparser.TestCase.i = junitparser.Attr(entity_type[i])
+        test_case.i = parameters[i]
+
+    # code[i] contains publisher/subscriber i test application ReturnCode,
+    # If we have 1 Publisher (index 0) and 1 Subscriber (index 1):
+    # code[0] will contain entity 0 ReturnCode -> Publisher Return Code
+    # code[1] will contain entity 1 ReturnCode -> Subscriber Return Code
+    # The order of the entities will depend on the definition of the parameters.
+    test_result_correct = True
+    for i in range(0, num_entities):
+        if expected_codes[i] != return_codes[i]:
+            # if any of the ReturnCode does not match with the expected code,
+            # there is an error.
+            test_result_correct = False
+
+    if test_result_correct:
+        print(f'{test_case.name} : OK')
+
+    else:
+        print(f'{test_case.name} : ERROR')
+        for i in range(0, num_entities):
+            print(f'{entity_type[i]} expected code: {expected_codes[i].name}; '
+                f'Code found: {return_codes[i].name}')
+
+            log_message(f'\nInformation about {entity_type[i]}:\n '
+                      f'{test_application_output[i]} ', verbosity)
+
+            # Change the '\n' and SIGINT chars to html <br>
+            test_application_output_edited.append(
+                        test_application_output[i]
+                        .replace('\n', '<br>')
+                        .replace(chr(3),'<br>'))
+
+        # generate the table for the html code.
+        message = \
+            '<table> ' \
+                '<tr> ' \
+                    '<th/> ' \
+                    '<th> Expected Code </th> ' \
+                    '<th> Code Produced </th> ' \
+                '</tr> '
+        for i in range(num_entities):
+            message += \
+                '<tr> ' \
+                    f'<th> {entity_type[i]} </th> ' \
+                    f'<th> {expected_codes[i].name} </th> ' \
+                    f'<th> {return_codes[i].name} </th> ' \
+                '</tr>'
+        message += '</table>'
+        for i in range(0, num_entities):
+            message += f'<strong> Information {entity_type[i]} </strong>' \
+                    f'<br> {test_application_output_edited[i]} <br>'
+        message = remove_ansi_colors(message)
+        test_case.result = [junitparser.Failure(message)]
+
+    for element in temporary_file:
+        element.close()
+
 class Arguments:
     def parser():
         parser = argparse.ArgumentParser(
-            description='Exercise the xtypes type system.  '
+            description='Validation of interoperability of products compliant '
+                'with OMG DDS-RTPS standard. This script generates automatically '
+                'the verification between two test executables. '
                 'It also generates an XML report in JUnit format.',
             add_help=True)
 
         gen_opts = parser.add_argument_group(title='general options')
-        gen_opts.add_argument('-P', '--publisher',
+        gen_opts.add_argument('--pub-exe',
             default=None,
             required=True,
             type=str,
             metavar='publisher_executable_name',
-            help='Path to the Publisher test_main application. '
+            help='Path to the Publisher test application. '
                 'It may be absolute or relative path. Example: if the executable '
                 'is in the same folder as the script: '
-                '"-P ./rti_connext_dds-6.1.1_test_main_linux".')
-        gen_opts.add_argument('-S', '--subscriber',
+                '"-P ./rti_connext_dds-6.1.1_shape_main_linux".')
+        gen_opts.add_argument('--sub-exe',
             default=None,
             required=True,
             type=str,
             metavar='subscriber_executable_name',
-            help='Path to the Subscriber test_main application. '
+            help='Path to the Subscriber test application. '
                 'It may be absolute or relative path. Example: if the executable '
                 'is in the same folder as the script: '
-                '"-S ./rti_connext_dds-6.1.1_test_main_linux".')
+                '"-S ./rti_connext_dds-6.1.1_shape_main_linux".')
 
         optional = parser.add_argument_group(title='optional parameters')
         optional.add_argument('-v','--verbose',
@@ -58,23 +618,33 @@ class Arguments:
             required=False,
             action='store_true',
             help='Print debug information to stdout. This option also shows the '
-                'test_main application output in case of error. '
+                'test application output in case of error. '
                 'If this option is not used, only the test results are printed '
                 'in the stdout. (Default: False).')
+        optional.add_argument('-x','--data-representation',
+            default="2",
+            required=None,
+            type=str,
+            choices=["1","2"],
+            help='Data Representation used if no provided when running the '
+                'test application. If this application already sets the '
+                'data representation, this parameter is not used.'
+                'The potential values are 1 for XCDR1 and 2 for XCDR2.'
+                'Default value 2.')
 
         tests = parser.add_argument_group(title='Test Case and Test Suite')
         tests.add_argument('-s', '--suite',
-            default='xtypes_test_suite',
+            default='test_suite',
             required=False,
             metavar='test_suite_dictionary_file',
             type=str,
             help='Test Suite that is going to be tested. '
                 'Test Suite is a file with a Python dictionary defined. It must '
-                'be located on the same directory as this test script. '
+                'be located on the same directory as interoperability_report. '
                 'This value should not contain the extension ".py", '
                 'only the name of the file. '
                 'It will run all the dictionaries defined in the file. '
-                '(Default: xtypes_test_suite).')
+                '(Default: test_suite).')
 
         enable_disable = tests.add_mutually_exclusive_group(required=False)
         enable_disable.add_argument('-t', '--test',
@@ -84,11 +654,10 @@ class Arguments:
             type=str,
             metavar='test_cases',
             help='Test Case that the script will run. '
-                'This option is not supported with --disable_test. '
+                'This option is not supported with --disable-test. '
                 'This allows to set multiple values separated by a space. '
                 '(Default: run all Test Cases from the Test Suite.)')
-        
-        enable_disable.add_argument('-d', '--disable_test',
+        enable_disable.add_argument('-d', '--disable-test',
             nargs='+',
             default=None,
             required=False,
@@ -111,564 +680,44 @@ class Arguments:
 
         return parser
 
-############################################################
 # this function checks if the test case exist in the test suite
-def are_tests_in_test_suite(test_suite, suite_name, test_cases):
+def are_tests_in_test_suite(test_suite, suite_name, test_cases, verbosity):
     all_test_cases_exist = True
     if test_cases != None:
         for i in test_cases:
             if i not in test_suite:
-                print(f'Test Case <{i}> not contained in Test Suite '
-                        f'<{suite_name}>.')
+                log_message(f'Test Case <{i}> not contained in Test Suite '
+                        f'<{suite_name}>.',
+                    verbosity)
                 all_test_cases_exist = False
     return all_test_cases_exist
 
-############################################################
-#
-def run_publisher(
-        name_executable: str,
-        xml_types_file: str,
-        xml_data_file: str,
-        parameters: str,
-        produced_code: "list[int]",
-        produced_code_index: int,
-        publisher_index: int,
-        samples_sent: multiprocessing.Queue,
-        verbosity: bool,
-        timeout: int,
-        file: tempfile.TemporaryFile,
-        subscribers_finished: "list[multiprocessing.Event]",
-        publisher_finished: multiprocessing.Event):
-
-    """ This function runs the publisher test_main application with
-        the specified parameters. Then it saves the
-        return code in the variable produced_code.
-
-        name_executable: <<in>> name of the test_main application to run
-                as a Publisher.
-        xml_types_file: <<in>>: the xml file containing the types
-        xml_data_file: <<in>>: the xml file containing the sample_data
-        parameters <<in>>: test_main application parameter list.
-        produced_code <<out>>: this variable will be overwritten with
-                the obtained ReturnCode.
-        produced_code_index <<in>>: index of the produced_code list
-                where the ReturnCode is saved.
-        publisher_index <<in>>: index of the publisher. For the first
-                publisher it is 1, for the second 2, etc.
-        samples_sent <<out>>: this variable contains the samples
-                the Publisher sends.
-        verbosity <<in>>: print debug information.
-        timeout <<in>>: time pexpect waits until it matches a pattern.
-        file <<inout>>: temporal file to save test_main application output.
-        subscribers_finished <<inout>>: list of events from multiprocessing
-                that are set when the subscribers are finished.
-                Element 1 of the list is for Subscriber 1, etc.
-        publisher_finished <<inout>>: object event from multiprocessing
-                that is set when the publisher is finished.
-
-        The function runs the test_main application as a Publisher
-        with the parameters defined.
-        The Publisher test_main application follows the next steps:
-            * The topic is created.
-            * The Data Writer is created.
-            * The Data Writer matches with a Data Reader.
-            * The Data Writer sends data.
-
-        If the test_main application passes one step, it prints a specific
-        string pattern. This function matches that pattern and and waits
-        for the next input string from the test_main application. If the
-        test_main application stops at some step, it prints an error message.
-        When this function matches an error string (or doesn't match
-        an expected pattern in the specified timeout),
-        the corresponding ReturnCode is saved in
-        produced_code[produced_code_index] and the process finishes.
-    """
-
-    # Step 1 : run the executable
-    log_message(f'Running test_main application Publisher {publisher_index}',
-            verbosity)
-    log_message(f'{name_executable} -X {xml_types_file} -V {xml_data_file} {parameters}',
-               verbosity)
-    
-    child_pub = pexpect.spawnu(f'{name_executable} -X {xml_types_file} -V {xml_data_file} {parameters}')
-    child_pub.logfile = file
-
-    # Step 2 : Check if the topic is created
-    log_message(f'Publisher {publisher_index}: Waiting for topic creation',
-            verbosity)
-    index = child_pub.expect(
-        [
-            'Create topic:', # index == 0
-            pexpect.TIMEOUT, # index == 1
-            pexpect.EOF # index == 2
-        ],
-        timeout
-    )
-
-    if index == 1 or index == 2:
-        produced_code[produced_code_index] = ReturnCode.TOPIC_NOT_CREATED
-    elif index == 0:
-        # Step 3 : Check if the writer is created
-        log_message(f'Publisher {publisher_index}: Waiting for DataWriter '
-                'creation', verbosity)
-        index = child_pub.expect(
-            [
-                'Create writer for topic', # index = 0
-                pexpect.TIMEOUT # index = 1
-            ],
-            timeout
-        )
-        if index == 1:
-            produced_code[produced_code_index] = ReturnCode.WRITER_NOT_CREATED
-        elif index == 0:
-            # Step 4 : Check if the writer matches the reader
-            log_message(f'Publisher {publisher_index}: Waiting for matching '
-                    'DataReader', verbosity)
-            index = child_pub.expect(
-                [
-                    'on_publication_matched()',    # index = 0
-                    pexpect.TIMEOUT,               # index = 1
-                    'on_offered_incompatible_qos', # index = 2
-                    'on_inconsistent_topic'        # index = 3
-                ],
-                timeout
-            )
-            if index == 1:
-                produced_code[produced_code_index] = ReturnCode.READER_NOT_MATCHED
-            elif index == 2:
-                produced_code[produced_code_index] = ReturnCode.INCOMPATIBLE_QOS
-            elif index == 3:
-                produced_code[produced_code_index] = ReturnCode.INCONSISTENT_TOPIC
-            elif index == 0:
-                produced_code[produced_code_index] = ReturnCode.OK
-
-    log_message(f'Publisher {publisher_index}: Waiting for Subscribers to finish',
-            verbosity)
-    for element in subscribers_finished:
-        element.wait() # wait for all subscribers to finish
-    publisher_finished.set()   # set publisher as finished
-    child_pub.kill( signal.SIGINT )
-    return
-
-############################################################
-#
-def run_subscriber(
-        name_executable: str,
-        xml_types_file: str,
-        xml_data_file: str,
-        parameters: str,
-        produced_code: "list[int]",
-        produced_code_index: int,
-        subscriber_index: int,
-        samples_sent: "list[multiprocessing.Queue]",
-        verbosity: bool,
-        timeout: int,
-        file: tempfile.TemporaryFile,
-        subscriber_finished: multiprocessing.Event,
-        publishers_finished: "list[multiprocessing.Event]",
-        check_function: "function"):
-
-    """ This function runs the subscriber test_main application with
-        the specified parameters. Then it saves the
-        return code in the variable produced_code.
-
-        name_executable <<in>>: name of the test_main application to run
-                as a Subscriber.
-        xml_types_file: <<in>>: the xml file containing the types
-        xml_data_file: <<in>>: the xml file containing the sample data
-        parameters <<in>>: test_main application parameter list.
-        produced_code <<out>>: this variable will be overwritten with
-                the obtained ReturnCode.
-        produced_code_index <<in>>: index of the produced_code list
-                where the ReturnCode is saved.
-        subscriber_index <<in>>: index of the subscriber. For the first
-                subscriber it is 1, for the second 2, etc.
-        samples_sent <<in>>: list of multiprocessing Queues with the samples
-                the Publishers send. Element 1 of the list is for
-                Publisher 1, etc.
-        verbosity <<in>>: print debug information.
-        timeout <<in>>: time pexpect waits until it matches a pattern.
-        file <<inout>>: temporal file to save test_main application output.
-        subscriber_finished <<inout>>: object event from multiprocessing
-                that is set when the subscriber is finished.
-        publishers_finished <<inout>>: list of events from multiprocessing
-                that are set when the publishers are finished.
-                Element 1 of the list is for Publisher 1, etc.
-        check_function <<in>>: function to check how the samples are received
-                by the Subscriber. By default it does not check anything.
-
-        The function runs the test_main application as a Subscriber
-        with the parameters defined.
-        The Subscriber test_main application follows the next steps:
-            * The topic is created.
-            * The Data Reader is created.
-            * The Data Reader matches with a Data Writer.
-            * The Data Reader detects the Data Writer as alive.
-            * The Data Reader receives data.
-
-        If the test_main application passes one step, it prints a specific
-        string pattern. This function matches that pattern and and waits
-        for the next input string from the test_main application. If the
-        test_main application stops at some step, it prints an error message.
-        When this function matches an error string (or doesn't match
-        an expected pattern in the specified timeout),
-        the corresponding ReturnCode is saved in
-        produced_code[produced_code_index] and the process finishes.
-
-    """
-    # Step 1 : run the executable
-    log_message(f'Running test_main application Subscriber {subscriber_index}',
-            verbosity)
-    log_message(f'{name_executable} -X {xml_types_file} -V {xml_data_file} {parameters}',
-               verbosity)
-    child_sub = pexpect.spawnu(f'{name_executable} -X {xml_types_file} -V {xml_data_file} {parameters}')
-    child_sub.logfile = file
-
-    # Step 2 : Check if the topic is created
-    log_message(f'Subscriber {subscriber_index}: Waiting for topic creation',
-            verbosity)
-    index = child_sub.expect(
-        [
-            'Create topic:', # index = 0
-            pexpect.TIMEOUT, # index = 1
-            pexpect.EOF # index = 2
-        ],
-        timeout
-    )
-
-    if index == 1 or index == 2:
-        produced_code[produced_code_index] = ReturnCode.TOPIC_NOT_CREATED
-    elif index == 0:
-        # Step 3 : Check if the reader is created
-        log_message(f'Subscriber {subscriber_index}: Waiting for DataReader '
-                'creation', verbosity)
-        index = child_sub.expect(
-            [
-                'Create reader for topic:', # index = 0
-                pexpect.TIMEOUT, # index = 1
-                'failed to create content filtered topic' # index = 2
-            ],
-            timeout
-        )
-
-        if index == 1:
-            produced_code[produced_code_index] = ReturnCode.READER_NOT_CREATED
-        elif index == 2:
-            produced_code[produced_code_index] = ReturnCode.FILTER_NOT_CREATED
-        elif index == 0:
-            # Step 4 : Check if the reader matches the writer
-            log_message(f'Subscriber {subscriber_index}: Waiting for matching '
-                    'DataWriter', verbosity)
-            index = child_sub.expect(
-                [
-                    'on_subscription_matched()',       # index = 0
-                    pexpect.TIMEOUT,                   # index = 1
-                    'on_requested_incompatible_qos()', # index = 2
-                    'on_inconsistent_topic'            # index = 3
-                ],
-                timeout
-            )
-
-            if index == 1:
-                produced_code[produced_code_index] = ReturnCode.WRITER_NOT_MATCHED
-            elif index == 2:
-                produced_code[produced_code_index] = ReturnCode.INCOMPATIBLE_QOS
-            elif index == 3:
-                produced_code[produced_code_index] = ReturnCode.INCONSISTENT_TOPIC
-            elif index == 0:
-                # Step 5: Check if the reader detects the writer as alive
-                log_message(f'Subscriber {subscriber_index}: Waiting for '
-                        'detecting DataWriter alive', verbosity)
-                index = child_sub.expect(
-                    [
-                        'on_liveliness_changed()', # index = 0
-                        pexpect.TIMEOUT,           # index = 1
-                        'on_inconsistent_topic'    # index = 2
-                    ],
-                    timeout
-                )
-
-                if index == 1:
-                    produced_code[produced_code_index] = ReturnCode.WRITER_NOT_ALIVE
-                if index == 2:
-                    produced_code[produced_code_index] = ReturnCode.INCONSISTENT_TOPIC
-                elif index == 0:
-                    # Step 6 : Check if the reader receives the samples
-                    log_message(f'Subscriber {subscriber_index}: Receiving '
-                            'samples', verbosity)
-                    index = child_sub.expect(
-                            [
-                                'sample_received()', # index = 0
-                                pexpect.TIMEOUT      # index = 1
-                            ],
-                            timeout
-                        )
-
-                    if index == 1:
-                        produced_code[produced_code_index] = ReturnCode.DATA_NOT_RECEIVED
-                    elif index == 0:
-                        # this is used to check how the samples are arriving
-                        # to the Subscriber. By default it does not check
-                        # anything and returns ReturnCode.OK.
-                        produced_code[produced_code_index] = check_function(
-                                                                child_sub,
-                                                                samples_sent,
-                                                                timeout)
-
-    subscriber_finished.set()   # set subscriber as finished
-    log_message(f'Subscriber {subscriber_index}: Waiting for Publishers to '
-            'finish', verbosity)
-    for element in publishers_finished:
-        element.wait()   # wait for all publishers to finish
-
-    child_sub.kill( signal.SIGINT )
-    return
-
-############################################################
-#
-def run_test(
-        name_executable_pub:str,
-        name_executable_sub:str,
-        xml_types_file:str,
-        xml_data_file:str,
-        test_case: junitparser.TestCase,
-        parameters: "list[str]",
-        expected_codes: "list[str]",
-        verbosity: bool,
-        timeout: int,
-        check_function: "function"):
-
-    """ Run the Publisher and the Subscriber applications and check
-        the actual and the expected ReturnCode.
-
-        name_executable_pub <<in>>: name of the test_main application to run
-                as a Publisher.
-        name_executable_sub <<in>>: name of the test_main application to run
-                as a Subscriber.
-        xml_types_file <<in>>: the file with xml type definition[s] for the test
-        xml_data_file <<in>>: the file with xml sample data for the test
-        test_case <<inout>>: testCase object to test.
-        parameters <<in>>: list of test_main application parameters.
-        expected_codes <<in>>: list of ReturnCodes the Publishers and
-                the Subscribers would obtain in a non error situation.
-        verbosity <<in>>: print debug information.
-        timeout <<in>>: time pexpect waits until it matches a pattern.
-        check_function <<in>>: function to check how the samples are received
-                by the Subscriber. By default it does not check anything.
-
-        The function runs several different processes: one for each Publisher
-        and one for each Subscriber test_main application.
-        The number of processes depends on how many elements are in
-        the list of parameters.
-        Then it checks that the codes obtained are the expected ones.
-    """
-    log_message(f'run_test parameters:\n'
-                f'    name_executable_pub: {name_executable_pub}\n'
-                f'    name_executable_sub: {name_executable_sub}\n'
-                f'    xml_types_file: {xml_types_file}\n'
-                f'    xml_data_file: {xml_data_file}\n'
-                f'    test_case: {test_case.name}\n'
-                f'    parameters: {parameters}\n'
-                f'    expected_codes: {expected_codes}\n'
-                f'    verbosity: {verbosity}\n'
-                f'    timeout: {timeout}\n'
-                f'    check_function: {check_function.__name__}',
-                verbosity)
-
-    # numbers of publishers/subscriber we will have. It depends on how
-    # many strings of parameters we have.
-    num_entities = len(parameters)
-
-    # Manager is a shared memory section where all processes can access.
-    # 'return_codes' is a list of elements where the different processes
-    # (publishers and subscribers test_main applications) copy their ReturnCode.
-    # These ReturnCodes are identified by the index within the list,
-    # every index identifies one test_main application. Therefore, only one
-    # test_main application must modify one element of the list.
-    # Once all processes are finished, the list 'return_codes' contains
-    # the ReturnCode in the corresponding index. This index is set manually
-    # and we need it in order to use it later.
-    # Example: (1 Publisher and 1 Subscriber)
-    #   Processes:
-    #     - Publisher Process (index = 0)
-    #     - Subscriber Process (index = 1)
-    #   Code contains:
-    #     - return_codes[0] contains Publisher test_main application ReturnCode
-    #     - return_codes[1] contains Subscriber test_main application ReturnCode
-    manager = multiprocessing.Manager()
-    return_codes = manager.list(range(num_entities))
-    samples_sent = [] # used for storing the samples the Publishers send.
-                      # It is a list with one Queue for each Publisher.
-
-    # list of multiprocessing Events used as semaphores to control the end of
-    # the processes, one for each entity.
-    subscribers_finished = []
-    publishers_finished = []
-    publisher_number = 0
-    subscriber_number = 0
-    # entity_type defines the name of the entity: Publisher/Subscriber_<number>.
-    entity_type = []
-    # list of files to save the test_main output, one for each entity.
-    temporary_file = []
-    # list of test_main application outputs, one for each entity.
-    test_main_application_output = []
-    # list of processes, one for each entity
-    entity_process = []
-    # list of test_main application outputs, edited to use in the html code.
-    test_main_application_output_edited = []
-    # Create these elements earlier because they are needed
-    # to define the processes.
-    for element in parameters:
-        temporary_file.append(tempfile.TemporaryFile(mode='w+t'))
-        if ('-P ' in element or element.endswith('-P')):
-            publishers_finished.append(multiprocessing.Event())
-            samples_sent.append(multiprocessing.Queue())
-        elif ('-S ' in element or element.endswith('-S')):
-            subscribers_finished.append(multiprocessing.Event())
-        else:
-            raise RuntimeError('Error in the definition of test_main '
-                'application parameters. Neither Publisher or Subscriber '
-                'defined.')
-
-    # Create and run the processes for the different test_main applications
-    for i in range(0, num_entities):
-        if ('-P ' in parameters[i] or parameters[i].endswith('-P')):
-            entity_process.append(multiprocessing.Process(
-                    target=run_publisher,
-                    kwargs={
-                        'name_executable':name_executable_pub,
-                        'xml_types_file':xml_types_file,
-                        'xml_data_file':xml_data_file,
-                        'parameters':parameters[i],
-                        'produced_code':return_codes,
-                        'produced_code_index':i,
-                        'publisher_index':publisher_number+1,
-                        'samples_sent':samples_sent[publisher_number],
-                        'verbosity':verbosity,
-                        'timeout':timeout,
-                        'file':temporary_file[i],
-                        'subscribers_finished':subscribers_finished,
-                        'publisher_finished':publishers_finished[publisher_number]}))
-            publisher_number += 1
-            entity_type.append(f'Publisher_{publisher_number}')
-
-        elif('-S ' in parameters[i] or parameters[i].endswith('-S')):
-            entity_process.append(multiprocessing.Process(
-                    target=run_subscriber,
-                    kwargs={
-                        'name_executable':name_executable_sub,
-                        'xml_types_file':xml_types_file,
-                        'xml_data_file':xml_data_file,
-                        'parameters':parameters[i],
-                        'produced_code':return_codes,
-                        'produced_code_index':i,
-                        'subscriber_index':subscriber_number+1,
-                        'samples_sent':samples_sent,
-                        'verbosity':verbosity,
-                        'timeout':timeout,
-                        'file':temporary_file[i],
-                        'subscriber_finished':subscribers_finished[subscriber_number],
-                        'publishers_finished':publishers_finished,
-                        'check_function':check_function}))
-            subscriber_number += 1
-            entity_type.append(f'Subscriber_{subscriber_number}')
-        else:
-            raise RuntimeError('Error in the definition of test_main '
-                'application parameters. Neither Publisher or Subscriber '
-                'defined.')
-
-        entity_process[i].start()
-
-    for element in entity_process:
-        element.join()     # Wait until the processes finish
-
-    log_message('Reading test_main application console output from '
-                'temporary files',
-                verbosity)
-    for element in temporary_file:
-        element.seek(0)
-        test_main_application_output.append(element.read())
-
-    # create an attribute for each entity that will contain their parameters
-    for i in range(0, num_entities):
-        junitparser.TestCase.i = junitparser.Attr(entity_type[i])
-        test_case.i = parameters[i]
-
-    # code[i] contains publisher/subscriber i test_main application ReturnCode,
-    # If we have 1 Publisher (index 0) and 1 Subscriber (index 1):
-    # code[0] will contain entity 0 ReturnCode -> Publisher Return Code
-    # code[1] will contain entity 1 ReturnCode -> Subscriber Return Code
-    # The order of the entities will depend on the definition of the parameters.
-    test_result_correct = True
-    for i in range(0, num_entities):
-        if expected_codes[i] != return_codes[i]:
-            # if any of the ReturnCode does not match with the expected code,
-            # there is an error.
-            test_result_correct = False
-
-    if test_result_correct:
-        print (f'{test_case.name} : Ok')
-
-    else:
-        print(f'Error in : {test_case.name}')
-        for i in range(0, num_entities):
-            print(f'{entity_type[i]} expected code: {expected_codes[i]}; '
-                f'Code found: {return_codes[i].name}')
-
-            log_message(f'\nInformation about {entity_type[i]}:\n '
-                      f'{test_main_application_output[i]} ', verbosity)
-
-            test_main_application_output_edited.append(
-                        test_main_application_output[i].replace('\n', '<br>'))
-
-        # generate the table for the html code.
-        message = \
-            '<table> ' \
-                '<tr> ' \
-                    '<th/> ' \
-                    '<th> Expected Code </th> ' \
-                    '<th> Code Produced </th> ' \
-                '</tr> '
-        for i in range(num_entities):
-            message += \
-                '<tr> ' \
-                    f'<th> {entity_type[i]} </th> ' \
-                    f'<th> {expected_codes[i].name} </th> ' \
-                    f'<th> {return_codes[i].name} </th> ' \
-                '</tr>'
-        message += '</table>'
-        for i in range(0, num_entities):
-            message += f'<strong> Information {entity_type[i]} </strong>' \
-                    f'<br> {test_main_application_output_edited[i]} <br>'
-        test_case.result = [junitparser.Failure(message)]
-
-    for element in temporary_file:
-        element.close()
-
-############################################################
-#
 def main():
     parser = Arguments.parser()
     args = parser.parse_args()
 
     options = {
-        'publisher': args.publisher,
-        'subscriber': args.subscriber,
+        'publisher': args.pub_exe,
+        'subscriber': args.sub_exe,
         'verbosity': args.verbose,
         'test_suite': args.suite,
         'test_cases': args.test,
-        'test_cases_disabled': args.disable_test
+        'test_cases_disabled': args.disable_test,
+        'data_representation': args.data_representation,
     }
 
-    # The executables's names are supposed to follow the pattern: name_test_main
+    # The executables's names are supposed to follow the pattern:
+    # name_[shape,test]_main
     # We will keep only the part of the name that is useful, deleting the path
-    # and the substring '_test_main'.
-    # Example: if the test_main application's name (including the path) is:
-    #  ./srcCxx/objs/x64Linux4gcc7.3.0/rti_connext_dds-6.1.1_test_main_linux
+    # and the substring '_shape_main' or '_test_main'.
+    # Example: if the shape_main application's name (including the path) is:
+    #  ./srcCxx/objs/x64Linux4gcc7.3.0/rti_connext_dds-6.1.1_shape_main_linux
     # we will take the substring rti_connext_dds-6.1.1.
     # That will be the name that will appear in the report.
-    name_publisher = (options['publisher'].split('_test')[0]).split('/')[-1]
-    name_subscriber = (options['subscriber'].split('_test')[0]).split('/')[-1]
+    name_publisher = options['publisher'].split('_shape')[0].split('-shape')[0] \
+            .split('_test')[0].split('-test')[0].split('/')[-1]
+    name_subscriber = options['subscriber'].split('_shape')[0].split('-shape')[0] \
+            .split('_test')[0].split('-test')[0].split('/')[-1]
 
     if args.output_name is None:
         now = datetime.now()
@@ -686,33 +735,47 @@ def main():
             xml = junitparser.JUnitXml()
 
     # TestSuite is a class from junitparser that will contain the
-    # results of running different TestCases between two test_main
+    # results of running different TestCases between two test
     # applications. A TestSuite contains a collection of TestCases.
     suite = junitparser.TestSuite(f"{name_publisher}---{name_subscriber}")
 
-    timeout = 5
+    timeout = 10
     now = datetime.now()
 
     t_suite_module = importlib.import_module(options['test_suite'])
+
+    # check that the test_cases selected or disabled are in the test_suite and
+    # exit the application if they are not.
+    test_cases_in_test_suite = False
+    disabled_cases_in_test_suite = False
+    for test_suite_name, t_suite_dict in inspect.getmembers(t_suite_module):
+        if type(t_suite_dict) is dict and test_suite_name != '__builtins__':
+            if type(t_suite_dict) is dict and test_suite_name != '__builtins__':
+                # check that the test_cases selected are in the test_suite and
+                # exit the application if they are not.
+                if are_tests_in_test_suite(
+                        t_suite_dict,
+                        test_suite_name,
+                        options['test_cases'],
+                        options['verbosity']):
+                    test_cases_in_test_suite = True
+                if are_tests_in_test_suite(
+                        t_suite_dict,
+                        test_suite_name,
+                        options['test_cases_disabled'],
+                        options['verbosity']):
+                    disabled_cases_in_test_suite = True
+    if not test_cases_in_test_suite:
+        raise RuntimeError('Test cases to proceed not found in test suite.')
+    if not disabled_cases_in_test_suite:
+        raise RuntimeError('Disabled test cases not found in test suite.')
+
     for test_suite_name, t_suite_dict in inspect.getmembers(t_suite_module):
         # getmembers returns all the members in the t_suite_module.
         # Then, 'type(t_suite) is dict' takes all the members that
         # are a dictionary. The only one that is not needed (it is not
         # a test_suite) is __builtins__, and it is skipped.
         if type(t_suite_dict) is dict and test_suite_name != '__builtins__':
-            # check that the test_cases selected are in the test_suite and
-            # exit the application if they are not.
-            if not are_tests_in_test_suite(
-                    t_suite_dict,
-                    test_suite_name,
-                    options['test_cases']):
-                raise RuntimeError('Cannot process test cases.')
-            if not are_tests_in_test_suite(
-                    t_suite_dict,
-                    test_suite_name,
-                    options['test_cases_disabled']):
-                raise RuntimeError('Disabled test cases not found.')
-
             for test_case_name, test_case_parameters in t_suite_dict.items():
                 # TestCase is a class from junitparser whose attributes
                 # are: name and result (OK, Failure, Error or Skipped).
@@ -731,37 +794,42 @@ def main():
                     continue
                 else:
                     # if the test case is processed
-                    check_function = no_check # default
-                    if len(test_case_parameters) >= 4:
-                        xml_types_file = test_case_parameters[0]
-                        xml_data_file  = test_case_parameters[1]
-                        parameters     = test_case_parameters[2]
-                        expected_codes = test_case_parameters[3]
-                    if len(test_case_parameters) == 5:
-                        if callable(test_case_parameters[4]):
-                            check_function = test_case_parameters[4]
+                    parameters = test_case_parameters['apps']
+                    common_args = test_case_parameters['common_args']
+                    # Add the common_args to all elements in parameters
+                    parameters = [s + f' {common_args[0]}' for s in parameters]
+
+                    # check parameters start with pub-exe or sub-exe and they
+                    # are creating publisher/subscriber apps accordingly
+                    parameters = check_pub_sub_app_params(parameters)
+
+                    expected_codes = test_case_parameters['expected_codes']
+                    if ('check_function' in test_case_parameters):
+                        if callable(test_case_parameters['check_function']):
+                            check_function = test_case_parameters['check_function']
                         else:
                             raise RuntimeError('Cannot process function of '
                                 f'test case: {test_case_name}')
-                    if len(test_case_parameters)<4 or len(test_case_parameters)>5:
-                        print('Error in the definition of the Test Suite. '
-                                'Number of arguments incorrect.')
-                        break
+                    else:
+                        check_function = no_check
 
                     assert(len(parameters) == len(expected_codes))
 
+                    for element in parameters:
+                        if not '-x ' in element:
+                            element += f'-x {options["data_representation"]}'
+
                     case = junitparser.TestCase(f'{test_suite_name}_{test_case_name}')
                     now_test_case = datetime.now()
-                    run_test( name_executable_pub=options['publisher'],
-                              name_executable_sub=options['subscriber'],
-                              xml_types_file=xml_types_file,
-                              xml_data_file=xml_data_file,
-                              test_case=case,
-                              parameters=parameters,
-                              expected_codes=expected_codes,
-                              verbosity=options['verbosity'],
-                              timeout=timeout,
-                              check_function=check_function )
+                    log_message(f'Running test: {test_case_name}', options['verbosity'])
+                    run_test(name_executable_pub=options['publisher'],
+                            name_executable_sub=options['subscriber'],
+                            test_case=case,
+                            parameters=parameters,
+                            expected_codes=expected_codes,
+                            verbosity=options['verbosity'],
+                            timeout=timeout,
+                            check_function=check_function)
                     case.time = (datetime.now() - now_test_case).total_seconds()
                     suite.add_testcase(case)
 
@@ -770,7 +838,5 @@ def main():
 
     xml.write(options['filename_report'])
 
-############################################################
-#
 if __name__ == '__main__':
     main()

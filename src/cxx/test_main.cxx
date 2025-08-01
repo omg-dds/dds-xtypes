@@ -18,6 +18,8 @@
 #include <getopt.h>
 #include <iostream>
 
+#define RTI_CONNEXT_DDS
+
 #if defined(RTI_CONNEXT_DDS)
 #include "variant_rti_connext_dds.h"
 #elif defined(TWINOAKS_COREDX)
@@ -34,10 +36,30 @@
 #ifndef STRING_INOUT
 #define STRING_INOUT
 #endif
+#ifndef NAME_ACCESSOR
+#define NAME_ACCESSOR
+#endif
+#ifndef LISTENER_STATUS_MASK_NONE
+#define LISTENER_STATUS_MASK_NONE 0
+#endif
+#ifndef SECONDS_FIELD_NAME
+#define SECONDS_FIELD_NAME sec
+#endif
+#ifndef FIELD_ACCESSOR
+#define FIELD_ACCESSOR
+#endif
+#ifndef GET_TOPIC_DESCRIPTION
+#define GET_TOPIC_DESCRIPTION(dr) dr->get_topicdescription()
+#endif
+#ifndef ADD_PARTITION
+#define ADD_PARTITION(field, value) StringSeq_push(field.name, value)
+#endif
 
 using namespace DDS;
 
-
+#define ERROR_PARSING_ARGUMENTS 1
+#define ERROR_INITIALIZING 2
+#define ERROR_RUNNING 3
 
 /*************************************************************/
 int  all_done  = 0;
@@ -150,6 +172,11 @@ public:
     } else if (consistency_kind_value == ALLOW_TYPE_COERCION){
       return "ALLOW_TYPE_COERCION";
     }
+#if defined (RTI_CONNEXT_DDS)
+    else if (consistency_kind_value == AUTO_TYPE_COERCION) {
+      return "AUTO_TYPE_COERCION";
+    }
+#endif
     return "Error stringifying TypeConsistency kind.";
   }
 };
@@ -188,23 +215,25 @@ Logger logger(ERROR);
 
 /*************************************************************/
 
-#define OPT_DO_TYPE_VALIDATION       0x1000 
-#define OPT_CHECK_MEMBER_NAMES       0x1001 
+#define OPT_DO_TYPE_VALIDATION       0x1000
+#define OPT_CHECK_MEMBER_NAMES       0x1001
 #define OPT_CHECK_SEQUENCE_BOUNDS    0x1002
 #define OPT_CHECK_STRING_BOUNDS      0x1003
 #define OPT_PREVENT_TYPE_WIDENING    0x1004
+#define OPT_ALLOW_TYPE_COERCION      0x1005
 
 static struct option long_opts[] =
   {
-    { "help",                  0, NULL, 'h'    },
-    { "do-type-validation",    0, NULL, OPT_DO_TYPE_VALIDATION     },
-    { "check-member-names",    0, NULL, OPT_CHECK_MEMBER_NAMES     },
-    { "check-seq-bounds",      0, NULL, OPT_CHECK_SEQUENCE_BOUNDS  },
-    { "check-str-bounds",      0, NULL, OPT_CHECK_STRING_BOUNDS    },
-    { "prevent-type-widening", 0, NULL, OPT_PREVENT_TYPE_WIDENING  },
+    { "help",                  no_argument, NULL, 'h'    },
+    { "do-type-validation",    required_argument, NULL, OPT_DO_TYPE_VALIDATION     },
+    { "ignore-member-names",   required_argument, NULL, OPT_CHECK_MEMBER_NAMES     },
+    { "ignore-seq-bounds",     required_argument, NULL, OPT_CHECK_SEQUENCE_BOUNDS  },
+    { "ignore-str-bounds",     required_argument, NULL, OPT_CHECK_STRING_BOUNDS    },
+    { "prevent-type-widening", required_argument, NULL, OPT_PREVENT_TYPE_WIDENING  },
+    { "allow-type-coercion",   required_argument, NULL, OPT_ALLOW_TYPE_COERCION  },
     { NULL, 0, NULL, 0 }
   };
-  
+
 
 /*************************************************************/
 class TestOptions {
@@ -217,13 +246,14 @@ public:
   int                            ownership_strength;
 
   DDS::TypeConsistencyEnforcementQosPolicy type_consistency;
- 
+
   char               *topic_name;
   char               *type_name;
   char               *types_uri;   /* xml file of defined types */
-  
-  char               *data_uri;    /* xml file of data sample */
-  
+
+  char               *xml_data_uri;    /* xml file of data sample */
+  char               *json_data_uri;    /* json file of data sample */
+
   char               *partition;
 
   bool                publish;
@@ -231,13 +261,13 @@ public:
 
   int                 timebasedfilter_interval;
   int                 deadline_interval;
-  
+
   bool                print_writer_samples;
 
 
 public:
   //-------------------------------------------------------------
-  TestOptions() 
+  TestOptions()
   {
     domain_id           = 0;
     reliability_kind    = RELIABLE_RELIABILITY_QOS;
@@ -246,18 +276,23 @@ public:
     history_depth       = -1;      /* means default */
     ownership_strength  = -1;      /* means shared */
 
+    type_consistency.force_type_validation  = DDS_BOOLEAN_FALSE;
+    type_consistency.ignore_member_names    = DDS_BOOLEAN_TRUE;
+    type_consistency.ignore_sequence_bounds = DDS_BOOLEAN_TRUE;
+    type_consistency.ignore_string_bounds   = DDS_BOOLEAN_TRUE;
+    type_consistency.prevent_type_widening  = DDS_BOOLEAN_FALSE;
     type_consistency.kind                   = ALLOW_TYPE_COERCION;
-    type_consistency.ignore_sequence_bounds = 1;
-    type_consistency.ignore_string_bounds   = 1;
-    type_consistency.ignore_member_names    = 1;
-    type_consistency.prevent_type_widening  = 0;
-    type_consistency.force_type_validation  = 0;
+#if defined (RTI_CONNEXT_DDS)
+    type_consistency.ignore_enum_literal_names =
+            TypeConsistency_get_default().ignore_enum_literal_names;
+#endif
 
     topic_name         = NULL;
     type_name          = NULL;
     partition          = NULL;
     types_uri          = NULL;
-    data_uri           = NULL;
+    xml_data_uri           = NULL;
+    json_data_uri           = NULL;
 
     publish            = false;
     subscribe          = false;
@@ -271,11 +306,12 @@ public:
   //-------------------------------------------------------------
   ~TestOptions()
   {
-    if (topic_name)  free(topic_name);
-    if (type_name)   free(type_name);
-    if (types_uri)   free(types_uri);
-    if (data_uri)    free(data_uri);
-    if (partition)   free(partition);
+    if (topic_name)       free(topic_name);
+    if (type_name)        free(type_name);
+    if (types_uri)        free(types_uri);
+    if (xml_data_uri)     free(xml_data_uri);
+    if (json_data_uri)    free(json_data_uri);
+    if (partition)        free(partition);
   }
 
   //-------------------------------------------------------------
@@ -298,19 +334,34 @@ public:
     printf("   -S              : subscribe samples\n");
     printf("   -x [1|2]        : set data representation [1: XCDR, 2: XCDR2]\n");
     printf("   -X <types_uri>  : xml file with type definitions\n");
-    printf("   -V <data_uri>   : xml file with data sample values\n");
+    printf("   -V <xml_data_uri> : xml file with data sample values. XML and JSON may be\n");
+    printf("                       provided, the app is in charge of using what it needs\n");
+    printf("   -J <json_data_uri> : json file with data sample values. XML and JSON may be\n");
+    printf("                        provided, the app is in charge of using what it needs\n");
     printf("   -w              : print Publisher's samples\n");
+    printf("   --do-type-validation [t|f|d]: enable, disable or default value for\n");
+    printf("                                 type_consistency.force_type_validation\n");
+    printf("   --ignore-member-names [t|f|d]: enable, disable or default value for\n");
+    printf("                                 type_consistency.ignore_member_names\n");
+    printf("   --ignore-seq-bounds [t|f|d]: enable, disable or default value for\n");
+    printf("                                 type_consistency.ignore_sequence_bounds\n");
+    printf("   --ignore-str-bounds [t|f|d]: enable, disable or default value for\n");
+    printf("                                 type_consistency.ignore_string_bounds\n");
+    printf("   --prevent-type-widening [t|f|d]: enable, disable or default value for\n");
+    printf("                                 type_consistency.prevent_type_widening\n");
+    printf("   --allow-type-coercion [t|f|d]: enable, disable type coercion or default\n");
+    printf("                                 value for type_consistency.kind\n");
     printf("   -v [e|d]        : set log message verbosity [e: ERROR, d: DEBUG]\n");
   }
 
   //-------------------------------------------------------------
   bool validate() {
     if (topic_name == NULL) {
-      logger.log_message("please specify topic name [-t]", Verbosity::ERROR);
+      logger.log_message("topic name unspecified [-t], using \"test\" by default", Verbosity::ERROR);
       return false;
     }
     if (type_name == NULL) {
-      logger.log_message("please specify type name [-t]", Verbosity::ERROR);
+      logger.log_message("please specify type name [-y]", Verbosity::ERROR);
       return false;
     }
     if ( (!publish) && (!subscribe) ) {
@@ -320,6 +371,23 @@ public:
     if ( publish && subscribe ) {
       logger.log_message("please specify only one of: publish [-P] or subscribe [-S]", Verbosity::ERROR);
       return false;
+    }
+    if ( xml_data_uri == NULL && json_data_uri == NULL ) {
+      logger.log_message("please provide the data either in XML [-V] or JSON [-J]", Verbosity::ERROR);
+      return false;
+    }
+    if ( types_uri == NULL ) {
+      logger.log_message("please provide the types in XML [-X]", Verbosity::ERROR);
+      return false;
+    }
+    if ( type_consistency.kind == DISALLOW_TYPE_COERCION
+            && type_consistency.ignore_sequence_bounds == DDS_BOOLEAN_TRUE
+            && type_consistency.ignore_string_bounds == DDS_BOOLEAN_TRUE
+            && type_consistency.ignore_member_names == DDS_BOOLEAN_TRUE
+            && type_consistency.prevent_type_widening == DDS_BOOLEAN_TRUE ) {
+      logger.log_message("warning: prevent_type_widening, ignore_sequence_bounds, "
+            "ignore_string_bounds, and ignore_member_names only apply when the "
+            "type consistency kind is ALLOW_TYPE_COERCION", Verbosity::ERROR);
     }
     return true;
   }
@@ -332,7 +400,7 @@ public:
     bool parse_ok = true;
     // double d;
     while ((opt = getopt_long(argc, argv,
-                              "hbrd:D:f:i:k:p:s:x:X:t:v:V:wy:PS",
+                              "hbrd:D:f:i:k:p:s:x:X:t:v:V:J:wy:PS",
                               long_opts, NULL)) != -1)
       {
         switch (opt)
@@ -557,30 +625,158 @@ public:
             }
           case 'V':
             {
-              data_uri = strdup(optarg);
+              xml_data_uri = strdup(optarg);
               break;
             }
-
+          case 'J':
+            {
+              json_data_uri = strdup(optarg);
+              break;
+            }
           case OPT_DO_TYPE_VALIDATION:
-            type_consistency . force_type_validation = 1;
+            if (optarg[0] != '\0') {
+                switch (optarg[0]) {
+                case 't':
+                    type_consistency.force_type_validation = DDS_BOOLEAN_TRUE;
+                    break;
+                case 'f':
+                    type_consistency.force_type_validation = DDS_BOOLEAN_FALSE;
+                    break;
+                case 'd':
+                    type_consistency.force_type_validation =
+                            TypeConsistency_get_default().force_type_validation;
+                    break;
+                default:
+                    logger.log_message("unrecognized value for type_consistency."
+                            "force_type_validation"
+                            + std::string(1, optarg[0]),
+                            Verbosity::ERROR);
+                    parse_ok = false;
+                    break;
+                }
+            }
             break;
-        
+
           case OPT_CHECK_MEMBER_NAMES:
-            type_consistency . ignore_member_names = 0;
+            if (optarg[0] != '\0') {
+                switch (optarg[0]) {
+                case 't':
+                    type_consistency.ignore_member_names = DDS_BOOLEAN_TRUE;
+                    break;
+                case 'f':
+                    type_consistency.ignore_member_names = DDS_BOOLEAN_FALSE;
+                    break;
+                case 'd':
+                    type_consistency.ignore_member_names =
+                            TypeConsistency_get_default().ignore_member_names;
+                    break;
+                default:
+                    logger.log_message("unrecognized value for type_consistency."
+                            "ignore_member_names"
+                            + std::string(1, optarg[0]),
+                            Verbosity::ERROR);
+                    parse_ok = false;
+                    break;
+                }
+            }
             break;
 
           case OPT_CHECK_SEQUENCE_BOUNDS:
-            type_consistency . ignore_sequence_bounds = 0;
+            if (optarg[0] != '\0') {
+                switch (optarg[0]) {
+                case 't':
+                    type_consistency.ignore_sequence_bounds = DDS_BOOLEAN_TRUE;
+                    break;
+                case 'f':
+                    type_consistency.ignore_sequence_bounds = DDS_BOOLEAN_FALSE;
+                    break;
+                case 'd':
+                    type_consistency.ignore_sequence_bounds =
+                            TypeConsistency_get_default().ignore_sequence_bounds;
+                    break;
+                default:
+                    logger.log_message("unrecognized value for type_consistency."
+                            "ignore_sequence_bounds"
+                            + std::string(1, optarg[0]),
+                            Verbosity::ERROR);
+                    parse_ok = false;
+                    break;
+                }
+            }
             break;
 
           case OPT_CHECK_STRING_BOUNDS:
-            type_consistency . ignore_string_bounds = 0;
+            if (optarg[0] != '\0') {
+                switch (optarg[0]) {
+                case 't':
+                    type_consistency.ignore_string_bounds = DDS_BOOLEAN_TRUE;
+                    break;
+                case 'f':
+                    type_consistency.ignore_string_bounds = DDS_BOOLEAN_FALSE;
+                    break;
+                case 'd':
+                    type_consistency.ignore_string_bounds =
+                            TypeConsistency_get_default().ignore_string_bounds;
+                    break;
+                default:
+                    logger.log_message("unrecognized value for type_consistency."
+                            "ignore_string_bounds"
+                            + std::string(1, optarg[0]),
+                            Verbosity::ERROR);
+                    parse_ok = false;
+                    break;
+                }
+            }
             break;
 
           case OPT_PREVENT_TYPE_WIDENING:
-            type_consistency . prevent_type_widening = 1;
+            if (optarg[0] != '\0') {
+                switch (optarg[0]) {
+                case 't':
+                    type_consistency.prevent_type_widening = DDS_BOOLEAN_TRUE;
+                    break;
+                case 'f':
+                    type_consistency.prevent_type_widening = DDS_BOOLEAN_FALSE;
+                    break;
+                case 'd':
+                    type_consistency.prevent_type_widening =
+                            TypeConsistency_get_default().prevent_type_widening;
+                    break;
+                default:
+                    logger.log_message("unrecognized value for type_consistency."
+                            "prevent_type_widening"
+                            + std::string(1, optarg[0]),
+                            Verbosity::ERROR);
+                    parse_ok = false;
+                    break;
+                }
+            }
             break;
-            
+
+          case OPT_ALLOW_TYPE_COERCION:
+            if (optarg[0] != '\0') {
+                switch (optarg[0]) {
+                case 't':
+                    type_consistency.kind = ALLOW_TYPE_COERCION;
+                    break;
+                case 'f':
+                    type_consistency.kind = DISALLOW_TYPE_COERCION;
+                    break;
+                case 'd':
+                    type_consistency.kind =
+                            TypeConsistency_get_default().kind;
+                    break;
+                default:
+                    logger.log_message("unrecognized value for type_consistency."
+                            "kind"
+                            + std::string(1, optarg[0]),
+                            Verbosity::ERROR);
+                    parse_ok = false;
+                    break;
+                }
+            }
+            break;
+
           case 'h':
             {
               print_usage(argv[0]);
@@ -607,18 +803,24 @@ public:
     } else {
       std::string app_kind = publish ? "publisher" : "subscriber";
       logger.log_message("Test Options: "
-                         "\n    This application is a " + app_kind +
-                         "\n    DomainId = " + std::to_string(domain_id) +
-                         "\n    ReliabilityKind = " + QosUtils::to_string(reliability_kind) +
-                         "\n    DurabilityKind = " + QosUtils::to_string(durability_kind) +
-                         "\n    DataRepresentation = " + QosUtils::to_string(data_representation) +
-                         "\n    HistoryDepth = " + std::to_string(history_depth) +
-                         "\n    OwnershipStrength = " + std::to_string(ownership_strength) +
-                         "\n    TimeBasedFilterInterval = " + std::to_string(timebasedfilter_interval) +
-                         "\n    DeadlineInterval = " + std::to_string(deadline_interval) +
-                         "\n    Verbosity = " + QosUtils::to_string(logger.verbosity()),
-                         Verbosity::DEBUG);
-    
+                    "\n    This application is a " + app_kind +
+                    "\n    DomainId = " + std::to_string(domain_id) +
+                    "\n    ReliabilityKind = " + QosUtils::to_string(reliability_kind) +
+                    "\n    DurabilityKind = " + QosUtils::to_string(durability_kind) +
+                    "\n    DataRepresentation = " + QosUtils::to_string(data_representation) +
+                    "\n    HistoryDepth = " + std::to_string(history_depth) +
+                    "\n    OwnershipStrength = " + std::to_string(ownership_strength) +
+                    "\n    TimeBasedFilterInterval = " + std::to_string(timebasedfilter_interval) +
+                    "\n    DeadlineInterval = " + std::to_string(deadline_interval) +
+                    "\n    Force type validation = " + std::to_string(type_consistency.force_type_validation) +
+                    "\n    Ignore member names = " + std::to_string(type_consistency.ignore_member_names) +
+                    "\n    Ignore sequence bounds = " + std::to_string(type_consistency.ignore_sequence_bounds) +
+                    "\n    Ignore string bounds = " + std::to_string(type_consistency.ignore_string_bounds) +
+                    "\n    Prevent type widening = " + std::to_string(type_consistency.prevent_type_widening) +
+                    "\n    Type consistency kind = " + QosUtils::to_string(type_consistency.kind) +
+                    "\n    Verbosity = " + QosUtils::to_string(logger.verbosity()),
+            Verbosity::DEBUG);
+
       if (topic_name != NULL){
         logger.log_message("    Topic = " + std::string(topic_name),
                            Verbosity::DEBUG);
@@ -631,8 +833,12 @@ public:
         logger.log_message("    Types URI = " + std::string(types_uri),
                            Verbosity::DEBUG);
       }
-      if (data_uri != NULL){
-        logger.log_message("    Data  URI = " + std::string(data_uri),
+      if (xml_data_uri != NULL){
+        logger.log_message("    Data  URI = " + std::string(xml_data_uri),
+                           Verbosity::DEBUG);
+      }
+      if (json_data_uri != NULL){
+        logger.log_message("    Data  URI = " + std::string(json_data_uri),
                            Verbosity::DEBUG);
       }
       if (partition != NULL) {
@@ -742,10 +948,10 @@ private:
   Publisher                *pub;
   Subscriber               *sub;
   Topic                    *topic;
-  
   DataReader               *dr;
   DataWriter               *dw;
   DynamicType              *dt;
+
 public:
   //-------------------------------------------------------------
   TestApplication()
@@ -788,8 +994,16 @@ public:
     logger.log_message("Participant created", Verbosity::DEBUG);
 
     dt = CREATE_TYPE( dp, options->types_uri, options->type_name );
-    REGISTER_TYPE( dp, dt, options->type_name );
-        
+    if (dt == NULL) {
+        logger.log_message("failed to create type", Verbosity::ERROR);
+        return false;
+    }
+
+    if (REGISTER_TYPE(dp, dt, options->type_name) != DDS_RETCODE_OK) {
+        logger.log_message("failed to register type", Verbosity::ERROR);
+        return false;
+    }
+
     printf("Create topic: %s\n", options->topic_name );
     topic = dp->create_topic( options->topic_name, options->type_name, TOPIC_QOS_DEFAULT, NULL, 0);
     if (topic == NULL) {
@@ -810,7 +1024,7 @@ public:
     if ( pub != NULL ) {
       return run_publisher(options);
     } else if ( sub != NULL ) {
-      return run_subscriber();
+      return run_subscriber(options);
     }
     CLEANUP_TYPE( dp, dt );
     return false;
@@ -840,7 +1054,7 @@ public:
     logger.log_message("    Reliability = " + QosUtils::to_string(dw_qos.reliability.kind), Verbosity::DEBUG);
     dw_qos.durability.kind  = options->durability_kind;
     logger.log_message("    Durability = " + QosUtils::to_string(dw_qos.durability.kind), Verbosity::DEBUG);
-    
+
 #if   defined(RTI_CONNEXT_DDS)
     DataRepresentationIdSeq data_representation_seq;
     data_representation_seq.ensure_length(1,1);
@@ -885,6 +1099,7 @@ public:
     }
 
     printf("Create writer for topic: %s type: %s\n", options->topic_name, options->type_name );
+
     dw = pub->create_datawriter( topic, dw_qos, NULL, 0);
 
     if (dw == NULL) {
@@ -962,14 +1177,16 @@ public:
 
     dr_qos.type_consistency = options->type_consistency;
     logger.log_message("    TypeConsistency . kind = "  + QosUtils::to_string(dr_qos.type_consistency.kind), Verbosity::DEBUG );
-    logger.log_message("                    . ignore_sequence_bounds = "  + std::to_string(dr_qos.type_consistency.ignore_sequence_bounds ), Verbosity::DEBUG ); 
-    logger.log_message("                    . ignore_string_bounds   = "  + std::to_string(dr_qos.type_consistency.ignore_string_bounds), Verbosity::DEBUG ); 
-    logger.log_message("                    . ignore_member_names    = "  + std::to_string(dr_qos.type_consistency.ignore_member_names), Verbosity::DEBUG ); 
-    logger.log_message("                    . prevent_type_widening  = "  + std::to_string(dr_qos.type_consistency.prevent_type_widening), Verbosity::DEBUG ); 
-    logger.log_message("                    . force_type_validation  = "  + std::to_string(dr_qos.type_consistency.force_type_validation), Verbosity::DEBUG ); 
-    
+    logger.log_message("                    . ignore_sequence_bounds = "  + std::to_string(dr_qos.type_consistency.ignore_sequence_bounds ), Verbosity::DEBUG );
+    logger.log_message("                    . ignore_string_bounds   = "  + std::to_string(dr_qos.type_consistency.ignore_string_bounds), Verbosity::DEBUG );
+    logger.log_message("                    . ignore_member_names    = "  + std::to_string(dr_qos.type_consistency.ignore_member_names), Verbosity::DEBUG );
+    logger.log_message("                    . prevent_type_widening  = "  + std::to_string(dr_qos.type_consistency.prevent_type_widening), Verbosity::DEBUG );
+    logger.log_message("                    . force_type_validation  = "  + std::to_string(dr_qos.type_consistency.force_type_validation), Verbosity::DEBUG );
+
     printf("Create reader for topic: %s\n", options->topic_name );
-    dr = sub->create_datareader(topic, dr_qos, NULL, 0);
+
+    dr = sub->create_datareader(topic, dr_qos, NULL, LISTENER_STATUS_MASK_NONE);
+
 
     if (dr == NULL) {
       logger.log_message("failed to create datareader", Verbosity::ERROR);
@@ -980,34 +1197,57 @@ public:
   }
 
   //-------------------------------------------------------------
-  bool run_subscriber()
+  bool run_subscriber(TestOptions *options)
   {
     while ( ! all_done )  {
       ReturnCode_t     retval;
       DynamicDataSeq   samples;
       SampleInfoSeq    sample_infos;
-      
+
       do {
         DynamicDataReader * ddr = dynamic_cast<DDS::DynamicDataReader*>(dr);
-        retval = ddr->take ( &samples,
-                             &sample_infos,
-                             LENGTH_UNLIMITED,
-                             ANY_SAMPLE_STATE,
-                             ANY_VIEW_STATE,
-                             ANY_INSTANCE_STATE );
+#if   defined(RTI_CONNEXT_DDS) || defined(OPENDDS) || defined(EPROSIMA_FAST_DDS) || defined(INTERCOM_DDS)
+                    retval = ddr->take ( samples,
+                            sample_infos,
+                            LENGTH_UNLIMITED,
+                            ANY_SAMPLE_STATE,
+                            ANY_VIEW_STATE,
+                            ANY_INSTANCE_STATE );
+#elif defined(TWINOAKS_COREDX)
+                    retval = ddr->take ( &samples,
+                            &sample_infos,
+                            LENGTH_UNLIMITED,
+                            ANY_SAMPLE_STATE,
+                            ANY_VIEW_STATE,
+                            ANY_INSTANCE_STATE );
+#endif
         if (retval == RETCODE_OK) {
           unsigned int i;
-          for (i = 0; i < samples.length(); i++)  {
-            DynamicData        *sample      = samples[i];
-            SampleInfo         *sample_info = sample_infos[i];
+          for (i = 0; i < (unsigned int) samples.length(); i++)  {
+#if   defined(RTI_CONNEXT_DDS)
+                DynamicData        *sample      = &samples[i];
+                SampleInfo         *sample_info = &sample_infos[i];
+#elif defined(TWINOAKS_COREDX)
+                DynamicData        *sample      = samples[i];
+                SampleInfo         *sample_info = sample_infos[i];
+#endif
 
             if (sample_info->valid_data)  {
               printf( "sample_received()\n" );
-              PRINT_DATA( sample );
+              PRINT_DATA(sample);
+              if (CHECK_DATA(sample, options->xml_data_uri, options->json_data_uri)) {
+                printf("Received sample is the same as loaded\n");
+              } else {
+                printf("Received sample is not the same as loaded\n");
+              }
             }
           }
 
-          ddr->return_loan( &samples, &sample_infos );
+#if   defined(RTI_CONNEXT_DDS)
+            ddr->return_loan(samples, sample_infos);
+#elif defined(TWINOAKS_COREDX)
+            ddr->return_loan( &samples, &sample_infos );
+#endif
         }
       } while (retval == RETCODE_OK);
 
@@ -1021,21 +1261,36 @@ public:
   //-------------------------------------------------------------
   bool run_publisher(TestOptions *options)
   {
-    DDS::DynamicData * dd = CREATE_DATA( dt );
-    INIT_DATA( dd, options->data_uri );
-    while ( ! all_done )  {
-      dw->write( dd, HANDLE_NIL );
+    DDS::DynamicData * dd = CREATE_DATA(dt);
+    if (dd == NULL) {
+        logger.log_message("Error creating DynamicData", Verbosity::ERROR);
+        return false;
+    }
+
+    if (INIT_DATA(dd, options->xml_data_uri, options->json_data_uri)
+            != DDS_RETCODE_OK) {
+        logger.log_message("Error initializing data", Verbosity::ERROR);
+        return false;
+    }
+
+    while (!all_done) {
+#if defined(RTI_CONNEXT_DDS)
+      DynamicDataWriter *ddw = dynamic_cast<DynamicDataWriter *>(dw);
+      ddw->write(*dd, HANDLE_NIL);
+#else
+      dw->write(*dd, HANDLE_NIL);
+#endif
       if (options->print_writer_samples)
         {
           printf(" Wrote:\n" );
           PRINT_DATA( dd );
-        }            
+        }
       usleep(1000000);
     }
-      
+
     return true;
   }
-  
+
 };
 
 /*************************************************************/
@@ -1046,14 +1301,14 @@ int main( int argc, char * argv[] )
   TestOptions options;
   bool parseResult = options.parse(argc, argv);
   if ( !parseResult  ) {
-    exit(1);
+    exit(ERROR_PARSING_ARGUMENTS);
   }
   TestApplication testApp;
   if ( !testApp.initialize(&options) ) {
-    exit(2);
+    exit(ERROR_INITIALIZING);
   }
   if ( !testApp.run(&options) ) {
-    exit(2);
+    exit(ERROR_RUNNING);
   }
 
   printf("Done.\n");

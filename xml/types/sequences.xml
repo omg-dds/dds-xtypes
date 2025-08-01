@@ -1,88 +1,99 @@
-<module name="Test">
+<dds>
+    <types>
+      <module name="Test">
+        <struct name="int32"   extensibility="final">
+            <member name="x1"   type="int32" sequenceMaxLength="-1"  /> <!-- unlimited (0 or -1) -->
+        </struct>
 
-  <enum name="E1" bitBound="32" extensibility="appendable">
-    <enumerator name="VAL0" value="0"/>
-    <enumerator name="VAL1" value="1"/>
-    <enumerator name="VAL2" value="2"/>
-  </enum>
-  
-  <enum name="E2" bitBound="32" extensibility="appendable">
-    <enumerator name="VAL0" value="0"/>
-    <enumerator name="VAL1" value="1"/>
-    <enumerator name="VAL2" value="2"/>
-    <enumerator name="VAL3" value="3"/> 
-  </enum>
+        <struct name="int32x10"   extensibility="final">
+            <member name="x1"   type="int32" sequenceMaxLength="10"  />
+        </struct>
 
-  <struct name="int32"   extensibility="final">
-    <member name="x1"   type="int32" sequenceMaxLength="-1"  /> <!-- unlimited (0 or -1) -->
-  </struct>
-  
-  <struct name="int32x10"   extensibility="final">
-    <member name="x1"   type="int32" sequenceMaxLength="10"  /> 
-  </struct>
+        <struct name="int32x20"   extensibility="final">
+            <member name="x1"   type="int32" sequenceMaxLength="20"  />
+        </struct>
 
-  <struct name="int32x20"   extensibility="final">
-    <member name="x1"   type="int32" sequenceMaxLength="20"  /> 
-  </struct>
-  
-  <struct name="uint32x10"   extensibility="final">
-    <member name="x1"   type="uint32" sequenceMaxLength="10"  /> 
-  </struct>
+        <struct name="uint32x10"   extensibility="final">
+            <member name="x1"   type="uint32" sequenceMaxLength="10"  />
+        </struct>
 
-  <struct name="uint32x20"   extensibility="final">
-    <member name="x1"   type="uint32" sequenceMaxLength="20"  /> 
-  </struct>
+        <struct name="uint32x20"   extensibility="final">
+            <member name="x1"   type="uint32" sequenceMaxLength="20"  />
+        </struct>
 
 
-  <!-- sequence of string types -->
-  <struct name="string10x10"   extensibility="final">
-    <member name="x1"   type="string" stringMaxLength="10" sequenceMaxLength="10"  /> 
-  </struct>
-  <struct name="string20x10"   extensibility="final">
-    <member name="x1"   type="string" stringMaxLength="20" sequenceMaxLength="10"  /> 
-  </struct>
+        <!-- sequence of string types -->
+        <struct name="string10x10"   extensibility="final">
+            <member name="x1"   type="string" stringMaxLength="10" sequenceMaxLength="10"  />
+        </struct>
+        <struct name="string20x10"   extensibility="final">
+            <member name="x1"   type="string" stringMaxLength="20" sequenceMaxLength="10"  />
+        </struct>
 
-  <!-- sequence of enum types -->
-  <struct name="enum1"   extensibility="final">
-    <member name="x1"   type="nonBasic" nonBasicTypeName="E1" sequenceMaxLength="10"  /> 
-  </struct>
-  <struct name="enum2"   extensibility="final">
-    <member name="x1"   type="nonBasic" nonBasicTypeName="E2" sequenceMaxLength="10"  /> 
-  </struct>
-  
-  
-  <!-- check 'strongly assignable' element type -->
-  <struct name="S_final"   extensibility="final">
-    <member name="x1"   type="uint32" sequenceMaxLength="20"  /> 
-  </struct>
-  <struct name="S_final_alt"   extensibility="final">
-    <member name="x1"   type="uint32" sequenceMaxLength="20"  /> 
-  </struct>
+        <!-- sequence of enum types -->
+        <enum name="E1" bitBound="32" extensibility="appendable">
+            <enumerator name="VAL0" value="0"/>
+            <enumerator name="VAL1" value="1"/>
+            <enumerator name="VAL2" value="2"/>
+        </enum>
 
-  <struct name="S_appendable"   extensibility="appendable">
-    <member name="x1"   type="uint32" sequenceMaxLength="20"  /> 
-  </struct>
-  <struct name="S_appendable_alt"   extensibility="appendable">
-    <member name="x1_alt"   type="uint32" sequenceMaxLength="20"  /> 
-  </struct>
+        <enum name="E2" bitBound="32" extensibility="appendable">
+            <enumerator name="VAL0" value="0"/>
+            <enumerator name="VAL1" value="1"/>
+            <enumerator name="VAL2" value="2"/>
+            <enumerator name="VAL3" value="3"/>
+        </enum>
+        <struct name="enum1"   extensibility="final">
+            <member name="x1"   type="nonBasic" nonBasicTypeName="E1" sequenceMaxLength="10"  />
+        </struct>
+        <struct name="enum2"   extensibility="final">
+            <member name="x1"   type="nonBasic" nonBasicTypeName="E2" sequenceMaxLength="10"  />
+        </struct>
 
-  <struct name="S_mutable"   extensibility="mutable">
-    <member name="x1"   type="uint32" sequenceMaxLength="20"  /> 
-  </struct>
 
-  <struct name="sfinalx10"   extensibility="final">
-    <member name="x1"   type="nonBasic" nonBasicTypeName="S_final" sequenceMaxLength="10"  /> 
-  </struct>
-  <struct name="sfinalx10_alt"   extensibility="final">
-    <member name="altx1"   type="nonBasic" nonBasicTypeName="S_final_alt" sequenceMaxLength="10"  /> 
-  </struct>
+        <!-- check 'strongly assignable' element type -->
+        <struct name="F_S__seq20_uint32"   extensibility="final">
+            <member name="x1"   type="uint32" sequenceMaxLength="20"  />
+        </struct>
+        <struct name="F_S__seq20_uint32_alt"   extensibility="final">
+            <member name="altx1"   type="uint32" sequenceMaxLength="20"  />
+        </struct>
 
-  <struct name="sappendablex10"   extensibility="final">
-    <member name="x1"   type="nonBasic" nonBasicTypeName="S_appendable" sequenceMaxLength="10"  /> 
-  </struct>
-  <struct name="sappendablex10_alt"   extensibility="final">
-    <member name="x1_alt"   type="nonBasic" nonBasicTypeName="S_appendable_alt" sequenceMaxLength="10"  /> 
-  </struct>
+        <struct name="A_S__seq20_uint32"   extensibility="appendable">
+            <member name="x1"   type="uint32" sequenceMaxLength="20"  />
+        </struct>
+        <struct name="A_S__seq20_uint32_alt"   extensibility="appendable">
+            <member name="altx1"   type="uint32" sequenceMaxLength="20"  />
+        </struct>
 
-  
-</module>
+        <struct name="M_S__seq20_uint32"   extensibility="mutable">
+            <member name="x1"   type="uint32" sequenceMaxLength="20"  />
+        </struct>
+        <struct name="M_S__seq20_uint32_alt"   extensibility="mutable">
+            <member name="altx1"   type="uint32" sequenceMaxLength="20"  />
+        </struct>
+
+        <struct name="F_S__seq10_F_S__seq20_uint32"   extensibility="final">
+            <member name="x1"   type="nonBasic" nonBasicTypeName="F_S__seq20_uint32" sequenceMaxLength="10"  />
+        </struct>
+        <struct name="F_S__seq10_F_S__seq20_uint32_alt"   extensibility="final">
+            <member name="altx1"   type="nonBasic" nonBasicTypeName="F_S__seq20_uint32_alt" sequenceMaxLength="10"  />
+        </struct>
+
+        <struct name="F_S__seq10_A_S__seq20_uint32"   extensibility="final">
+            <member name="x1"   type="nonBasic" nonBasicTypeName="A_S__seq20_uint32" sequenceMaxLength="10"  />
+        </struct>
+        <struct name="F_S__seq10_A_S__seq20_uint32_alt"   extensibility="final">
+            <member name="altx1"   type="nonBasic" nonBasicTypeName="A_S__seq20_uint32_alt" sequenceMaxLength="10"  />
+        </struct>
+
+        <struct name="F_S__seq10_M_S__seq20_uint32"   extensibility="final">
+            <member name="x1"   type="nonBasic" nonBasicTypeName="M_S__seq20_uint32" sequenceMaxLength="10"  />
+        </struct>
+        <struct name="F_S__seq10_M_S__seq20_uint32_alt"   extensibility="final">
+            <member name="altx1"   type="nonBasic" nonBasicTypeName="M_S__seq20_uint32_alt" sequenceMaxLength="10"  />
+        </struct>
+
+      </module>
+    </types>
+</dds>

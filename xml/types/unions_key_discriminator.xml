@@ -1,0 +1,9 @@
+<dds>
+    <types>
+        <!-- discriminator key vs not -->
+        <union name="union_uint32_key" ><discriminator type="uint32" key="true"/>
+            <case><caseDiscriminator value="2"/><member name="x1" type="int16"/></case>
+            <case><caseDiscriminator value="1"/><member name="x2" type="int32"/></case>
+        </union>
+    </types>
+</dds>

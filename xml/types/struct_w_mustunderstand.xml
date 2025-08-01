@@ -1,0 +1,13 @@
+<dds>
+    <types>
+        <!-- member mustUnderstand  -->
+        <struct name="struct_mustUnderstand"   extensibility="appendable">
+            <member name="x1"                       type="int32"/>
+            <member name="x2" mustUnderstand="true" type="int32"/>
+        </struct>
+
+        <struct name="struct_int32"   extensibility="appendable">
+            <member name="x1" type="int32"/>
+        </struct>
+    </types>
+</dds>

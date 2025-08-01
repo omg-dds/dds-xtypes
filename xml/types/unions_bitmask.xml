@@ -1,0 +1,29 @@
+<dds>
+    <types>
+      <module name="Test">
+
+        <bitmask name="B_16" bitBound="16">
+            <flag name="B_FLAG_1" value="0"/>
+            <flag name="B_FLAG_2" value="1"/>
+        </bitmask>
+
+        <bitmask name="B_32" bitBound="32">
+            <flag name="B_FLAG_1" value="0"/>
+            <flag name="B_FLAG_2" value="1"/>
+            <flag name="B_FLAG_3" value="2"/>
+        </bitmask>
+
+        <union name="union_bitmask16" ><discriminator type="nonBasic" nonBasicTypeName="B_16"/>
+            <case><caseDiscriminator value="2"/><member name="x1" type="int16"/></case>
+            <case><caseDiscriminator value="1"/><member name="x2" type="int32"/></case>
+        </union>
+
+        <union name="union_bitmask32" ><discriminator type="nonBasic" nonBasicTypeName="B_32"/>
+            <case><caseDiscriminator value="2"/><member name="x1" type="int16"/></case>
+            <case><caseDiscriminator value="1"/><member name="x2" type="int32"/></case>
+        </union>
+
+      </module>
+
+    </types>
+</dds>

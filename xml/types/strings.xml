@@ -1,28 +1,32 @@
-<module name="Test">
+<dds>
+    <types>
+        <module name="Test">
 
-  <struct name="string"   extensibility="final">
-    <member name="x1"   type="string"   /> 
-  </struct>
+        <struct name="string"   extensibility="final">
+            <member name="x1"   type="string"   />
+        </struct>
 
-  <struct name="string10"   extensibility="final">
-    <member name="x1"   type="string" stringMaxLength="10"  /> 
-  </struct>
-  
-  <struct name="string20"   extensibility="final">
-    <member name="x1"   type="string" stringMaxLength="20"  /> 
-  </struct>
+        <struct name="string10"   extensibility="final">
+            <member name="x1"   type="string" stringMaxLength="10"  />
+        </struct>
 
-  
-  <struct name="wstring"   extensibility="final">
-    <member name="x1"   type="wstring"   /> 
-  </struct>
+        <struct name="string20"   extensibility="final">
+            <member name="x1"   type="string" stringMaxLength="20"  />
+        </struct>
 
-  <struct name="wstring10"   extensibility="final">
-    <member name="x1"   type="wstring" stringMaxLength="10"  /> 
-  </struct>
-  
-  <struct name="wstring20"   extensibility="final">
-    <member name="x1"   type="wstring" stringMaxLength="20"  /> 
-  </struct>
 
-</module>
+        <struct name="wstring"   extensibility="final">
+            <member name="x1"   type="wstring"   />
+        </struct>
+
+        <struct name="wstring10"   extensibility="final">
+            <member name="x1"   type="wstring" stringMaxLength="10"  />
+        </struct>
+
+        <struct name="wstring20"   extensibility="final">
+            <member name="x1"   type="wstring" stringMaxLength="20"  />
+        </struct>
+
+        </module>
+    </types>
+</dds>
