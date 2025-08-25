@@ -215,7 +215,7 @@ Logger logger(ERROR);
 
 /*************************************************************/
 
-#define OPT_DO_TYPE_VALIDATION       0x1000
+#define OPT_FORCE_TYPE_VALIDATION    0x1000
 #define OPT_CHECK_MEMBER_NAMES       0x1001
 #define OPT_CHECK_SEQUENCE_BOUNDS    0x1002
 #define OPT_CHECK_STRING_BOUNDS      0x1003
@@ -225,12 +225,12 @@ Logger logger(ERROR);
 static struct option long_opts[] =
   {
     { "help",                  no_argument, NULL, 'h'    },
-    { "do-type-validation",    required_argument, NULL, OPT_DO_TYPE_VALIDATION     },
+    { "force-type-validation", required_argument, NULL, OPT_FORCE_TYPE_VALIDATION  },
     { "ignore-member-names",   required_argument, NULL, OPT_CHECK_MEMBER_NAMES     },
     { "ignore-seq-bounds",     required_argument, NULL, OPT_CHECK_SEQUENCE_BOUNDS  },
     { "ignore-str-bounds",     required_argument, NULL, OPT_CHECK_STRING_BOUNDS    },
     { "prevent-type-widening", required_argument, NULL, OPT_PREVENT_TYPE_WIDENING  },
-    { "allow-type-coercion",   required_argument, NULL, OPT_ALLOW_TYPE_COERCION  },
+    { "allow-type-coercion",   required_argument, NULL, OPT_ALLOW_TYPE_COERCION    },
     { NULL, 0, NULL, 0 }
   };
 
@@ -339,7 +339,7 @@ public:
     printf("   -J <json_data_uri> : json file with data sample values. XML and JSON may be\n");
     printf("                        provided, the app is in charge of using what it needs\n");
     printf("   -w              : print Publisher's samples\n");
-    printf("   --do-type-validation [t|f|d]: enable, disable or default value for\n");
+    printf("   --force-type-validation [t|f|d]: enable, disable or default value for\n");
     printf("                                 type_consistency.force_type_validation\n");
     printf("   --ignore-member-names [t|f|d]: enable, disable or default value for\n");
     printf("                                 type_consistency.ignore_member_names\n");
@@ -633,7 +633,7 @@ public:
               json_data_uri = strdup(optarg);
               break;
             }
-          case OPT_DO_TYPE_VALIDATION:
+          case OPT_FORCE_TYPE_VALIDATION:
             if (optarg[0] != '\0') {
                 switch (optarg[0]) {
                 case 't':
@@ -801,25 +801,29 @@ public:
     if ( !parse_ok ) {
       print_usage(argv[0]);
     } else {
-      std::string app_kind = publish ? "publisher" : "subscriber";
-      logger.log_message("Test Options: "
-                    "\n    This application is a " + app_kind +
-                    "\n    DomainId = " + std::to_string(domain_id) +
-                    "\n    ReliabilityKind = " + QosUtils::to_string(reliability_kind) +
-                    "\n    DurabilityKind = " + QosUtils::to_string(durability_kind) +
-                    "\n    DataRepresentation = " + QosUtils::to_string(data_representation) +
-                    "\n    HistoryDepth = " + std::to_string(history_depth) +
-                    "\n    OwnershipStrength = " + std::to_string(ownership_strength) +
-                    "\n    TimeBasedFilterInterval = " + std::to_string(timebasedfilter_interval) +
-                    "\n    DeadlineInterval = " + std::to_string(deadline_interval) +
+        std::string app_kind = publish ? "publisher" : "subscriber";
+        logger.log_message("Test Options: "
+                "\n    This application is a " + app_kind +
+                "\n    DomainId = " + std::to_string(domain_id) +
+                "\n    ReliabilityKind = " + QosUtils::to_string(reliability_kind) +
+                "\n    DurabilityKind = " + QosUtils::to_string(durability_kind) +
+                "\n    DataRepresentation = " + QosUtils::to_string(data_representation) +
+                "\n    HistoryDepth = " + std::to_string(history_depth) +
+                "\n    OwnershipStrength = " + std::to_string(ownership_strength) +
+                "\n    TimeBasedFilterInterval = " + std::to_string(timebasedfilter_interval) +
+                "\n    DeadlineInterval = " + std::to_string(deadline_interval) +
+                "\n    Type consistency kind = " + QosUtils::to_string(type_consistency.kind) +
+                "\n    Verbosity = " + QosUtils::to_string(logger.verbosity()),
+            Verbosity::DEBUG);
+        if (!publish) {
+            logger.log_message(
                     "\n    Force type validation = " + std::to_string(type_consistency.force_type_validation) +
                     "\n    Ignore member names = " + std::to_string(type_consistency.ignore_member_names) +
                     "\n    Ignore sequence bounds = " + std::to_string(type_consistency.ignore_sequence_bounds) +
                     "\n    Ignore string bounds = " + std::to_string(type_consistency.ignore_string_bounds) +
-                    "\n    Prevent type widening = " + std::to_string(type_consistency.prevent_type_widening) +
-                    "\n    Type consistency kind = " + QosUtils::to_string(type_consistency.kind) +
-                    "\n    Verbosity = " + QosUtils::to_string(logger.verbosity()),
-            Verbosity::DEBUG);
+                    "\n    Prevent type widening = " + std::to_string(type_consistency.prevent_type_widening),
+                Verbosity::DEBUG);
+      }
 
       if (topic_name != NULL){
         logger.log_message("    Topic = " + std::string(topic_name),
@@ -1176,12 +1180,12 @@ public:
     }
 
     dr_qos.type_consistency = options->type_consistency;
-    logger.log_message("    TypeConsistency . kind = "  + QosUtils::to_string(dr_qos.type_consistency.kind), Verbosity::DEBUG );
-    logger.log_message("                    . ignore_sequence_bounds = "  + std::to_string(dr_qos.type_consistency.ignore_sequence_bounds ), Verbosity::DEBUG );
-    logger.log_message("                    . ignore_string_bounds   = "  + std::to_string(dr_qos.type_consistency.ignore_string_bounds), Verbosity::DEBUG );
-    logger.log_message("                    . ignore_member_names    = "  + std::to_string(dr_qos.type_consistency.ignore_member_names), Verbosity::DEBUG );
-    logger.log_message("                    . prevent_type_widening  = "  + std::to_string(dr_qos.type_consistency.prevent_type_widening), Verbosity::DEBUG );
-    logger.log_message("                    . force_type_validation  = "  + std::to_string(dr_qos.type_consistency.force_type_validation), Verbosity::DEBUG );
+    logger.log_message("    TypeConsistency * kind = "  + QosUtils::to_string(dr_qos.type_consistency.kind), Verbosity::DEBUG );
+    logger.log_message("                    * ignore_sequence_bounds = "  + std::to_string(dr_qos.type_consistency.ignore_sequence_bounds ), Verbosity::DEBUG );
+    logger.log_message("                    * ignore_string_bounds   = "  + std::to_string(dr_qos.type_consistency.ignore_string_bounds), Verbosity::DEBUG );
+    logger.log_message("                    * ignore_member_names    = "  + std::to_string(dr_qos.type_consistency.ignore_member_names), Verbosity::DEBUG );
+    logger.log_message("                    * prevent_type_widening  = "  + std::to_string(dr_qos.type_consistency.prevent_type_widening), Verbosity::DEBUG );
+    logger.log_message("                    * force_type_validation  = "  + std::to_string(dr_qos.type_consistency.force_type_validation), Verbosity::DEBUG );
 
     printf("Create reader for topic: %s\n", options->topic_name );
 
