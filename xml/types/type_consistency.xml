@@ -1,0 +1,27 @@
+<dds>
+    <types>
+        <module name="Test">
+            <struct name="struct_x1"   extensibility="appendable">
+                <member name="x1" type="int32" />
+            </struct>
+            <struct name="struct_x2"   extensibility="appendable">
+                <member name="x2" type="int32" />
+            </struct>
+
+            <struct name="seq_int32x10"   extensibility="final">
+                <member name="x1"   type="int32" sequenceMaxLength="10"  />
+            </struct>
+            <struct name="seq_int32x20"   extensibility="final">
+                <member name="x1"   type="int32" sequenceMaxLength="20"  />
+            </struct>
+
+            <struct name="string10"   extensibility="final">
+                <member name="x1"   type="string" stringMaxLength="10"  />
+            </struct>
+            <struct name="string20"   extensibility="final">
+                <member name="x1"   type="string" stringMaxLength="20"  />
+            </struct>
+
+        </module>
+    </types>
+</dds>

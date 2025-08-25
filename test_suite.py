@@ -9,6 +9,366 @@
 from rtps_test_utilities import ReturnCode
 import test_suite_functions as tsf
 
+xtypes_v2_extensibility_rules = {
+    'final_1' : {
+        'common_args' : ['-X xml/types/extensibility.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::struct_f1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
+                  'sub-exe -S -t test -y Test::struct_f1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --ignore-member-names f'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'final_2' : {
+        'common_args' : ['-X xml/types/extensibility.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::struct_f1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
+                  'sub-exe -S -t test -y Test::struct_f2 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --ignore-member-names f'],
+        'expected_codes' : [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'appendable_1' : {
+        'common_args' : ['-X xml/types/extensibility.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::struct_a1 -V xml/data/arrays.xml -J json/data/struct_num_x1.json',
+                  'sub-exe -S -t test -y Test::struct_a1 -V xml/data/arrays.xml -J json/data/struct_num_x1.json --ignore-member-names f'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'appendable_2' : {
+        'common_args' : ['-X xml/types/extensibility.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::struct_a1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
+                  'sub-exe -S -t test -y Test::struct_a2 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --ignore-member-names f'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'appendable_3' : {
+        'common_args' : ['-X xml/types/extensibility.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::struct_a2 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x2.json',
+                  'sub-exe -S -t test -y Test::struct_a1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --ignore-member-names f'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'appendable_4' : {
+        'common_args' : ['-X xml/types/extensibility.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::struct_a2 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x2.json',
+                  'sub-exe -S -t test -y Test::struct_a3 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x2.json --ignore-member-names f'],
+        'expected_codes' : [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'appendable_5' : {
+        'common_args' : ['-X xml/types/extensibility.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::struct_a3 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x3_x2.json',
+                  'sub-exe -S -t test -y Test::struct_a2 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x2.json --ignore-member-names f'],
+        'expected_codes' : [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+
+    'mutable_1' : {
+        'common_args' : ['-X xml/types/extensibility.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::struct_m1 -V xml/data/arrays.xml -J json/data/struct_num_x1.json',
+                  'sub-exe -S -t test -y Test::struct_m1 -V xml/data/arrays.xml -J json/data/struct_num_x1.json --ignore-member-names f'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'mutable_2' : {
+        'common_args' : ['-X xml/types/extensibility.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::struct_m1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
+                  'sub-exe -S -t test -y Test::struct_m2 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --ignore-member-names f'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'mutable_3' : {
+        'common_args' : ['-X xml/types/extensibility.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::struct_m2 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x2.json',
+                  'sub-exe -S -t test -y Test::struct_m1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --ignore-member-names f'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'mutable_4' : {
+        'common_args' : ['-X xml/types/extensibility.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::struct_m2 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x2.json',
+                  'sub-exe -S -t test -y Test::struct_m3 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x2.json --ignore-member-names f'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'mutable_5' : {
+        'common_args' : ['-X xml/types/extensibility.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::struct_m3 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x3_x2.json',
+                  'sub-exe -S -t test -y Test::struct_m2 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x2.json --ignore-member-names f'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'mutable_6' : {
+        'common_args' : ['-X xml/types/extensibility.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::struct_m2 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x2.json',
+                  'sub-exe -S -t test -y Test::struct_m4 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x2.json --ignore-member-names f'],
+        'expected_codes' : [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+}
+
+
+xtypes_v2_type_consistency_rules = {
+    'ignore_member_names_1' : {
+        'common_args' : ['-X xml/types/type_consistency.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::struct_x1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
+                  'sub-exe -S -t test -y Test::struct_x2 -V xml/data/struct_1.xml -J json/data/struct_num_x2.json --ignore-member-names t'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'ignore_member_names_2' : {
+        'common_args' : ['-X xml/types/type_consistency.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::struct_x1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
+                  'sub-exe -S -t test -y Test::struct_x2 -V xml/data/struct_1.xml -J json/data/struct_num_x2.json --ignore-member-names f'],
+        'expected_codes' : [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'ignore_member_names_3' : {
+        'common_args' : ['-X xml/types/type_consistency.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::struct_x1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
+                  'sub-exe -S -t test -y Test::struct_x2 -V xml/data/struct_1.xml -J json/data/struct_num_x2.json --ignore-member-names d'],
+        'expected_codes' : [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'ignore_seq_bounds_1' : {
+        'common_args' : ['-X xml/types/type_consistency.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::seq_int32x10 -V xml/data/arrays.xml -J json/data/array_num_10.json',
+                  'sub-exe -S -t test -y Test::seq_int32x20 -V xml/data/arrays.xml -J json/data/array_num_10.json --ignore-seq-bounds t'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'ignore_seq_bounds_2' : {
+        'common_args' : ['-X xml/types/type_consistency.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::seq_int32x10 -V xml/data/arrays.xml -J json/data/array_num_10.json',
+                  'sub-exe -S -t test -y Test::seq_int32x20 -V xml/data/arrays.xml -J json/data/array_num_10.json --ignore-seq-bounds f'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'ignore_seq_bounds_3' : {
+        'common_args' : ['-X xml/types/type_consistency.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::seq_int32x10 -V xml/data/arrays.xml -J json/data/array_num_10.json',
+                  'sub-exe -S -t test -y Test::seq_int32x20 -V xml/data/arrays.xml -J json/data/array_num_10.json --ignore-seq-bounds d'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'ignore_seq_bounds_4' : {
+        'common_args' : ['-X xml/types/type_consistency.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::seq_int32x20 -V xml/data/arrays.xml -J json/data/array_num_20.json',
+                  'sub-exe -S -t test -y Test::seq_int32x10 -V xml/data/arrays.xml -J json/data/array_num_10.json --ignore-seq-bounds t'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.DATA_NOT_RECEIVED],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'ignore_seq_bounds_5' : {
+        'common_args' : ['-X xml/types/type_consistency.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::seq_int32x20 -V xml/data/arrays.xml -J json/data/array_num_20.json',
+                  'sub-exe -S -t test -y Test::seq_int32x10 -V xml/data/arrays.xml -J json/data/array_num_10.json --ignore-seq-bounds f'],
+        'expected_codes' : [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'ignore_seq_bounds_6' : {
+        'common_args' : ['-X xml/types/type_consistency.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::seq_int32x20 -V xml/data/arrays.xml -J json/data/array_num_20.json',
+                  'sub-exe -S -t test -y Test::seq_int32x10 -V xml/data/arrays.xml -J json/data/array_num_10.json --ignore-seq-bounds d'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.DATA_NOT_RECEIVED],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'ignore_seq_bounds_7' : {
+        'common_args' : ['-X xml/types/type_consistency.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::seq_int32x20 -V xml/data/arrays.xml -J json/data/array_num_10.json',
+                  'sub-exe -S -t test -y Test::seq_int32x10 -V xml/data/arrays.xml -J json/data/array_num_10.json --ignore-seq-bounds t'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'ignore_str_bounds_1' : {
+        'common_args' : ['-X xml/types/type_consistency.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::string10 -V xml/data/strings_hello.xml -J json/data/strings_hello.json',
+                  'sub-exe -S -t test -y Test::string20 -V xml/data/strings_hello.xml -J json/data/strings_hello.json --ignore-str-bounds t'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'ignore_str_bounds_2' : {
+        'common_args' : ['-X xml/types/type_consistency.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::string10 -V xml/data/strings_hello.xml -J json/data/strings_hello.json',
+                  'sub-exe -S -t test -y Test::string20 -V xml/data/strings_hello.xml -J json/data/strings_hello.json --ignore-str-bounds f'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'ignore_str_bounds_3' : {
+        'common_args' : ['-X xml/types/type_consistency.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::string10 -V xml/data/strings_hello.xml -J json/data/strings_hello.json',
+                  'sub-exe -S -t test -y Test::string20 -V xml/data/strings_hello.xml -J json/data/strings_hello.json --ignore-str-bounds d'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'ignore_str_bounds_4' : {
+        'common_args' : ['-X xml/types/type_consistency.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::string20 -V xml/data/strings_hello.xml -J json/data/strings.json',
+                  'sub-exe -S -t test -y Test::string10 -V xml/data/strings_hello.xml -J json/data/strings.json --ignore-str-bounds t'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.DATA_NOT_RECEIVED],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'ignore_str_bounds_5' : {
+        'common_args' : ['-X xml/types/type_consistency.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::string20 -V xml/data/strings_hello.xml -J json/data/strings.json',
+                  'sub-exe -S -t test -y Test::string10 -V xml/data/strings_hello.xml -J json/data/strings.json --ignore-str-bounds f'],
+        'expected_codes' : [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'ignore_str_bounds_6' : {
+        'common_args' : ['-X xml/types/type_consistency.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::string20 -V xml/data/strings_hello.xml -J json/data/strings.json',
+                  'sub-exe -S -t test -y Test::string10 -V xml/data/strings_hello.xml -J json/data/strings.json --ignore-str-bounds d'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.DATA_NOT_RECEIVED],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'ignore_str_bounds_7' : {
+        'common_args' : ['-X xml/types/type_consistency.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::string20 -V xml/data/strings_hello.xml -J json/data/strings_hello.json',
+                  'sub-exe -S -t test -y Test::string10 -V xml/data/strings_hello.xml -J json/data/strings_hello.json --ignore-str-bounds t'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'prevent_type_widening_1' : {
+        'common_args' : ['-X xml/types/extensibility.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::struct_f1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
+                  'sub-exe -S -t test -y Test::struct_f2 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --prevent-type-widening t'],
+        'expected_codes' : [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'prevent_type_widening_2' : {
+        'common_args' : ['-X xml/types/extensibility.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::struct_f1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
+                  'sub-exe -S -t test -y Test::struct_f2 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --prevent-type-widening f'],
+        'expected_codes' : [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'prevent_type_widening_3' : {
+        'common_args' : ['-X xml/types/extensibility.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::struct_f1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
+                  'sub-exe -S -t test -y Test::struct_f2 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --prevent-type-widening d'],
+        'expected_codes' : [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'prevent_type_widening_4' : {
+        'common_args' : ['-X xml/types/extensibility.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::struct_a1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
+                  'sub-exe -S -t test -y Test::struct_a2 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --prevent-type-widening t'],
+        'expected_codes' : [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'prevent_type_widening_5' : {
+        'common_args' : ['-X xml/types/extensibility.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::struct_a1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
+                  'sub-exe -S -t test -y Test::struct_a2 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --prevent-type-widening f'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'prevent_type_widening_6' : {
+        'common_args' : ['-X xml/types/extensibility.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::struct_a1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
+                  'sub-exe -S -t test -y Test::struct_a2 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --prevent-type-widening d'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'prevent_type_widening_7' : {
+        'common_args' : ['-X xml/types/extensibility.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::struct_m1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
+                  'sub-exe -S -t test -y Test::struct_m2 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --prevent-type-widening t'],
+        'expected_codes' : [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'prevent_type_widening_8' : {
+        'common_args' : ['-X xml/types/extensibility.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::struct_m1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
+                  'sub-exe -S -t test -y Test::struct_m2 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --prevent-type-widening f'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'prevent_type_widening_9' : {
+        'common_args' : ['-X xml/types/extensibility.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::struct_m1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
+                  'sub-exe -S -t test -y Test::struct_m2 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --prevent-type-widening d'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+}
+
+
 xtypes_v2_array_rules = {
     'int32[10]' : {
         'common_args' : ['-X xml/types/arrays.xml'],
@@ -155,7 +515,7 @@ xtypes_v2_sequence_rules = {
         'common_args' : ['-X xml/types/sequences.xml'],
         'apps' : ['pub-exe -P -t test -y Test::int32x20 -V xml/data/sequences.xml -J json/data/array_num_20.json',
                   'sub-exe -S -t test -y Test::int32x10 -V xml/data/sequences.xml -J json/data/array_num_10.json'],
-        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.DATA_NOT_RECEIVED],
         'check_function' : tsf.data_is_correct,
         'title' : '',
         'description' : ''
@@ -290,7 +650,7 @@ xtypes_v2_string_rules = {
         'common_args' : ['-X xml/types/strings.xml'],
         'apps' : ['pub-exe -P -t test -y Test::string -V xml/data/strings.xml -J json/data/strings.json',
                   'sub-exe -S -t test -y Test::string10 -V xml/data/strings.xml -J json/data/strings.json'],
-        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.DATA_NOT_RECEIVED],
         'check_function' : tsf.data_is_correct,
         'title' : '',
         'description' : ''
@@ -336,7 +696,7 @@ xtypes_v2_string_rules = {
         'common_args' : ['-X xml/types/strings.xml'],
         'apps' : ['pub-exe -P -t test -y Test::wstring -V xml/data/wstrings.xml -J json/data/wstrings.json',
                   'sub-exe -S -t test -y Test::wstring10 -V xml/data/wstrings.xml -J json/data/wstrings.json'],
-        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.DATA_NOT_RECEIVED],
         'check_function' : tsf.data_is_correct,
         'title' : '',
         'description' : ''
@@ -486,8 +846,8 @@ xtypes_v2_struct_test_suite = {
     },
     'struct_different_ids_ok': {
         'common_args': ['-X xml/types/struct_names.xml'],
-        'apps': ['pub-exe -P -t test -y Test::struct_1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
-                 'sub-exe -S -t test -y Test::struct_2 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json'],
+        'apps': ['pub-exe -P -t test -y Test::struct_1 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x5.json',
+                 'sub-exe -S -t test -y Test::struct_2 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x5.json'],
         'expected_codes': [ReturnCode.OK, ReturnCode.OK],
         'check_function': tsf.data_is_correct,
         'title': '',
@@ -495,8 +855,8 @@ xtypes_v2_struct_test_suite = {
     },
     'struct_different_ids': {
         'common_args': ['-X xml/types/struct_names.xml'],
-        'apps': ['pub-exe -P -t test -y Test::struct_1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
-                 'sub-exe -S -t test -y Test::struct_2 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --ignore-member-names f'
+        'apps': ['pub-exe -P -t test -y Test::struct_1 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x5.json',
+                 'sub-exe -S -t test -y Test::struct_2 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x5.json --ignore-member-names f'
         ],
         'expected_codes': [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
         'check_function': tsf.data_is_correct,
@@ -598,7 +958,7 @@ xtypes_v2_struct_test_suite = {
         'common_args': ['-X xml/types/struct_names.xml'],
         'apps': ['pub-exe -P -t test -y Test::struct_key_string20 -V xml/data/struct_str.xml -J json/data/struct_str_x1.json',
                  'sub-exe -S -t test -y Test::struct_key_string10 -V xml/data/struct_str.xml -J json/data/struct_str_x1.json'],
-        'expected_codes': [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
+        'expected_codes': [ReturnCode.OK, ReturnCode.OK],
         'check_function': tsf.data_is_correct,
         'title': '',
         'description': ''
@@ -616,7 +976,7 @@ xtypes_v2_struct_test_suite = {
         'common_args': ['-X xml/types/struct_names.xml'],
         'apps': ['pub-exe -P -t test -y Test::struct_key_enum_2 -V xml/data/struct_enum.xml -J json/data/struct_enum.json',
                  'sub-exe -S -t test -y Test::struct_key_enum_1 -V xml/data/struct_enum.xml -J json/data/struct_enum.json'],
-        'expected_codes': [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
+        'expected_codes': [ReturnCode.OK, ReturnCode.OK],
         'check_function': tsf.data_is_correct,
         'title': '',
         'description': ''
@@ -634,7 +994,7 @@ xtypes_v2_struct_test_suite = {
         'common_args': ['-X xml/types/struct_names.xml'],
         'apps': ['pub-exe -P -t test -y Test::struct_key_seq20 -V xml/data/struct_seq.xml -J json/data/struct_seq.json',
                  'sub-exe -S -t test -y Test::struct_key_seq10 -V xml/data/struct_seq.xml -J json/data/struct_seq.json'],
-        'expected_codes': [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
+        'expected_codes': [ReturnCode.OK, ReturnCode.OK],
         'check_function': tsf.data_is_correct,
         'title': '',
         'description': ''
@@ -652,7 +1012,7 @@ xtypes_v2_struct_test_suite = {
         'common_args': ['-X xml/types/struct_names.xml'],
         'apps': ['pub-exe -P -t test -y Test::struct_key_struct_2 -V xml/data/struct_key.xml -J json/data/struct_str_key.json',
                  'sub-exe -S -t test -y Test::struct_key_struct_1 -V xml/data/struct_key.xml -J json/data/struct_str_key.json'],
-        'expected_codes': [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
+        'expected_codes': [ReturnCode.OK, ReturnCode.OK],
         'check_function': tsf.data_is_correct,
         'title': '',
         'description': ''

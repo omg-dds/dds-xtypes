@@ -1,0 +1,44 @@
+<dds>
+    <types>
+        <module name="Test">
+            <struct name="struct_f1"   extensibility="final">
+                <member name="x1" type="int32" />
+            </struct>
+            <struct name="struct_f2"   extensibility="final">
+                <member name="x1" type="int32" />
+                <member name="x2" type="int32" />
+            </struct>
+
+            <struct name="struct_a1"   extensibility="appendable">
+                <member name="x1" type="int32" />
+            </struct>
+            <struct name="struct_a2"   extensibility="appendable">
+                <member name="x1" type="int32" />
+                <member name="x2" type="int32" />
+            </struct>
+            <struct name="struct_a3"   extensibility="appendable">
+                <member name="x1" type="int32" />
+                <member name="x3" type="int32" />
+                <member name="x2" type="int32" />
+            </struct>
+
+            <struct name="struct_m1"   extensibility="mutable">
+                <member name="x1" type="int32" id="1" />
+            </struct>
+            <struct name="struct_m2"   extensibility="mutable">
+                <member name="x1" type="int32" id="1" />
+                <member name="x2" type="int32" id="2" />
+            </struct>
+            <struct name="struct_m3"   extensibility="mutable">
+                <member name="x1" type="int32" id="1" />
+                <member name="x3" type="int32" id="3" />
+                <member name="x2" type="int32" id="2" />
+            </struct>
+            <struct name="struct_m4"   extensibility="mutable">
+                <member name="x1" type="int32" />
+                <member name="x3" type="int32" />
+                <member name="x2" type="int32" />
+            </struct>
+        </module>
+    </types>
+</dds>
