@@ -795,9 +795,10 @@ def main():
                 else:
                     # if the test case is processed
                     parameters = test_case_parameters['apps']
-                    common_args = test_case_parameters['common_args']
-                    # Add the common_args to all elements in parameters
-                    parameters = [s + f' {common_args[0]}' for s in parameters]
+                    if 'common_args' in test_case_parameters:
+                        common_args = test_case_parameters['common_args']
+                        # Add the common_args to all elements in parameters
+                        parameters = [s + f' {common_args[0]}' for s in parameters]
 
                     # check parameters start with pub-exe or sub-exe and they
                     # are creating publisher/subscriber apps accordingly
