@@ -59,9 +59,9 @@
 
         <!-- sames names / different ids -->
         <union name="union_1" ><discriminator type="uint32" />
-            <case><caseDiscriminator value="1"/><member name="x1" type="int16"/></case>
-            <case><caseDiscriminator value="2"/><member name="x2" type="int32"/></case>
-            <case><caseDiscriminator value="3"/><member name="x3" type="int32"/></case>
+            <case><caseDiscriminator value="1"/><member name="x1" type="int16" /></case>
+            <case><caseDiscriminator value="2"/><member name="x2" type="int32" /></case>
+            <case><caseDiscriminator value="3"/><member name="x3" type="int32" /></case>
         </union>
 
         <union name="union_2" ><discriminator type="uint32" />
@@ -69,7 +69,7 @@
             <case><caseDiscriminator value="1"/><member name="x1" type="int16"/></case>
             <case><caseDiscriminator value="3"/><member name="x3" type="int32"/></case>
         </union>
-        
+
         <!-- sames ids / different names -->
         <union name="union_3" ><discriminator type="uint32" />
             <case><caseDiscriminator value="1"/><member name="x1" type="int16"/></case>
@@ -81,6 +81,19 @@
             <case><caseDiscriminator value="1"/><member name="x2" type="int16"/></case>
             <case><caseDiscriminator value="2"/><member name="x1" type="int32"/></case>
             <case><caseDiscriminator value="3"/><member name="x3" type="int32"/></case>
+        </union>
+
+        <!-- sames ids / different order -->
+        <union name="union_5" ><discriminator type="uint32" />
+            <case><caseDiscriminator value="1"/><member name="x1" type="int16" id="1"/></case>
+            <case><caseDiscriminator value="2"/><member name="x2" type="int32" id="2"/></case>
+            <case><caseDiscriminator value="3"/><member name="x3" type="int32" id="3"/></case>
+        </union>
+
+        <union name="union_6" ><discriminator type="uint32" />
+            <case><caseDiscriminator value="2"/><member name="x2" type="int32" id="2"/></case>
+            <case><caseDiscriminator value="1"/><member name="x1" type="int16" id="1"/></case>
+            <case><caseDiscriminator value="3"/><member name="x3" type="int32" id="3"/></case>
         </union>
 
         <!-- label in one selects assignable member from other -->

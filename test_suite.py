@@ -10,7 +10,7 @@ from rtps_test_utilities import ReturnCode
 import test_suite_functions as tsf
 
 xtypes_v2_extensibility_rules = {
-    'final_1' : {
+    'ext_final_1' : {
         'common_args' : ['-X xml/types/extensibility.xml'],
         'apps' : ['pub-exe -P -t test -y Test::struct_f1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
                   'sub-exe -S -t test -y Test::struct_f1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --ignore-member-names f'],
@@ -19,7 +19,7 @@ xtypes_v2_extensibility_rules = {
         'title' : '',
         'description' : ''
     },
-    'final_2' : {
+    'ext_final_2' : {
         'common_args' : ['-X xml/types/extensibility.xml'],
         'apps' : ['pub-exe -P -t test -y Test::struct_f1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
                   'sub-exe -S -t test -y Test::struct_f2 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --ignore-member-names f'],
@@ -37,7 +37,7 @@ xtypes_v2_extensibility_rules = {
         'title' : '',
         'description' : ''
     },
-    'appendable_2' : {
+    'ext_appendable_2' : {
         'common_args' : ['-X xml/types/extensibility.xml'],
         'apps' : ['pub-exe -P -t test -y Test::struct_a1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
                   'sub-exe -S -t test -y Test::struct_a2 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --ignore-member-names f'],
@@ -46,7 +46,7 @@ xtypes_v2_extensibility_rules = {
         'title' : '',
         'description' : ''
     },
-    'appendable_3' : {
+    'ext_appendable_3' : {
         'common_args' : ['-X xml/types/extensibility.xml'],
         'apps' : ['pub-exe -P -t test -y Test::struct_a2 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x2.json',
                   'sub-exe -S -t test -y Test::struct_a1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --ignore-member-names f'],
@@ -55,7 +55,7 @@ xtypes_v2_extensibility_rules = {
         'title' : '',
         'description' : ''
     },
-    'appendable_4' : {
+    'ext_appendable_4' : {
         'common_args' : ['-X xml/types/extensibility.xml'],
         'apps' : ['pub-exe -P -t test -y Test::struct_a2 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x2.json',
                   'sub-exe -S -t test -y Test::struct_a3 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x2.json --ignore-member-names f'],
@@ -64,7 +64,7 @@ xtypes_v2_extensibility_rules = {
         'title' : '',
         'description' : ''
     },
-    'appendable_5' : {
+    'ext_appendable_5' : {
         'common_args' : ['-X xml/types/extensibility.xml'],
         'apps' : ['pub-exe -P -t test -y Test::struct_a3 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x3_x2.json',
                   'sub-exe -S -t test -y Test::struct_a2 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x2.json --ignore-member-names f'],
@@ -74,7 +74,7 @@ xtypes_v2_extensibility_rules = {
         'description' : ''
     },
 
-    'mutable_1' : {
+    'ext_mutable_1' : {
         'common_args' : ['-X xml/types/extensibility.xml'],
         'apps' : ['pub-exe -P -t test -y Test::struct_m1 -V xml/data/arrays.xml -J json/data/struct_num_x1.json',
                   'sub-exe -S -t test -y Test::struct_m1 -V xml/data/arrays.xml -J json/data/struct_num_x1.json --ignore-member-names f'],
@@ -83,7 +83,7 @@ xtypes_v2_extensibility_rules = {
         'title' : '',
         'description' : ''
     },
-    'mutable_2' : {
+    'ext_mutable_2' : {
         'common_args' : ['-X xml/types/extensibility.xml'],
         'apps' : ['pub-exe -P -t test -y Test::struct_m1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
                   'sub-exe -S -t test -y Test::struct_m2 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --ignore-member-names f'],
@@ -92,7 +92,7 @@ xtypes_v2_extensibility_rules = {
         'title' : '',
         'description' : ''
     },
-    'mutable_3' : {
+    'ext_mutable_3' : {
         'common_args' : ['-X xml/types/extensibility.xml'],
         'apps' : ['pub-exe -P -t test -y Test::struct_m2 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x2.json',
                   'sub-exe -S -t test -y Test::struct_m1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --ignore-member-names f'],
@@ -101,7 +101,7 @@ xtypes_v2_extensibility_rules = {
         'title' : '',
         'description' : ''
     },
-    'mutable_4' : {
+    'ext_mutable_4' : {
         'common_args' : ['-X xml/types/extensibility.xml'],
         'apps' : ['pub-exe -P -t test -y Test::struct_m2 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x2.json',
                   'sub-exe -S -t test -y Test::struct_m3 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x2.json --ignore-member-names f'],
@@ -110,7 +110,7 @@ xtypes_v2_extensibility_rules = {
         'title' : '',
         'description' : ''
     },
-    'mutable_5' : {
+    'ext_mutable_5' : {
         'common_args' : ['-X xml/types/extensibility.xml'],
         'apps' : ['pub-exe -P -t test -y Test::struct_m3 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x3_x2.json',
                   'sub-exe -S -t test -y Test::struct_m2 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x2.json --ignore-member-names f'],
@@ -119,7 +119,7 @@ xtypes_v2_extensibility_rules = {
         'title' : '',
         'description' : ''
     },
-    'mutable_6' : {
+    'ext_mutable_6' : {
         'common_args' : ['-X xml/types/extensibility.xml'],
         'apps' : ['pub-exe -P -t test -y Test::struct_m2 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x2.json',
                   'sub-exe -S -t test -y Test::struct_m4 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x2.json --ignore-member-names f'],
@@ -128,11 +128,20 @@ xtypes_v2_extensibility_rules = {
         'title' : '',
         'description' : ''
     },
+    'ext_autoid_1' : {
+        'common_args' : ['-X xml/types/extensibility.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::struct_hashid_1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
+                  'sub-exe -S -t test -y Test::struct_hashid_2 -V xml/data/struct_1.xml -J json/data/struct_num_x2.json'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
 }
 
 
 xtypes_v2_type_consistency_rules = {
-    'ignore_member_names_1' : {
+    'tc_ignore_member_names_1' : {
         'common_args' : ['-X xml/types/type_consistency.xml'],
         'apps' : ['pub-exe -P -t test -y Test::struct_x1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
                   'sub-exe -S -t test -y Test::struct_x2 -V xml/data/struct_1.xml -J json/data/struct_num_x2.json --ignore-member-names t'],
@@ -141,7 +150,7 @@ xtypes_v2_type_consistency_rules = {
         'title' : '',
         'description' : ''
     },
-    'ignore_member_names_2' : {
+    'tc_ignore_member_names_2' : {
         'common_args' : ['-X xml/types/type_consistency.xml'],
         'apps' : ['pub-exe -P -t test -y Test::struct_x1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
                   'sub-exe -S -t test -y Test::struct_x2 -V xml/data/struct_1.xml -J json/data/struct_num_x2.json --ignore-member-names f'],
@@ -150,7 +159,7 @@ xtypes_v2_type_consistency_rules = {
         'title' : '',
         'description' : ''
     },
-    'ignore_member_names_3' : {
+    'tc_ignore_member_names_3' : {
         'common_args' : ['-X xml/types/type_consistency.xml'],
         'apps' : ['pub-exe -P -t test -y Test::struct_x1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
                   'sub-exe -S -t test -y Test::struct_x2 -V xml/data/struct_1.xml -J json/data/struct_num_x2.json --ignore-member-names d'],
@@ -159,7 +168,7 @@ xtypes_v2_type_consistency_rules = {
         'title' : '',
         'description' : ''
     },
-    'ignore_seq_bounds_1' : {
+    'tc_ignore_seq_bounds_1' : {
         'common_args' : ['-X xml/types/type_consistency.xml'],
         'apps' : ['pub-exe -P -t test -y Test::seq_int32x10 -V xml/data/arrays.xml -J json/data/array_num_10.json',
                   'sub-exe -S -t test -y Test::seq_int32x20 -V xml/data/arrays.xml -J json/data/array_num_10.json --ignore-seq-bounds t'],
@@ -168,7 +177,7 @@ xtypes_v2_type_consistency_rules = {
         'title' : '',
         'description' : ''
     },
-    'ignore_seq_bounds_2' : {
+    'tc_ignore_seq_bounds_2' : {
         'common_args' : ['-X xml/types/type_consistency.xml'],
         'apps' : ['pub-exe -P -t test -y Test::seq_int32x10 -V xml/data/arrays.xml -J json/data/array_num_10.json',
                   'sub-exe -S -t test -y Test::seq_int32x20 -V xml/data/arrays.xml -J json/data/array_num_10.json --ignore-seq-bounds f'],
@@ -177,7 +186,7 @@ xtypes_v2_type_consistency_rules = {
         'title' : '',
         'description' : ''
     },
-    'ignore_seq_bounds_3' : {
+    'tc_ignore_seq_bounds_3' : {
         'common_args' : ['-X xml/types/type_consistency.xml'],
         'apps' : ['pub-exe -P -t test -y Test::seq_int32x10 -V xml/data/arrays.xml -J json/data/array_num_10.json',
                   'sub-exe -S -t test -y Test::seq_int32x20 -V xml/data/arrays.xml -J json/data/array_num_10.json --ignore-seq-bounds d'],
@@ -186,7 +195,7 @@ xtypes_v2_type_consistency_rules = {
         'title' : '',
         'description' : ''
     },
-    'ignore_seq_bounds_4' : {
+    'tc_ignore_seq_bounds_4' : {
         'common_args' : ['-X xml/types/type_consistency.xml'],
         'apps' : ['pub-exe -P -t test -y Test::seq_int32x20 -V xml/data/arrays.xml -J json/data/array_num_20.json',
                   'sub-exe -S -t test -y Test::seq_int32x10 -V xml/data/arrays.xml -J json/data/array_num_10.json --ignore-seq-bounds t'],
@@ -195,7 +204,7 @@ xtypes_v2_type_consistency_rules = {
         'title' : '',
         'description' : ''
     },
-    'ignore_seq_bounds_5' : {
+    'tc_ignore_seq_bounds_5' : {
         'common_args' : ['-X xml/types/type_consistency.xml'],
         'apps' : ['pub-exe -P -t test -y Test::seq_int32x20 -V xml/data/arrays.xml -J json/data/array_num_20.json',
                   'sub-exe -S -t test -y Test::seq_int32x10 -V xml/data/arrays.xml -J json/data/array_num_10.json --ignore-seq-bounds f'],
@@ -204,7 +213,7 @@ xtypes_v2_type_consistency_rules = {
         'title' : '',
         'description' : ''
     },
-    'ignore_seq_bounds_6' : {
+    'tc_ignore_seq_bounds_6' : {
         'common_args' : ['-X xml/types/type_consistency.xml'],
         'apps' : ['pub-exe -P -t test -y Test::seq_int32x20 -V xml/data/arrays.xml -J json/data/array_num_20.json',
                   'sub-exe -S -t test -y Test::seq_int32x10 -V xml/data/arrays.xml -J json/data/array_num_10.json --ignore-seq-bounds d'],
@@ -213,7 +222,7 @@ xtypes_v2_type_consistency_rules = {
         'title' : '',
         'description' : ''
     },
-    'ignore_seq_bounds_7' : {
+    'tc_ignore_seq_bounds_7' : {
         'common_args' : ['-X xml/types/type_consistency.xml'],
         'apps' : ['pub-exe -P -t test -y Test::seq_int32x20 -V xml/data/arrays.xml -J json/data/array_num_10.json',
                   'sub-exe -S -t test -y Test::seq_int32x10 -V xml/data/arrays.xml -J json/data/array_num_10.json --ignore-seq-bounds t'],
@@ -222,7 +231,7 @@ xtypes_v2_type_consistency_rules = {
         'title' : '',
         'description' : ''
     },
-    'ignore_str_bounds_1' : {
+    'tc_ignore_str_bounds_1' : {
         'common_args' : ['-X xml/types/type_consistency.xml'],
         'apps' : ['pub-exe -P -t test -y Test::string10 -V xml/data/strings_hello.xml -J json/data/strings_hello.json',
                   'sub-exe -S -t test -y Test::string20 -V xml/data/strings_hello.xml -J json/data/strings_hello.json --ignore-str-bounds t'],
@@ -231,7 +240,7 @@ xtypes_v2_type_consistency_rules = {
         'title' : '',
         'description' : ''
     },
-    'ignore_str_bounds_2' : {
+    'tc_ignore_str_bounds_2' : {
         'common_args' : ['-X xml/types/type_consistency.xml'],
         'apps' : ['pub-exe -P -t test -y Test::string10 -V xml/data/strings_hello.xml -J json/data/strings_hello.json',
                   'sub-exe -S -t test -y Test::string20 -V xml/data/strings_hello.xml -J json/data/strings_hello.json --ignore-str-bounds f'],
@@ -240,7 +249,7 @@ xtypes_v2_type_consistency_rules = {
         'title' : '',
         'description' : ''
     },
-    'ignore_str_bounds_3' : {
+    'tc_ignore_str_bounds_3' : {
         'common_args' : ['-X xml/types/type_consistency.xml'],
         'apps' : ['pub-exe -P -t test -y Test::string10 -V xml/data/strings_hello.xml -J json/data/strings_hello.json',
                   'sub-exe -S -t test -y Test::string20 -V xml/data/strings_hello.xml -J json/data/strings_hello.json --ignore-str-bounds d'],
@@ -249,7 +258,7 @@ xtypes_v2_type_consistency_rules = {
         'title' : '',
         'description' : ''
     },
-    'ignore_str_bounds_4' : {
+    'tc_ignore_str_bounds_4' : {
         'common_args' : ['-X xml/types/type_consistency.xml'],
         'apps' : ['pub-exe -P -t test -y Test::string20 -V xml/data/strings_hello.xml -J json/data/strings.json',
                   'sub-exe -S -t test -y Test::string10 -V xml/data/strings_hello.xml -J json/data/strings.json --ignore-str-bounds t'],
@@ -258,7 +267,7 @@ xtypes_v2_type_consistency_rules = {
         'title' : '',
         'description' : ''
     },
-    'ignore_str_bounds_5' : {
+    'tc_ignore_str_bounds_5' : {
         'common_args' : ['-X xml/types/type_consistency.xml'],
         'apps' : ['pub-exe -P -t test -y Test::string20 -V xml/data/strings_hello.xml -J json/data/strings.json',
                   'sub-exe -S -t test -y Test::string10 -V xml/data/strings_hello.xml -J json/data/strings.json --ignore-str-bounds f'],
@@ -267,7 +276,7 @@ xtypes_v2_type_consistency_rules = {
         'title' : '',
         'description' : ''
     },
-    'ignore_str_bounds_6' : {
+    'tc_ignore_str_bounds_6' : {
         'common_args' : ['-X xml/types/type_consistency.xml'],
         'apps' : ['pub-exe -P -t test -y Test::string20 -V xml/data/strings_hello.xml -J json/data/strings.json',
                   'sub-exe -S -t test -y Test::string10 -V xml/data/strings_hello.xml -J json/data/strings.json --ignore-str-bounds d'],
@@ -276,7 +285,7 @@ xtypes_v2_type_consistency_rules = {
         'title' : '',
         'description' : ''
     },
-    'ignore_str_bounds_7' : {
+    'tc_ignore_str_bounds_7' : {
         'common_args' : ['-X xml/types/type_consistency.xml'],
         'apps' : ['pub-exe -P -t test -y Test::string20 -V xml/data/strings_hello.xml -J json/data/strings_hello.json',
                   'sub-exe -S -t test -y Test::string10 -V xml/data/strings_hello.xml -J json/data/strings_hello.json --ignore-str-bounds t'],
@@ -285,7 +294,7 @@ xtypes_v2_type_consistency_rules = {
         'title' : '',
         'description' : ''
     },
-    'prevent_type_widening_1' : {
+    'tc_prevent_type_widening_1' : {
         'common_args' : ['-X xml/types/extensibility.xml'],
         'apps' : ['pub-exe -P -t test -y Test::struct_f1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
                   'sub-exe -S -t test -y Test::struct_f2 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --prevent-type-widening t'],
@@ -294,7 +303,7 @@ xtypes_v2_type_consistency_rules = {
         'title' : '',
         'description' : ''
     },
-    'prevent_type_widening_2' : {
+    'tc_prevent_type_widening_2' : {
         'common_args' : ['-X xml/types/extensibility.xml'],
         'apps' : ['pub-exe -P -t test -y Test::struct_f1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
                   'sub-exe -S -t test -y Test::struct_f2 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --prevent-type-widening f'],
@@ -303,7 +312,7 @@ xtypes_v2_type_consistency_rules = {
         'title' : '',
         'description' : ''
     },
-    'prevent_type_widening_3' : {
+    'tc_prevent_type_widening_3' : {
         'common_args' : ['-X xml/types/extensibility.xml'],
         'apps' : ['pub-exe -P -t test -y Test::struct_f1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
                   'sub-exe -S -t test -y Test::struct_f2 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --prevent-type-widening d'],
@@ -312,7 +321,7 @@ xtypes_v2_type_consistency_rules = {
         'title' : '',
         'description' : ''
     },
-    'prevent_type_widening_4' : {
+    'tc_prevent_type_widening_4' : {
         'common_args' : ['-X xml/types/extensibility.xml'],
         'apps' : ['pub-exe -P -t test -y Test::struct_a1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
                   'sub-exe -S -t test -y Test::struct_a2 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --prevent-type-widening t'],
@@ -321,7 +330,7 @@ xtypes_v2_type_consistency_rules = {
         'title' : '',
         'description' : ''
     },
-    'prevent_type_widening_5' : {
+    'tc_prevent_type_widening_5' : {
         'common_args' : ['-X xml/types/extensibility.xml'],
         'apps' : ['pub-exe -P -t test -y Test::struct_a1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
                   'sub-exe -S -t test -y Test::struct_a2 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --prevent-type-widening f'],
@@ -330,7 +339,7 @@ xtypes_v2_type_consistency_rules = {
         'title' : '',
         'description' : ''
     },
-    'prevent_type_widening_6' : {
+    'tc_prevent_type_widening_6' : {
         'common_args' : ['-X xml/types/extensibility.xml'],
         'apps' : ['pub-exe -P -t test -y Test::struct_a1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
                   'sub-exe -S -t test -y Test::struct_a2 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --prevent-type-widening d'],
@@ -339,7 +348,7 @@ xtypes_v2_type_consistency_rules = {
         'title' : '',
         'description' : ''
     },
-    'prevent_type_widening_7' : {
+    'tc_prevent_type_widening_7' : {
         'common_args' : ['-X xml/types/extensibility.xml'],
         'apps' : ['pub-exe -P -t test -y Test::struct_m1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
                   'sub-exe -S -t test -y Test::struct_m2 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --prevent-type-widening t'],
@@ -348,7 +357,7 @@ xtypes_v2_type_consistency_rules = {
         'title' : '',
         'description' : ''
     },
-    'prevent_type_widening_8' : {
+    'tc_prevent_type_widening_8' : {
         'common_args' : ['-X xml/types/extensibility.xml'],
         'apps' : ['pub-exe -P -t test -y Test::struct_m1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
                   'sub-exe -S -t test -y Test::struct_m2 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --prevent-type-widening f'],
@@ -357,7 +366,7 @@ xtypes_v2_type_consistency_rules = {
         'title' : '',
         'description' : ''
     },
-    'prevent_type_widening_9' : {
+    'tc_prevent_type_widening_9' : {
         'common_args' : ['-X xml/types/extensibility.xml'],
         'apps' : ['pub-exe -P -t test -y Test::struct_m1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
                   'sub-exe -S -t test -y Test::struct_m2 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --prevent-type-widening d'],
@@ -1178,46 +1187,64 @@ xtypes_v2_union_rules = {
         'title': '',
         'description': ''
     },
-    'union_different_ids_ok': {
+    'union_different_ids_1': {
         'common_args': ['-X xml/types/unions.xml'],
-        'apps': ['pub-exe -P -t test -y Test::union_1 -V xml/data/union_1.xml -J json/data/union_1.json',
-                 'sub-exe -S -t test -y Test::union_2 -V xml/data/union_1.xml -J json/data/union_1.json'],
-        'expected_codes': [ReturnCode.OK, ReturnCode.OK],
-        'check_function': tsf.data_is_correct,
-        'title': '',
-        'description': ''
-    },
-    'union_different_ids': {
-        'common_args': ['-X xml/types/unions.xml'],
-        'apps': ['pub-exe -P -t test -y Test::union_1 -V xml/data/union_1.xml -J json/data/union_1.json',
-                 'sub-exe -S -t test -y Test::union_2 -V xml/data/union_1.xml -J json/data/union_1.json --ignore-member-names f'],
+        'apps': ['pub-exe -P -t test -y Test::union_1 -V xml/data/union_x1.xml -J json/data/union_x1.json',
+                 'sub-exe -S -t test -y Test::union_2 -V xml/data/union_x1.xml -J json/data/union_x1.json'],
         'expected_codes': [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
         'check_function': tsf.data_is_correct,
         'title': '',
         'description': ''
     },
-    'union_different_names_ok': {
+    'union_different_ids_2': {
         'common_args': ['-X xml/types/unions.xml'],
-        'apps': ['pub-exe -P -t test -y Test::union_3 -V xml/data/union_1.xml -J json/data/union_1.json',
-                 'sub-exe -S -t test -y Test::union_4 -V xml/data/union_1.xml -J json/data/union_1.json'],
+        'apps': ['pub-exe -P -t test -y Test::union_1 -V xml/data/union_x1.xml -J json/data/union_x1.json',
+                 'sub-exe -S -t test -y Test::union_2 -V xml/data/union_x1.xml -J json/data/union_x1.json --ignore-member-names f'],
+        'expected_codes': [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
+        'check_function': tsf.data_is_correct,
+        'title': '',
+        'description': ''
+    },
+    'union_different_names_1': {
+        'common_args': ['-X xml/types/unions.xml'],
+        'apps': ['pub-exe -P -t test -y Test::union_3 -V xml/data/union_x1.xml -J json/data/union_x1.json',
+                 'sub-exe -S -t test -y Test::union_4 -V xml/data/union_x2.xml -J json/data/union_x2.json'],
         'expected_codes': [ReturnCode.OK, ReturnCode.OK],
         'check_function': tsf.data_is_correct,
         'title': '',
         'description': ''
     },
-    'union_different_names': {
+    'union_different_names_2': {
         'common_args': ['-X xml/types/unions.xml'],
-        'apps': ['pub-exe -P -t test -y Test::union_3 -V xml/data/union_1.xml -J json/data/union_1.json',
-                 'sub-exe -S -t test -y Test::union_4 -V xml/data/union_1.xml -J json/data/union_1.json --ignore-member-names f'],
+        'apps': ['pub-exe -P -t test -y Test::union_3 -V xml/data/union_x1.xml -J json/data/union_x1.json',
+                 'sub-exe -S -t test -y Test::union_4 -V xml/data/union_x2.xml -J json/data/union_x2.json --ignore-member-names f'],
         'expected_codes': [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
+        'check_function': tsf.data_is_correct,
+        'title': '',
+        'description': ''
+    },
+    'union_different_order_1': {
+        'common_args': ['-X xml/types/unions.xml'],
+        'apps': ['pub-exe -P -t test -y Test::union_5 -V xml/data/union_x1.xml -J json/data/union_x1.json',
+                 'sub-exe -S -t test -y Test::union_6 -V xml/data/union_x1.xml -J json/data/union_x1.json'],
+        'expected_codes': [ReturnCode.OK, ReturnCode.OK],
+        'check_function': tsf.data_is_correct,
+        'title': '',
+        'description': ''
+    },
+    'union_different_names_2': {
+        'common_args': ['-X xml/types/unions.xml'],
+        'apps': ['pub-exe -P -t test -y Test::union_5 -V xml/data/union_x1.xml -J json/data/union_x1.json',
+                 'sub-exe -S -t test -y Test::union_6 -V xml/data/union_x1.xml -J json/data/union_x1.json --ignore-member-names f'],
+        'expected_codes': [ReturnCode.OK, ReturnCode.OK],
         'check_function': tsf.data_is_correct,
         'title': '',
         'description': ''
     },
     'union_int16_int32': {
         'common_args': ['-X xml/types/unions.xml'],
-        'apps': ['pub-exe -P -t test -y Test::union_int16 -V xml/data/union_1.xml -J json/data/union_1.json',
-                 'sub-exe -S -t test -y Test::union_int32 -V xml/data/union_1.xml -J json/data/union_1.json'],
+        'apps': ['pub-exe -P -t test -y Test::union_int16 -V xml/data/union_x1.xml -J json/data/union_x1.json',
+                 'sub-exe -S -t test -y Test::union_int32 -V xml/data/union_x1.xml -J json/data/union_x1.json'],
         'expected_codes': [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
         'check_function': tsf.data_is_correct,
         'title': '',
@@ -1225,8 +1252,8 @@ xtypes_v2_union_rules = {
     },
     'union_int16_int32_default': {
         'common_args': ['-X xml/types/unions.xml'],
-        'apps': ['pub-exe -P -t test -y Test::union_int16 -V xml/data/union_1.xml -J json/data/union_1.json',
-                 'sub-exe -S -t test -y Test::union_int32_default -V xml/data/union_1.xml -J json/data/union_1.json'],
+        'apps': ['pub-exe -P -t test -y Test::union_int16 -V xml/data/union_x1.xml -J json/data/union_x1.json',
+                 'sub-exe -S -t test -y Test::union_int32_default -V xml/data/union_x1.xml -J json/data/union_x1.json'],
         'expected_codes': [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
         'check_function': tsf.data_is_correct,
         'title': '',
@@ -1234,8 +1261,8 @@ xtypes_v2_union_rules = {
     },
     'union_int32_int32_default': {
         'common_args': ['-X xml/types/unions.xml'],
-        'apps': ['pub-exe -P -t test -y Test::union_int32 -V xml/data/union_1.xml -J json/data/union_1.json',
-                 'sub-exe -S -t test -y Test::union_int32_default -V xml/data/union_1.xml -J json/data/union_1.json'],
+        'apps': ['pub-exe -P -t test -y Test::union_int32 -V xml/data/union_x1.xml -J json/data/union_x1.json',
+                 'sub-exe -S -t test -y Test::union_int32_default -V xml/data/union_x1.xml -J json/data/union_x1.json'],
         'expected_codes': [ReturnCode.OK, ReturnCode.OK],
         'check_function': tsf.data_is_correct,
         'title': '',
@@ -1243,8 +1270,8 @@ xtypes_v2_union_rules = {
     },
     'union_int32_default_int16': {
         'common_args': ['-X xml/types/unions.xml'],
-        'apps': ['pub-exe -P -t test -y Test::union_int32_default -V xml/data/union_1.xml -J json/data/union_1.json',
-                 'sub-exe -S -t test -y Test::union_int16 -V xml/data/union_1.xml -J json/data/union_1.json'],
+        'apps': ['pub-exe -P -t test -y Test::union_int32_default -V xml/data/union_x1.xml -J json/data/union_x1.json',
+                 'sub-exe -S -t test -y Test::union_int16 -V xml/data/union_x1.xml -J json/data/union_x1.json'],
         'expected_codes': [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
         'check_function': tsf.data_is_correct,
         'title': '',
@@ -1252,8 +1279,8 @@ xtypes_v2_union_rules = {
     },
     'union_int32_default_int32': {
         'common_args': ['-X xml/types/unions.xml'],
-        'apps': ['pub-exe -P -t test -y Test::union_int32_default -V xml/data/union_1.xml -J json/data/union_1.json',
-                 'sub-exe -S -t test -y Test::union_int32 -V xml/data/union_1.xml -J json/data/union_1.json'],
+        'apps': ['pub-exe -P -t test -y Test::union_int32_default -V xml/data/union_x1.xml -J json/data/union_x1.json',
+                 'sub-exe -S -t test -y Test::union_int32 -V xml/data/union_x1.xml -J json/data/union_x1.json'],
         'expected_codes': [ReturnCode.OK, ReturnCode.OK],
         'check_function': tsf.data_is_correct,
         'title': '',
@@ -1261,8 +1288,8 @@ xtypes_v2_union_rules = {
     },
     'union_int32_default_int16_default': {
         'common_args': ['-X xml/types/unions.xml'],
-        'apps': ['pub-exe -P -t test -y Test::union_int32_default -V xml/data/union_1.xml -J json/data/union_1.json',
-                 'sub-exe -S -t test -y Test::union_int16_default -V xml/data/union_1.xml -J json/data/union_1.json'],
+        'apps': ['pub-exe -P -t test -y Test::union_int32_default -V xml/data/union_x1.xml -J json/data/union_x1.json',
+                 'sub-exe -S -t test -y Test::union_int16_default -V xml/data/union_x1.xml -J json/data/union_x1.json'],
         'expected_codes': [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
         'check_function': tsf.data_is_correct,
         'title': '',
@@ -1270,8 +1297,8 @@ xtypes_v2_union_rules = {
     },
     'union_int32_default_int32_default': {
         'common_args': ['-X xml/types/unions.xml'],
-        'apps': ['pub-exe -P -t test -y Test::union_int32_default -V xml/data/union_1.xml -J json/data/union_1.json',
-                 'sub-exe -S -t test -y Test::union_int32_default -V xml/data/union_1.xml -J json/data/union_1.json'],
+        'apps': ['pub-exe -P -t test -y Test::union_int32_default -V xml/data/union_x1.xml -J json/data/union_x1.json',
+                 'sub-exe -S -t test -y Test::union_int32_default -V xml/data/union_x1.xml -J json/data/union_x1.json'],
         'expected_codes': [ReturnCode.OK, ReturnCode.OK],
         'check_function': tsf.data_is_correct,
         'title': '',
@@ -1279,8 +1306,8 @@ xtypes_v2_union_rules = {
     },
     'union_final_5_vs_6': {
         'common_args': ['-X xml/types/unions.xml'],
-        'apps': ['pub-exe -P -t test -y Test::union_final_5 -V xml/data/union_1.xml -J json/data/union_1.json',
-                 'sub-exe -S -t test -y Test::union_final_6 -V xml/data/union_1.xml -J json/data/union_1.json'],
+        'apps': ['pub-exe -P -t test -y Test::union_final_5 -V xml/data/union_x1.xml -J json/data/union_x1.json',
+                 'sub-exe -S -t test -y Test::union_final_6 -V xml/data/union_x1.xml -J json/data/union_x1.json'],
         'expected_codes': [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
         'check_function': tsf.data_is_correct,
         'title': '',
@@ -1288,8 +1315,8 @@ xtypes_v2_union_rules = {
     },
     'union_final_6_vs_5': {
         'common_args': ['-X xml/types/unions.xml'],
-        'apps': ['pub-exe -P -t test -y Test::union_final_6 -V xml/data/union_1.xml -J json/data/union_1.json',
-                 'sub-exe -S -t test -y Test::union_final_5 -V xml/data/union_1.xml -J json/data/union_1.json'],
+        'apps': ['pub-exe -P -t test -y Test::union_final_6 -V xml/data/union_x1.xml -J json/data/union_x1.json',
+                 'sub-exe -S -t test -y Test::union_final_5 -V xml/data/union_x1.xml -J json/data/union_x1.json'],
         'expected_codes': [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
         'check_function': tsf.data_is_correct,
         'title': '',
@@ -1297,8 +1324,8 @@ xtypes_v2_union_rules = {
     },
     'union_final_one_default_1': {
         'common_args': ['-X xml/types/unions.xml'],
-        'apps': ['pub-exe -P -t test -y Test::union_final_5 -V xml/data/union_1.xml -J json/data/union_1.json',
-                 'sub-exe -S -t test -y Test::union_final_5_default -V xml/data/union_1.xml -J json/data/union_1.json'],
+        'apps': ['pub-exe -P -t test -y Test::union_final_5 -V xml/data/union_x1.xml -J json/data/union_x1.json',
+                 'sub-exe -S -t test -y Test::union_final_5_default -V xml/data/union_x1.xml -J json/data/union_x1.json'],
         'expected_codes': [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
         'check_function': tsf.data_is_correct,
         'title': '',
@@ -1306,8 +1333,8 @@ xtypes_v2_union_rules = {
     },
     'union_final_one_default_2': {
         'common_args': ['-X xml/types/unions.xml'],
-        'apps': ['pub-exe -P -t test -y Test::union_final_5_default -V xml/data/union_1.xml -J json/data/union_1.json',
-                 'sub-exe -S -t test -y Test::union_final_5 -V xml/data/union_1.xml -J json/data/union_1.json'],
+        'apps': ['pub-exe -P -t test -y Test::union_final_5_default -V xml/data/union_x1.xml -J json/data/union_x1.json',
+                 'sub-exe -S -t test -y Test::union_final_5 -V xml/data/union_x1.xml -J json/data/union_x1.json'],
         'expected_codes': [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
         'check_function': tsf.data_is_correct,
         'title': '',
@@ -1353,7 +1380,7 @@ xtypes_v2_union_rules = {
         'common_args': ['-X xml/types/unions.xml'],
         'apps': ['pub-exe -P -t test -y Test::union_appendable_a_default -V xml/data/union_xd.xml -J json/data/union_xd.json',
                  'sub-exe -S -t test -y Test::union_appendable_b_default -V xml/data/union_xd.xml -J json/data/union_xd.json'],
-        'expected_codes': [ReturnCode.OK, ReturnCode.OK],
+        'expected_codes': [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
         'check_function': tsf.data_is_correct,
         'title': '',
         'description': ''
@@ -1380,7 +1407,7 @@ xtypes_v2_union_rules = {
         'common_args': ['-X xml/types/unions.xml'],
         'apps': ['pub-exe -P -t test -y Test::union_mutable_a_default -V xml/data/union_xd.xml -J json/data/union_xd.json',
                  'sub-exe -S -t test -y Test::union_mutable_b_default -V xml/data/union_xd.xml -J json/data/union_xd.json'],
-        'expected_codes': [ReturnCode.OK, ReturnCode.OK],
+        'expected_codes': [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
         'check_function': tsf.data_is_correct,
         'title': '',
         'description': ''
@@ -3136,4 +3163,297 @@ xtypes_v2_primitive_test_suite = {
     # 'struct_float128_float32':  [ 'xml/types/primitives.xml', 'xml/data/struct_primitives.xml', ['-P -y Test::struct_primitive_float128', '-S -y Test::struct_primitive_float32'  ], [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC] ],
     # 'struct_float128_float64':  [ 'xml/types/primitives.xml', 'xml/data/struct_primitives.xml', ['-P -y Test::struct_primitive_float128', '-S -y Test::struct_primitive_float64'  ], [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC] ],
     # 'struct_float128_float128': [ 'xml/types/primitives.xml', 'xml/data/struct_primitives.xml', ['-P -y Test::struct_primitive_float128', '-S -y Test::struct_primitive_float128' ], [ReturnCode.OK, ReturnCode.OK] ],
+}
+
+xtypes_v2_tryconstruct_rules = {
+    'tryc_seq_1' : {
+        'common_args' : ['-X xml/types/try_construct.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::seq_int32x20 -V xml/data/sequences.xml -J json/data/array_num_20.json',
+                  'sub-exe -S -t test -y Test::seq_int32x10_trim -V xml/data/sequences.xml -J json/data/array_num_10.json'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'tryc_seq_2' : {
+        'common_args' : ['-X xml/types/try_construct.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::seq_int32x20 -V xml/data/sequences.xml -J json/data/array_num_20.json',
+                  'sub-exe -S -t test -y Test::seq_int32x10_discard -V xml/data/sequences.xml -J json/data/array_num_10.json'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.DATA_NOT_RECEIVED],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'tryc_seq_3' : {
+        'common_args' : ['-X xml/types/try_construct.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::seq_int32x20 -V xml/data/sequences.xml -J json/data/array_num_20.json',
+                  'sub-exe -S -t test -y Test::seq_int32x10_default -V xml/data/sequences.xml -J json/data/tryconstruct/seq_num_empty.json'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'tryc_seq_4' : {
+        'common_args' : ['-X xml/types/try_construct.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::seq_int32x20 -V xml/data/sequences.xml -J json/data/array_num_20.json',
+                  'sub-exe -S -t test -y Test::seq_int32x10 -V xml/data/sequences.xml -J json/data/array_num_10.json'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.DATA_NOT_RECEIVED],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+
+    'tryc_str_1' : {
+        'common_args' : ['-X xml/types/try_construct.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::string20 -V xml/data/strings.xml -J json/data/strings.json',
+                  'sub-exe -S -t test -y Test::string10_trim -V xml/data/tryconstruct/strings.xml -J json/data/tryconstruct/strings_trim_10.json'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'tryc_str_2' : {
+        'common_args' : ['-X xml/types/try_construct.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::string20 -V xml/data/strings.xml -J json/data/strings.json',
+                  'sub-exe -S -t test -y Test::string10_discard -V xml/data/tryconstruct/strings.xml -J json/data/tryconstruct/strings_trim_10.json'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.DATA_NOT_RECEIVED],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'tryc_str_3' : {
+        'common_args' : ['-X xml/types/try_construct.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::string20 -V xml/data/strings.xml -J json/data/strings.json',
+                  'sub-exe -S -t test -y Test::string10_default -V xml/data/tryconstruct/strings.xml -J json/data/tryconstruct/strings_default.json'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'tryc_str_4' : {
+        'common_args' : ['-X xml/types/try_construct.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::string20 -V xml/data/strings.xml -J json/data/strings.json',
+                  'sub-exe -S -t test -y Test::string10 -V xml/data/tryconstruct/strings.xml -J json/data/tryconstruct/strings_trim_10.json'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.DATA_NOT_RECEIVED],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+
+    'tryc_enum_1' : {
+        'common_args' : ['-X xml/types/try_construct.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::struct_enum_1 -V xml/data/tryconstruct/struct_enum_val3.xml -J json/tryconstruct/enum_val3.json',
+                  'sub-exe -S -t test -y Test::struct_enum_2_discard -V xml/data/tryconstruct/struct_enum_val1.xml -J json/data/tryconstruct/enum_val1.json'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.DATA_NOT_RECEIVED],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'tryc_enum_2' : {
+        'common_args' : ['-X xml/types/try_construct.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::struct_enum_1 -V xml/data/tryconstruct/struct_enum_val3.xml -J json/tryconstruct/enum_val3.json',
+                  'sub-exe -S -t test -y Test::struct_enum_2_default -V xml/data/tryconstruct/struct_enum_val1.xml -J json/data/tryconstruct/enum_val1.json'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'tryc_enum_3' : {
+        'common_args' : ['-X xml/types/try_construct.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::struct_enum_1 -V xml/data/tryconstruct/struct_enum_val3.xml -J json/tryconstruct/enum_val3.json',
+                  'sub-exe -S -t test -y Test::struct_enum_2 -V xml/data/tryconstruct/struct_enum_val1.xml -J json/data/tryconstruct/enum_val1.json'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.DATA_NOT_RECEIVED],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+
+
+    'tryc_union_seq_1' : {
+        'common_args' : ['-X xml/types/try_construct.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::union_seq_int32x20 -V xml/data/sequences.xml -J json/data/array_num_20.json',
+                  'sub-exe -S -t test -y Test::union_seq_int32x10_trim -V xml/data/sequences.xml -J json/data/array_num_10.json'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'tryc_union_seq_2' : {
+        'common_args' : ['-X xml/types/try_construct.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::union_seq_int32x20 -V xml/data/sequences.xml -J json/data/array_num_20.json',
+                  'sub-exe -S -t test -y Test::union_seq_int32x10_discard -V xml/data/sequences.xml -J json/data/array_num_10.json'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.DATA_NOT_RECEIVED],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'tryc_union_seq_3' : {
+        'common_args' : ['-X xml/types/try_construct.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::union_seq_int32x20 -V xml/data/sequences.xml -J json/data/array_num_20.json',
+                  'sub-exe -S -t test -y Test::union_seq_int32x10_default -V xml/data/sequences.xml -J json/data/tryconstruct/seq_num_empty.json'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'tryc_union_seq_4' : {
+        'common_args' : ['-X xml/types/try_construct.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::union_seq_int32x20 -V xml/data/sequences.xml -J json/data/array_num_20.json',
+                  'sub-exe -S -t test -y Test::union_seq_int32x10 -V xml/data/sequences.xml -J json/data/array_num_10.json'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.DATA_NOT_RECEIVED],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+
+    'tryc_union_str_1' : {
+        'common_args' : ['-X xml/types/try_construct.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::union_string20 -V xml/data/strings.xml -J json/data/strings.json',
+                  'sub-exe -S -t test -y Test::union_string10_trim -V xml/data/tryconstruct/strings.xml -J json/data/tryconstruct/strings_trim_10.json'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'tryc_union_str_2' : {
+        'common_args' : ['-X xml/types/try_construct.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::union_string20 -V xml/data/strings.xml -J json/data/strings.json',
+                  'sub-exe -S -t test -y Test::union_string10_discard -V xml/data/tryconstruct/strings.xml -J json/data/tryconstruct/strings_trim_10.json'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.DATA_NOT_RECEIVED],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'tryc_union_str_3' : {
+        'common_args' : ['-X xml/types/try_construct.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::union_string20 -V xml/data/strings.xml -J json/data/strings.json',
+                  'sub-exe -S -t test -y Test::union_string10_default -V xml/data/tryconstruct/strings.xml -J json/data/tryconstruct/strings_default.json'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'tryc_union_str_4' : {
+        'common_args' : ['-X xml/types/try_construct.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::union_string20 -V xml/data/strings.xml -J json/data/strings.json',
+                  'sub-exe -S -t test -y Test::union_string10 -V xml/data/tryconstruct/strings.xml -J json/data/tryconstruct/strings_trim_10.json'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.DATA_NOT_RECEIVED],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+
+    'tryc_union_enum_1' : {
+        'common_args' : ['-X xml/types/try_construct.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::union_enum_1 -V xml/data/tryconstruct/struct_enum_val3.xml -J json/tryconstruct/enum_val3.json',
+                  'sub-exe -S -t test -y Test::union_enum_2_discard -V xml/data/tryconstruct/struct_enum_val1.xml -J json/data/tryconstruct/enum_val1.json'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.DATA_NOT_RECEIVED],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'tryc_union_enum_2' : {
+        'common_args' : ['-X xml/types/try_construct.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::union_enum_1 -V xml/data/tryconstruct/struct_enum_val3.xml -J json/tryconstruct/enum_val3.json',
+                  'sub-exe -S -t test -y Test::union_enum_2_default -V xml/data/tryconstruct/struct_enum_val1.xml -J json/data/tryconstruct/enum_val1.json'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'tryc_union_enum_3' : {
+        'common_args' : ['-X xml/types/try_construct.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::union_enum_1 -V xml/data/tryconstruct/struct_enum_val3.xml -J json/tryconstruct/enum_val3.json',
+                  'sub-exe -S -t test -y Test::union_enum_2 -V xml/data/tryconstruct/struct_enum_val1.xml -J json/data/tryconstruct/enum_val1.json'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.DATA_NOT_RECEIVED],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+
+    'tryc_union_enum_disc_1' : {
+        'common_args' : ['-X xml/types/try_construct.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::union_disc_enum_1 -V xml/data/tryconstruct/struct_enum_val3.xml -J json/tryconstruct/union_x3.json',
+                  'sub-exe -S -t test -y Test::union_disc_enum_2_discard -V xml/data/tryconstruct/struct_enum_val1.xml -J json/data/tryconstruct/union_x1.json'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.DATA_NOT_RECEIVED],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'tryc_union_enum_disc_2' : {
+        'common_args' : ['-X xml/types/try_construct.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::union_disc_enum_1 -V xml/data/tryconstruct/struct_enum_val3.xml -J json/tryconstruct/union_x3.json',
+                  'sub-exe -S -t test -y Test::union_disc_enum_2_default -V xml/data/tryconstruct/struct_enum_val1.xml -J json/data/tryconstruct/union_x1.json'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'tryc_union_enum_disc_3' : {
+        'common_args' : ['-X xml/types/try_construct.xml'],
+        'apps' : ['pub-exe -P -t test -y Test::union_disc_enum_1 -V xml/data/tryconstruct/struct_enum_val3.xml -J json/tryconstruct/union_x3.json',
+                  'sub-exe -S -t test -y Test::union_disc_enum_2 -V xml/data/tryconstruct/struct_enum_val1.xml -J json/data/tryconstruct/union_x1.json'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.DATA_NOT_RECEIVED],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+
+
+
+
+    # 'tryc_union_1' : {
+    #     'common_args' : ['-X xml/types/try_construct.xml'],
+    #     'apps' : ['pub-exe -P -t test -y Test::union_tryconstruct_big -V xml/data/tryconstruct/union.xml -J json/tryconstruct/union_seq_num_20_x2.json',
+    #               'sub-exe -S -t test -y Test::union_tryconstruct_small -V xml/data/tryconstruct/union.xml -J json/data/tryconstruct/union_seq_num_10_x2.json'],
+    #     'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+    #     'check_function' : tsf.data_is_correct,
+    #     'title' : '',
+    #     'description' : ''
+    # },
+    # 'tryc_union_2' : {
+    #     'common_args' : ['-X xml/types/try_construct.xml'],
+    #     'apps' : ['pub-exe -P -t test -y Test::union_tryconstruct_big -V xml/data/tryconstruct/union.xml -J json/tryconstruct/union_seq_num_20_x3.json',
+    #               'sub-exe -S -t test -y Test::union_tryconstruct_small -V xml/data/tryconstruct/union.xml -J json/data/tryconstruct/union_seq_num_10_x3.json'],
+    #     'expected_codes' : [ReturnCode.OK, ReturnCode.DATA_NOT_RECEIVED],
+    #     'check_function' : tsf.data_is_correct,
+    #     'title' : '',
+    #     'description' : ''
+    # },
+    # 'tryc_union_3' : {
+    #     'common_args' : ['-X xml/types/try_construct.xml'],
+    #     'apps' : ['pub-exe -P -t test -y Test::union_tryconstruct_big -V xml/data/tryconstruct/union.xml -J json/tryconstruct/union_seq_num_20_x4.json',
+    #               'sub-exe -S -t test -y Test::union_tryconstruct_small -V xml/data/tryconstruct/union.xml -J json/data/tryconstruct/union_seq_num_empty.json'],
+    #     'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+    #     'check_function' : tsf.data_is_correct,
+    #     'title' : '',
+    #     'description' : ''
+    # },
+    # 'tryc_union_4' : {
+    #     'common_args' : ['-X xml/types/try_construct.xml'],
+    #     'apps' : ['pub-exe -P -t test -y Test::union_tryconstruct_big -V xml/data/tryconstruct/union.xml -J json/tryconstruct/union_str_20_x5.json',
+    #               'sub-exe -S -t test -y Test::union_tryconstruct_small -V xml/data/tryconstruct/union.xml -J json/data/tryconstruct/union_str_trim10_x5.json'],
+    #     'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+    #     'check_function' : tsf.data_is_correct,
+    #     'title' : '',
+    #     'description' : ''
+    # },
+    # 'tryc_union_5' : {
+    #     'common_args' : ['-X xml/types/try_construct.xml'],
+    #     'apps' : ['pub-exe -P -t test -y Test::union_tryconstruct_big -V xml/data/tryconstruct/union.xml -J json/tryconstruct/union_str_20_x6.json',
+    #               'sub-exe -S -t test -y Test::union_tryconstruct_small -V xml/data/tryconstruct/union.xml -J json/data/tryconstruct/union_str_10_x6.json'],
+    #     'expected_codes' : [ReturnCode.OK, ReturnCode.DATA_NOT_RECEIVED],
+    #     'check_function' : tsf.data_is_correct,
+    #     'title' : '',
+    #     'description' : ''
+    # },
+    # 'tryc_union_6' : {
+    #     'common_args' : ['-X xml/types/try_construct.xml'],
+    #     'apps' : ['pub-exe -P -t test -y Test::union_tryconstruct_big -V xml/data/tryconstruct/union.xml -J json/tryconstruct/union_str_20_x7.json',
+    #               'sub-exe -S -t test -y Test::union_tryconstruct_small -V xml/data/tryconstruct/union.xml -J json/data/tryconstruct/union_str_default.json'],
+    #     'expected_codes' : [ReturnCode.OK, ReturnCode.DATA_NOT_RECEIVED],
+    #     'check_function' : tsf.data_is_correct,
+    #     'title' : '',
+    #     'description' : ''
+    # },
 }

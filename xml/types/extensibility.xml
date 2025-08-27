@@ -39,6 +39,13 @@
                 <member name="x3" type="int32" />
                 <member name="x2" type="int32" />
             </struct>
+
+            <struct name="struct_hashid_1" extensibility="final" autoid="hash">
+                <member name="x1" type="int32"/>
+            </struct>
+            <struct name="struct_hashid_2" extensibility="final" autoid="hash">
+                <member name="x2" type="int32" hashid="x1"/>
+            </struct>
         </module>
     </types>
 </dds>

@@ -1,0 +1,134 @@
+<dds>
+     <types>
+        <module name="test">
+            <struct name="seq_int32x20"  extensibility="final">
+                <member name="x1"   type="int32" sequenceMaxLength="20"  />
+            </struct>
+            <struct name="seq_int32x10_trim"   extensibility="final">
+                <member name="x1"   type="int32" sequenceMaxLength="10" tryConstruct="trim"/>
+            </struct>
+            <struct name="seq_int32x10_discard" extensibility="final">
+                <member name="x1"   type="int32" sequenceMaxLength="10" tryConstruct="discard"/>
+            </struct>
+            <struct name="seq_int32x10_default"   extensibility="final">
+                <member name="x1"   type="int32" sequenceMaxLength="10" tryConstruct="use_default"/>
+            </struct>
+            <struct name="seq_int32x10"   extensibility="final">
+                <member name="x1"   type="int32" sequenceMaxLength="10"/>
+            </struct>
+
+            <struct name="string20"   extensibility="final">
+                <member name="x1"   type="string" stringMaxLength="20"  />
+            </struct>
+            <struct name="string10_trim"   extensibility="final">
+                <member name="x1"   type="string" stringMaxLength="10" tryConstruct="trim" />
+            </struct>
+            <struct name="string10_discard"   extensibility="final">
+                <member name="x1"   type="string" stringMaxLength="10" tryConstruct="discard" />
+            </struct>
+            <struct name="string10_default"   extensibility="final">
+                <member name="x1"   type="string" stringMaxLength="10" tryConstruct="use_default" />
+            </struct>
+            <struct name="string10"   extensibility="final">
+                <member name="x1"   type="string" stringMaxLength="10" />
+            </struct>
+
+            <enum name="E1" bitBound="32" extensibility="appendable">
+                <enumerator name="VAL0" value="0"/>
+                <enumerator name="VAL1" value="1"/>
+                <enumerator name="VAL2" value="2"/>
+                <enumerator name="VAL3" value="3"/>
+            </enum>
+
+            <enum name="E2" bitBound="32" extensibility="appendable">
+                <enumerator name="VAL0" value="0"/>
+                <enumerator name="VAL1" value="1" defaultLiteral="true"/>
+                <enumerator name="VAL2" value="2"/>
+            </enum>
+            <struct name="struct_enum_1"   extensibility="mutable">
+                <member name="x1" type="nonBasic" nonBasicTypeName="E1" />
+            </struct>
+
+            <struct name="struct_enum_2_discard"   extensibility="mutable">
+                <member name="x1" type="nonBasic" nonBasicTypeName="E2" tryConstruct="discard"/>
+            </struct>
+            <struct name="struct_enum_2_default"   extensibility="mutable">
+                <member name="x1" type="nonBasic" nonBasicTypeName="E2" tryConstruct="use_default"/>
+            </struct>
+            <struct name="struct_enum_2"   extensibility="mutable">
+                <member name="x1" type="nonBasic" nonBasicTypeName="E2"/>
+            </struct>
+
+
+
+            <union name="union_seq_int32x20"> <discriminator type="uint32" />
+                <case><caseDiscriminator value="1" /><member name="x1"   type="int32" sequenceMaxLength="20" /></case>
+            </union>
+            <union name="union_seq_int32x10_trim"> <discriminator type="uint32" />
+                <case><caseDiscriminator value="1" /><member name="x1"   type="int32" sequenceMaxLength="10" tryConstruct="trim"/></case>
+            </union>
+            <union name="union_seq_int32x10_discard"> <discriminator type="uint32" />
+                <case><caseDiscriminator value="1" /><member name="x1"   type="int32" sequenceMaxLength="10" tryConstruct="discard"/></case>
+            </union>
+            <union name="union_seq_int32x10_default"> <discriminator type="uint32" />
+                <case><caseDiscriminator value="1" /><member name="x1"   type="int32" sequenceMaxLength="10" tryConstruct="use_default"/></case>
+            </union>
+            <union name="union_seq_int32x10"> <discriminator type="uint32" />
+                <case><caseDiscriminator value="1" /><member name="x1"   type="int32" sequenceMaxLength="10"/></case>
+            </union>
+
+            <union name="union_string20"> <discriminator type="uint32" />
+                <case><caseDiscriminator value="1" /><member name="x1"   type="string" stringMaxLength="20" /></case>
+            </union>
+            <union name="union_string10_trim"> <discriminator type="uint32" />
+                <case><caseDiscriminator value="1" /><member name="x1"   type="string" stringMaxLength="10" tryConstruct="trim"/></case>
+            </union>
+            <union name="union_string10_discard"> <discriminator type="uint32" />
+                <case><caseDiscriminator value="1" /><member name="x1"   type="string" stringMaxLength="10" tryConstruct="discard"/></case>
+            </union>
+            <union name="union_string10_default"> <discriminator type="uint32" />
+                <case><caseDiscriminator value="1" /><member name="x1"   type="string" stringMaxLength="10" tryConstruct="use_default"/></case>
+            </union>
+            <union name="union_string10"> <discriminator type="uint32" />
+                <case><caseDiscriminator value="1" /><member name="x1"   type="string" stringMaxLength="10"/></case>
+            </union>
+
+            <union name="union_enum_1"> <discriminator type="uint32" />
+                <case><caseDiscriminator value="1" /><member name="x1"   type="nonBasic" nonBasicTypeName="E1"/></case>
+            </union>
+            <union name="union_enum_2_discard"> <discriminator type="uint32" />
+                <case><caseDiscriminator value="1" /><member name="x1"   type="nonBasic" nonBasicTypeName="E2" tryConstruct="discard"/></case>
+            </union>
+            <union name="union_enum_2_default"> <discriminator type="uint32" />
+                <case><caseDiscriminator value="1" /><member name="x1"   type="nonBasic" nonBasicTypeName="E2" tryConstruct="use_default"/></case>
+            </union>
+            <union name="union_enum_2"> <discriminator type="uint32" />
+                <case><caseDiscriminator value="1" /><member name="x1"   type="nonBasic" nonBasicTypeName="E2"/></case>
+            </union>
+
+            <union name="union_disc_enum_1"> <discriminator type="nonBasic" nonBasicTypeName="E1"/>
+                <case><caseDiscriminator value="VAL0" /><member name="x0"   type="int32"/></case>
+                <case><caseDiscriminator value="VAL1" /><member name="x1"   type="int32"/></case>
+                <case><caseDiscriminator value="VAL2" /><member name="x2"   type="int32"/></case>
+                <case><caseDiscriminator value="VAL3" /><member name="x3"   type="int32"/></case>
+            </union>
+            <union name="union_disc_enum_2_discard"> <discriminator type="nonBasic" nonBasicTypeName="E2" tryConstruct="discard"/>
+                <case><caseDiscriminator value="VAL0" /><member name="x0"   type="int32"/></case>
+                <case><caseDiscriminator value="VAL1" /><member name="x1"   type="int32"/></case>
+                <case><caseDiscriminator value="VAL2" /><member name="x2"   type="int32"/></case>
+            </union>
+            <union name="union_disc_enum_2_default"> <discriminator type="nonBasic" nonBasicTypeName="E2" tryConstruct="use_default"/>
+                <case><caseDiscriminator value="VAL0" /><member name="x0"   type="int32"/></case>
+                <case><caseDiscriminator value="VAL1" /><member name="x1"   type="int32"/></case>
+                <case><caseDiscriminator value="VAL2" /><member name="x2"   type="int32"/></case>
+            </union>
+            <union name="union_disc_enum_2"> <discriminator type="nonBasic" nonBasicTypeName="E2" />
+                <case><caseDiscriminator value="VAL0" /><member name="x0"   type="int32"/></case>
+                <case><caseDiscriminator value="VAL1" /><member name="x1"   type="int32"/></case>
+                <case><caseDiscriminator value="VAL2" /><member name="x2"   type="int32"/></case>
+            </union>
+
+
+        </module>
+    </types>
+</dds>

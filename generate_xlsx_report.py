@@ -18,7 +18,7 @@ import os
 import re
 import datetime
 from rtps_test_utilities import log_message
-import union_rules as test_suite
+import test_suite
 
 class XlxsReportArgumentParser:
     """Class that parse the arguments of the application."""
@@ -816,10 +816,18 @@ class XlsxReport:
         worksheet.write(
             current_row, starting_column + 1,
             'Test Title', self.__formats['product_subtitle'])
-        worksheet.write_url(
-            current_row, starting_column + 2,
-            'https://omg-dds.github.io/dds-rtps/test_description.html',
-            string="Click here for full test descriptions")
+
+        dir_name = pathlib.Path(__file__).resolve().parent.name
+        if dir_name == "dds-rtps":
+            worksheet.write_url(
+                current_row, starting_column + 2,
+                'https://omg-dds.github.io/dds-rtps/test_description.html',
+                string="Click here for full test descriptions")
+        elif dir_name == "dds-xtypes":
+            worksheet.write_url(
+                current_row, starting_column + 2,
+                'https://omg-dds.github.io/dds-xtypes/test_description.html',
+                string="Click here for full test descriptions")
 
     def add_test_name_description_worksheet(self,
             worksheet: xlsxwriter.Workbook.worksheet_class,
@@ -830,9 +838,12 @@ class XlsxReport:
         current_row = starting_row
 
         # Add test name
-        for test_name in test_suite.xtypes_v2_union_rules.keys():
-            worksheet.write(current_row, col, test_name, self.__formats['bold'])
-            current_row += 1
+        for test_dict in dir(test_suite):
+            obj = getattr(test_suite, test_dict)
+            if isinstance(obj, dict) and test_dict != '__builtins__':
+                for test_name in obj.keys():
+                    worksheet.write(current_row, col, test_name, self.__formats['bold'])
+                    current_row += 1
 
     def add_title_description_worksheet(self,
             worksheet: xlsxwriter.Workbook.worksheet_class,
@@ -843,9 +854,12 @@ class XlsxReport:
         current_row = starting_row
 
         # Add test title
-        for value in test_suite.xtypes_v2_union_rules.values():
-            worksheet.write(current_row, col, value['title'])
-            current_row += 1
+        for test_dict in dir(test_suite):
+            obj = getattr(test_suite, test_dict)
+            if isinstance(obj, dict) and test_dict != '__builtins__':
+                for value in obj.values():
+                    worksheet.write(current_row, col, value['title'])
+                    current_row += 1
 
 def get_file_extension(input) -> str:
     """Get file extension from the input as Path or str"""
