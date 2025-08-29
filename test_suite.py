@@ -10,7 +10,7 @@ from rtps_test_utilities import ReturnCode
 import test_suite_functions as tsf
 
 xtypes_v2_extensibility_rules = {
-    'ext_final_1' : {
+    'ext_final_struct_1' : {
         'common_args' : ['-X xml/types/extensibility.xml'],
         'apps' : ['pub-exe -P -t test -y Test::struct_f1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
                   'sub-exe -S -t test -y Test::struct_f1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --ignore-member-names f'],
@@ -19,7 +19,7 @@ xtypes_v2_extensibility_rules = {
         'title' : '',
         'description' : ''
     },
-    'ext_final_2' : {
+    'ext_final_struct_2' : {
         'common_args' : ['-X xml/types/extensibility.xml'],
         'apps' : ['pub-exe -P -t test -y Test::struct_f1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
                   'sub-exe -S -t test -y Test::struct_f2 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --ignore-member-names f'],
@@ -28,7 +28,7 @@ xtypes_v2_extensibility_rules = {
         'title' : '',
         'description' : ''
     },
-    'ext_appendable_1' : {
+    'ext_appendable_struct_1' : {
         'common_args' : ['-X xml/types/extensibility.xml'],
         'apps' : ['pub-exe -P -t test -y Test::struct_a1 -V xml/data/arrays.xml -J json/data/struct_num_x1.json',
                   'sub-exe -S -t test -y Test::struct_a1 -V xml/data/arrays.xml -J json/data/struct_num_x1.json --ignore-member-names f'],
@@ -37,7 +37,7 @@ xtypes_v2_extensibility_rules = {
         'title' : '',
         'description' : ''
     },
-    'ext_appendable_2' : {
+    'ext_appendable_struct_2' : {
         'common_args' : ['-X xml/types/extensibility.xml'],
         'apps' : ['pub-exe -P -t test -y Test::struct_a1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
                   'sub-exe -S -t test -y Test::struct_a2 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --ignore-member-names f'],
@@ -46,7 +46,7 @@ xtypes_v2_extensibility_rules = {
         'title' : '',
         'description' : ''
     },
-    'ext_appendable_3' : {
+    'ext_appendable_struct_3' : {
         'common_args' : ['-X xml/types/extensibility.xml'],
         'apps' : ['pub-exe -P -t test -y Test::struct_a2 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x2.json',
                   'sub-exe -S -t test -y Test::struct_a1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --ignore-member-names f'],
@@ -55,7 +55,7 @@ xtypes_v2_extensibility_rules = {
         'title' : '',
         'description' : ''
     },
-    'ext_appendable_4' : {
+    'ext_appendable_struct_4' : {
         'common_args' : ['-X xml/types/extensibility.xml'],
         'apps' : ['pub-exe -P -t test -y Test::struct_a2 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x2.json',
                   'sub-exe -S -t test -y Test::struct_a3 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x2.json --ignore-member-names f'],
@@ -64,7 +64,7 @@ xtypes_v2_extensibility_rules = {
         'title' : '',
         'description' : ''
     },
-    'ext_appendable_5' : {
+    'ext_appendable_struct_5' : {
         'common_args' : ['-X xml/types/extensibility.xml'],
         'apps' : ['pub-exe -P -t test -y Test::struct_a3 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x3_x2.json',
                   'sub-exe -S -t test -y Test::struct_a2 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x2.json --ignore-member-names f'],
@@ -74,7 +74,7 @@ xtypes_v2_extensibility_rules = {
         'description' : ''
     },
 
-    'ext_mutable_1' : {
+    'ext_mutable_struct_1' : {
         'common_args' : ['-X xml/types/extensibility.xml'],
         'apps' : ['pub-exe -P -t test -y Test::struct_m1 -V xml/data/arrays.xml -J json/data/struct_num_x1.json',
                   'sub-exe -S -t test -y Test::struct_m1 -V xml/data/arrays.xml -J json/data/struct_num_x1.json --ignore-member-names f'],
@@ -83,7 +83,7 @@ xtypes_v2_extensibility_rules = {
         'title' : '',
         'description' : ''
     },
-    'ext_mutable_2' : {
+    'ext_mutable_struct_2' : {
         'common_args' : ['-X xml/types/extensibility.xml'],
         'apps' : ['pub-exe -P -t test -y Test::struct_m1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',
                   'sub-exe -S -t test -y Test::struct_m2 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --ignore-member-names f'],
@@ -92,7 +92,7 @@ xtypes_v2_extensibility_rules = {
         'title' : '',
         'description' : ''
     },
-    'ext_mutable_3' : {
+    'ext_mutable_struct_3' : {
         'common_args' : ['-X xml/types/extensibility.xml'],
         'apps' : ['pub-exe -P -t test -y Test::struct_m2 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x2.json',
                   'sub-exe -S -t test -y Test::struct_m1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --ignore-member-names f'],
@@ -101,7 +101,7 @@ xtypes_v2_extensibility_rules = {
         'title' : '',
         'description' : ''
     },
-    'ext_mutable_4' : {
+    'ext_mutable_struct_4' : {
         'common_args' : ['-X xml/types/extensibility.xml'],
         'apps' : ['pub-exe -P -t test -y Test::struct_m2 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x2.json',
                   'sub-exe -S -t test -y Test::struct_m3 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x2.json --ignore-member-names f'],
@@ -110,7 +110,7 @@ xtypes_v2_extensibility_rules = {
         'title' : '',
         'description' : ''
     },
-    'ext_mutable_5' : {
+    'ext_mutable_struct_5' : {
         'common_args' : ['-X xml/types/extensibility.xml'],
         'apps' : ['pub-exe -P -t test -y Test::struct_m3 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x3_x2.json',
                   'sub-exe -S -t test -y Test::struct_m2 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x2.json --ignore-member-names f'],
@@ -119,7 +119,7 @@ xtypes_v2_extensibility_rules = {
         'title' : '',
         'description' : ''
     },
-    'ext_mutable_6' : {
+    'ext_mutable_struct_6' : {
         'common_args' : ['-X xml/types/extensibility.xml'],
         'apps' : ['pub-exe -P -t test -y Test::struct_m2 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x2.json',
                   'sub-exe -S -t test -y Test::struct_m4 -V xml/data/struct_1.xml -J json/data/struct_num_x1_x2.json --ignore-member-names f'],
