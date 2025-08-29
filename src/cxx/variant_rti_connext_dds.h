@@ -61,6 +61,12 @@ const char *get_qos_policy_name(DDS_QosPolicyId_t policy_id)
     return DDS_QosPolicyId_to_string(policy_id); // not standard...
 }
 
+void disable_type_info(DDS::DomainParticipantQos &dp_qos)
+{
+    dp_qos.resource_limits.type_code_max_serialized_length = 0;
+    dp_qos.resource_limits.type_object_max_serialized_length = 0;
+}
+
 DDS::DynamicType * CREATE_TYPE(
     DDS::DomainParticipant * dp,
     const char * types_uri,

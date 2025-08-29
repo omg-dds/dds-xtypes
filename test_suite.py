@@ -141,6 +141,30 @@ xtypes_v2_extensibility_rules = {
 
 
 xtypes_v2_type_consistency_rules = {
+    'tc_force_type_validation_1' : {
+        'apps' : ['pub-exe -P -t test -X xml/types/type_consistency.xml -y Test::struct_x1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --disable-type-info',
+                  'sub-exe -S -t test -X xml/types/type_consistency_force_type_val.xml -y Test::struct_x1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --force-type-validation t --disable-type-info'],
+        'expected_codes' : [ReturnCode.INCONSISTENT_TOPIC, ReturnCode.INCONSISTENT_TOPIC],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'tc_force_type_validation_2' : {
+        'apps' : ['pub-exe -P -t test -X xml/types/type_consistency.xml -y Test::struct_x1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --disable-type-info',
+                  'sub-exe -S -t test -X xml/types/type_consistency_force_type_val.xml -y Test::struct_x1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --force-type-validation f --disable-type-info'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
+    'tc_force_type_validation_3' : {
+        'apps' : ['pub-exe -P -t test -X xml/types/type_consistency.xml -y Test::struct_x1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --disable-type-info',
+                  'sub-exe -S -t test -X xml/types/type_consistency_force_type_val.xml -y Test::struct_x1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json --force-type-validation d --disable-type-info'],
+        'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
+        'check_function' : tsf.data_is_correct,
+        'title' : '',
+        'description' : ''
+    },
     'tc_ignore_member_names_1' : {
         'common_args' : ['-X xml/types/type_consistency.xml'],
         'apps' : ['pub-exe -P -t test -y Test::struct_x1 -V xml/data/struct_1.xml -J json/data/struct_num_x1.json',

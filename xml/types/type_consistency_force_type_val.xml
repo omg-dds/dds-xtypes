@@ -1,0 +1,9 @@
+<dds>
+    <types>
+        <module name="Test">
+            <struct name="struct_x1"   extensibility="appendable">
+                <member name="x1" type="uint32" />
+            </struct>
+        </module>
+    </types>
+</dds>

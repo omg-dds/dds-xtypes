@@ -18,8 +18,6 @@
 #include <getopt.h>
 #include <iostream>
 
-#define RTI_CONNEXT_DDS
-
 #if defined(RTI_CONNEXT_DDS)
 #include "variant_rti_connext_dds.h"
 #elif defined(TWINOAKS_COREDX)
@@ -221,6 +219,7 @@ Logger logger(ERROR);
 #define OPT_CHECK_STRING_BOUNDS      0x1003
 #define OPT_PREVENT_TYPE_WIDENING    0x1004
 #define OPT_ALLOW_TYPE_COERCION      0x1005
+#define OPT_DISABLE_TYPE_INFO        0x1006
 
 static struct option long_opts[] =
   {
@@ -231,6 +230,7 @@ static struct option long_opts[] =
     { "ignore-str-bounds",     required_argument, NULL, OPT_CHECK_STRING_BOUNDS    },
     { "prevent-type-widening", required_argument, NULL, OPT_PREVENT_TYPE_WIDENING  },
     { "allow-type-coercion",   required_argument, NULL, OPT_ALLOW_TYPE_COERCION    },
+    { "disable-type-info",     no_argument,       NULL, OPT_DISABLE_TYPE_INFO    },
     { NULL, 0, NULL, 0 }
   };
 
@@ -264,6 +264,8 @@ public:
 
   bool                print_writer_samples;
 
+  bool                disable_type_info;
+
 
 public:
   //-------------------------------------------------------------
@@ -286,6 +288,8 @@ public:
     type_consistency.ignore_enum_literal_names =
             TypeConsistency_get_default().ignore_enum_literal_names;
 #endif
+
+    disable_type_info = false;
 
     topic_name         = NULL;
     type_name          = NULL;
@@ -351,6 +355,8 @@ public:
     printf("                                 type_consistency.prevent_type_widening\n");
     printf("   --allow-type-coercion [t|f|d]: enable, disable type coercion or default\n");
     printf("                                 value for type_consistency.kind\n");
+    printf("   --disable-type-info: disable sending the type info for type\n");
+    printf("                        assignability\n");
     printf("   -v [e|d]        : set log message verbosity [e: ERROR, d: DEBUG]\n");
   }
 
@@ -777,6 +783,10 @@ public:
             }
             break;
 
+          case OPT_DISABLE_TYPE_INFO:
+            disable_type_info = true;
+            break;
+
           case 'h':
             {
               print_usage(argv[0]);
@@ -813,6 +823,7 @@ public:
                 "\n    TimeBasedFilterInterval = " + std::to_string(timebasedfilter_interval) +
                 "\n    DeadlineInterval = " + std::to_string(deadline_interval) +
                 "\n    Type consistency kind = " + QosUtils::to_string(type_consistency.kind) +
+                "\n    Disable type info = " + std::to_string(disable_type_info) +
                 "\n    Verbosity = " + QosUtils::to_string(logger.verbosity()),
             Verbosity::DEBUG);
         if (!publish) {
@@ -990,7 +1001,13 @@ public:
     CONFIGURE_PARTICIPANT_FACTORY
 #endif
 
-      dp = dpf->create_participant( options->domain_id, PARTICIPANT_QOS_DEFAULT, &dp_listener, LISTENER_STATUS_MASK_ALL );
+    DomainParticipantQos dp_qos;
+    dpf->get_default_participant_qos(dp_qos);
+    if (options->disable_type_info) {
+        disable_type_info(dp_qos);
+    }
+
+    dp = dpf->create_participant( options->domain_id, dp_qos, &dp_listener, LISTENER_STATUS_MASK_ALL );
     if (dp == NULL) {
       logger.log_message("failed to create participant (missing license?).", Verbosity::ERROR);
       return false;
