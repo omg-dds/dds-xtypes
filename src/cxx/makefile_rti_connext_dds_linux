@@ -27,7 +27,7 @@ version_name = $(lastword $(split_path_name))
 common_name = "_shape_main_linux"
 executable_name = $(version_name)$(common_name)
 
-TARGET_ARCH = x64Linux4gcc7.3.0
+TARGET_ARCH = $(CONNEXTDDS_ARCH)
 
 ifndef COMPILER
 COMPILER = g++

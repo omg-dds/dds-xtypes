@@ -27,7 +27,7 @@ version_name = $(lastword $(split_path_name))
 common_name = "_test_main_macos"
 executable_name = $(version_name)$(common_name)
 
-TARGET_ARCH = arm64Darwin20clang12.0
+TARGET_ARCH = $(CONNEXTDDS_ARCH)
 
 ifndef COMPILER
 COMPILER       = clang++
