@@ -699,14 +699,14 @@ xtypes_v2_string_rules = {
     },
     'string10_string20_check' : {
         'common_args' : ['-X xml/types/strings.xml'],
-        'apps' : ['pub-exe -P -t test -y Test::string10 -V xml/data/strings.xml -J json/data/strings.json',
-                  'sub-exe -S -t test -y Test::string20 -V xml/data/strings.xml -J json/data/strings.json --ignore-str-bounds f'],
+        'apps' : ['pub-exe -P -t test -y Test::string10 -V xml/data/strings_hello.xml -J json/data/strings_hello.json',
+                  'sub-exe -S -t test -y Test::string20 -V xml/data/strings_hello.xml -J json/data/strings_hello.json --ignore-str-bounds f'],
         'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
         'check_function' : tsf.data_is_correct,
         'title' : '',
         'description' : ''
     },
-    'string10_string20_check' : {
+    'string20_string10_check' : {
         'common_args' : ['-X xml/types/strings.xml'],
         'apps' : ['pub-exe -P -t test -y Test::string20 -V xml/data/strings.xml -J json/data/strings.json',
                   'sub-exe -S -t test -y Test::string10 -V xml/data/strings.xml -J json/data/strings.json --ignore-str-bounds f'],
@@ -745,14 +745,14 @@ xtypes_v2_string_rules = {
     },
     'wstring10_wstring20_check' : {
         'common_args' : ['-X xml/types/strings.xml'],
-        'apps' : ['pub-exe -P -t test -y Test::wstring10 -V xml/data/wstrings.xml -J json/data/wstrings.json',
-                  'sub-exe -S -t test -y Test::wstring20 -V xml/data/wstrings.xml -J json/data/wstrings.json --ignore-str-bounds f'],
+        'apps' : ['pub-exe -P -t test -y Test::wstring10 -V xml/data/wstrings_hello.xml -J json/data/wstrings_hello.json',
+                  'sub-exe -S -t test -y Test::wstring20 -V xml/data/wstrings_hello.xml -J json/data/wstrings_hello.json --ignore-str-bounds f'],
         'expected_codes' : [ReturnCode.OK, ReturnCode.OK],
         'check_function' : tsf.data_is_correct,
         'title' : '',
         'description' : ''
     },
-    'wstring10_wstring20_check' : {
+    'wstring20_wstring10_check' : {
         'common_args' : ['-X xml/types/strings.xml'],
         'apps' : ['pub-exe -P -t test -y Test::wstring20 -V xml/data/wstrings.xml -J json/data/wstrings.json',
                   'sub-exe -S -t test -y Test::wstring10 -V xml/data/wstrings.xml -J json/data/wstrings.json --ignore-str-bounds f'],
@@ -1256,7 +1256,7 @@ xtypes_v2_union_rules = {
         'title': '',
         'description': ''
     },
-    'union_different_names_2': {
+    'union_different_order_2': {
         'common_args': ['-X xml/types/unions.xml'],
         'apps': ['pub-exe -P -t test -y Test::union_5 -V xml/data/union_x1.xml -J json/data/union_x1.json',
                  'sub-exe -S -t test -y Test::union_6 -V xml/data/union_x1.xml -J json/data/union_x1.json --ignore-member-names f'],
