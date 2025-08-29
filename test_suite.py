@@ -28,7 +28,7 @@ xtypes_v2_extensibility_rules = {
         'title' : '',
         'description' : ''
     },
-    'appendable_1' : {
+    'ext_appendable_1' : {
         'common_args' : ['-X xml/types/extensibility.xml'],
         'apps' : ['pub-exe -P -t test -y Test::struct_a1 -V xml/data/arrays.xml -J json/data/struct_num_x1.json',
                   'sub-exe -S -t test -y Test::struct_a1 -V xml/data/arrays.xml -J json/data/struct_num_x1.json --ignore-member-names f'],
