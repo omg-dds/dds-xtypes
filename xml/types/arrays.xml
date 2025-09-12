@@ -63,10 +63,10 @@
   
   <!-- check 'strongly assignable' element type -->
   <struct name="S_final"   extensibility="final">
-    <member name="x1"   type="uint32" arrayDimensions="20"  /> 
+    <member name="x1"    type="uint32" arrayDimensions="20"  /> 
   </struct>
   <struct name="S_final_alt"   extensibility="final">
-    <member name="x1"   type="uint32" arrayDimensions="20"  /> 
+    <member name="x1alt" type="uint32" arrayDimensions="20"  /> 
   </struct>
 
   <struct name="S_appendable"   extensibility="appendable">
@@ -84,7 +84,7 @@
     <member name="x1"   type="nonBasic" nonBasicTypeName="S_final" arrayDimensions="10"  /> 
   </struct>
   <struct name="sfinalx10_alt"   extensibility="final">
-    <member name="altx1"   type="nonBasic" nonBasicTypeName="S_final_alt" arrayDimensions="10"  /> 
+    <member name="x1"   type="nonBasic" nonBasicTypeName="S_final_alt" arrayDimensions="10"  /> 
   </struct>
 
   <struct name="sappendablex10"   extensibility="final">

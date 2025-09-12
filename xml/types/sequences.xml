@@ -53,17 +53,17 @@
   
   <!-- check 'strongly assignable' element type -->
   <struct name="S_final"   extensibility="final">
-    <member name="x1"   type="uint32" sequenceMaxLength="20"  /> 
+    <member name="x1"    type="uint32" sequenceMaxLength="20"  /> 
   </struct>
   <struct name="S_final_alt"   extensibility="final">
-    <member name="x1"   type="uint32" sequenceMaxLength="20"  /> 
+    <member name="x1alt" type="uint32" sequenceMaxLength="20"  /> 
   </struct>
 
   <struct name="S_appendable"   extensibility="appendable">
     <member name="x1"   type="uint32" sequenceMaxLength="20"  /> 
   </struct>
   <struct name="S_appendable_alt"   extensibility="appendable">
-    <member name="x1_alt"   type="uint32" sequenceMaxLength="20"  /> 
+    <member name="x1"   type="uint32" sequenceMaxLength="20"  /> 
   </struct>
 
   <struct name="S_mutable"   extensibility="mutable">
