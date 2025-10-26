@@ -71,10 +71,10 @@ ${EXECUTABLE}: ${test_main_coredx_OBJS}
 # Rules for cleaning
 
 clean:
-	\rm -f ${test_main_coredx_OBJS}  ${EXECUTABLE}
+	rm -f ${test_main_coredx_OBJS}  ${EXECUTABLE}
 
 reallyclean: clean
-	\echo ""
+	echo ""
 
 
 ##########################################################

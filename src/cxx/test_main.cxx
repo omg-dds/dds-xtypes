@@ -378,10 +378,12 @@ public:
       logger.log_message("please specify only one of: publish [-P] or subscribe [-S]", Verbosity::ERROR);
       return false;
     }
+#if 0   /* allow publishing an empty, unpopulated sample */
     if ( xml_data_uri == NULL && json_data_uri == NULL ) {
       logger.log_message("please provide the data either in XML [-V] or JSON [-J]", Verbosity::ERROR);
       return false;
     }
+#endif
     if ( types_uri == NULL ) {
       logger.log_message("please provide the types in XML [-X]", Verbosity::ERROR);
       return false;
@@ -981,6 +983,7 @@ public:
   //-------------------------------------------------------------
   ~TestApplication()
   {
+    if (dt)  CLEANUP_TYPE( dp, dt );
     if (dp)  dp->delete_contained_entities( );
     if (dpf) dpf->delete_participant( dp );
   }
@@ -1119,6 +1122,11 @@ public:
       logger.log_message("    HistoryDepth = " + std::to_string(dw_qos.history.depth), Verbosity::DEBUG);
     }
 
+#if defined(TWINOAKS_COREDX)
+    if ( options->disable_type_info )
+      dw_qos.rtps_writer.send_typeobj_v2 = 0;
+#endif
+    
     printf("Create writer for topic: %s type: %s\n", options->topic_name, options->type_name );
 
     dw = pub->create_datawriter( topic, dw_qos, NULL, 0);
@@ -1203,9 +1211,14 @@ public:
     logger.log_message("                    * ignore_member_names    = "  + std::to_string(dr_qos.type_consistency.ignore_member_names), Verbosity::DEBUG );
     logger.log_message("                    * prevent_type_widening  = "  + std::to_string(dr_qos.type_consistency.prevent_type_widening), Verbosity::DEBUG );
     logger.log_message("                    * force_type_validation  = "  + std::to_string(dr_qos.type_consistency.force_type_validation), Verbosity::DEBUG );
+    
+#if defined(TWINOAKS_COREDX)
+    if ( options->disable_type_info )
+      dr_qos.rtps_reader.send_typeobj_v2 = 0;
+#endif
 
     printf("Create reader for topic: %s\n", options->topic_name );
-
+    
     dr = sub->create_datareader(topic, dr_qos, NULL, LISTENER_STATUS_MASK_NONE);
 
 
@@ -1295,11 +1308,11 @@ public:
     }
 
     while (!all_done) {
-#if defined(RTI_CONNEXT_DDS)
       DynamicDataWriter *ddw = dynamic_cast<DynamicDataWriter *>(dw);
+#if defined(RTI_CONNEXT_DDS)
       ddw->write(*dd, HANDLE_NIL);
-#else
-      dw->write(*dd, HANDLE_NIL);
+#elif defined(TWINOAKS_COREDX)
+      ddw->write(dd, HANDLE_NIL);
 #endif
       if (options->print_writer_samples)
         {
@@ -1308,7 +1321,7 @@ public:
         }
       usleep(1000000);
     }
-
+    CLEANUP_DATA( dd );
     return true;
   }
 
