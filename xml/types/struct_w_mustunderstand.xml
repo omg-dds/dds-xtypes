@@ -1,5 +1,6 @@
 <dds>
-    <types>
+<types>
+<module name="Test">
         <!-- member mustUnderstand  -->
         <struct name="struct_mustUnderstand"   extensibility="appendable">
             <member name="x1"                       type="int32"/>
@@ -9,5 +10,6 @@
         <struct name="struct_int32"   extensibility="appendable">
             <member name="x1" type="int32"/>
         </struct>
-    </types>
+</module>        
+</types>
 </dds>

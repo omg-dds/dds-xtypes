@@ -1,0 +1,4 @@
+<union>
+  <discriminator>1</discriminator>
+  <x1>3</x1>
+</union>

@@ -1,5 +1,5 @@
 <union_bitmask>
-  <discriminator>1</discriminator>
-  <x1>1234</x1>
+  <discriminator>2</discriminator>
+  <x1>128</x1>
 </union_bitmask>
 

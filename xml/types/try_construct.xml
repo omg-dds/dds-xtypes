@@ -1,6 +1,6 @@
 <dds>
      <types>
-        <module name="test">
+        <module name="Test">
             <struct name="seq_int32x20"  extensibility="final">
                 <member name="x1"   type="int32" sequenceMaxLength="20"  />
             </struct>
