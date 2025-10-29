@@ -171,7 +171,6 @@ DDS::ReturnCode_t INIT_DATA(
     (void) xml_data_uri;
 
     if (dd != NULL && json_data_uri != NULL) {
-        PRINT_DATA_JSON(dd);
         std::ifstream file(json_data_uri);
         if (!file) {
             std::cerr << "Failed to open the file: " << std::string(json_data_uri)
@@ -193,30 +192,7 @@ DDS::ReturnCode_t INIT_DATA(
 void
 PRINT_DATA(DDS::DynamicData *dd)
 {
-    // unsigned int str_size = 0;
-
-    // DDS::PrintFormatProperty property = DDS_PRINT_FORMAT_PROPERTY_DEFAULT;
-    // property.kind = DDS_JSON_PRINT_FORMAT;
-
-    // if (dd->to_string(NULL, str_size, property) != DDS::RETCODE_OK) {
-    //     std::cerr << "Failed to get size" << std::endl;
-    //     return;
-    // }
-
-    // char* json_str = new char[str_size];
-
-    // if (dd->to_string(json_str, str_size, property) != DDS::RETCODE_OK) {
-    //     std::cerr << "Failed to get string" << std::endl;
-    //     delete[] json_str;
-    //     return;
-    // }
-
-    // printf("%s\n", json_str);
-    // delete[] json_str;
-
-    //dd->print(stdout, 0);
     PRINT_DATA_JSON(dd);
-
 }
 
 void CLEANUP_DATA(DDS::DynamicData *dd)
