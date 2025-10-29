@@ -55,7 +55,7 @@ TypeConsistency_get_default(void) {
   return rval;
 }
 
-void disable_type_info(DDS::DomainParticipantQos &dp_qos) {}
+void disable_type_information(DDS::DomainParticipantQos &dp_qos) {}
 
 DDS::DynamicType  *
 CREATE_TYPE( DDS::DomainParticipant * dp,
