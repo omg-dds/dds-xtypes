@@ -220,6 +220,7 @@ Logger logger(ERROR);
 #define OPT_PREVENT_TYPE_WIDENING    0x1004
 #define OPT_ALLOW_TYPE_COERCION      0x1005
 #define OPT_DISABLE_TYPE_INFO        0x1006
+#define OPT_TYPE_OBJECT_VERSION      0x1007
 
 static struct option long_opts[] =
   {
@@ -230,7 +231,8 @@ static struct option long_opts[] =
     { "ignore-str-bounds",     required_argument, NULL, OPT_CHECK_STRING_BOUNDS    },
     { "prevent-type-widening", required_argument, NULL, OPT_PREVENT_TYPE_WIDENING  },
     { "allow-type-coercion",   required_argument, NULL, OPT_ALLOW_TYPE_COERCION    },
-    { "disable-type-info",     no_argument,       NULL, OPT_DISABLE_TYPE_INFO    },
+    { "disable-type-info",     no_argument,       NULL, OPT_DISABLE_TYPE_INFO      },
+    { "type-object-version",   required_argument, NULL, OPT_TYPE_OBJECT_VERSION    },
     { NULL, 0, NULL, 0 }
   };
 
@@ -265,6 +267,8 @@ public:
   bool                print_writer_samples;
 
   bool                disable_type_info;
+
+  int                 type_object_version;
 
 
 public:
@@ -305,6 +309,9 @@ public:
     deadline_interval        = 0; /* off */
 
     print_writer_samples = false;
+
+    disable_type_info = false;
+    type_object_version = 2;
   }
 
   //-------------------------------------------------------------
@@ -357,6 +364,8 @@ public:
     printf("                                 value for type_consistency.kind\n");
     printf("   --disable-type-info: disable sending the type info for type\n");
     printf("                        assignability\n");
+    printf("   --type-object-version [1|2]: set the Type Object version to use.\n");
+    printf("                                Default: 2.\n");
     printf("   -v [e|d]        : set log message verbosity [e: ERROR, d: DEBUG]\n");
   }
 
@@ -388,7 +397,7 @@ public:
       logger.log_message("please provide the types in XML [-X]", Verbosity::ERROR);
       return false;
     }
-    if ( type_consistency.kind == DISALLOW_TYPE_COERCION
+    if ( type_consistency.kind != ALLOW_TYPE_COERCION
             && type_consistency.ignore_sequence_bounds == DDS_BOOLEAN_TRUE
             && type_consistency.ignore_string_bounds == DDS_BOOLEAN_TRUE
             && type_consistency.ignore_member_names == DDS_BOOLEAN_TRUE
@@ -789,6 +798,25 @@ public:
             disable_type_info = true;
             break;
 
+          case OPT_TYPE_OBJECT_VERSION:
+            if (optarg[0] != '\0') {
+            switch (optarg[0]) {
+                case '1':
+                    type_object_version = 1;
+                    break;
+                case '2':
+                    type_object_version = 2;
+                    break;
+                default:
+                    logger.log_message("unrecognized value for type object version "
+                            + std::string(1, optarg[0]),
+                            Verbosity::ERROR);
+                    parse_ok = false;
+                    break;
+                }
+            }
+          break;
+
           case 'h':
             {
               print_usage(argv[0]);
@@ -826,6 +854,7 @@ public:
                 "\n    DeadlineInterval = " + std::to_string(deadline_interval) +
                 "\n    Type consistency kind = " + QosUtils::to_string(type_consistency.kind) +
                 "\n    Disable type info = " + std::to_string(disable_type_info) +
+                "\n    TypeObject version = " + std::to_string(type_object_version) +
                 "\n    Verbosity = " + QosUtils::to_string(logger.verbosity()),
             Verbosity::DEBUG);
         if (!publish) {
@@ -851,11 +880,11 @@ public:
                            Verbosity::DEBUG);
       }
       if (xml_data_uri != NULL){
-        logger.log_message("    Data  URI = " + std::string(xml_data_uri),
+        logger.log_message("    XML Data URI = " + std::string(xml_data_uri),
                            Verbosity::DEBUG);
       }
       if (json_data_uri != NULL){
-        logger.log_message("    Data  URI = " + std::string(json_data_uri),
+        logger.log_message("    JSON Data URI = " + std::string(json_data_uri),
                            Verbosity::DEBUG);
       }
       if (partition != NULL) {
@@ -1006,9 +1035,12 @@ public:
 
     DomainParticipantQos dp_qos;
     dpf->get_default_participant_qos(dp_qos);
+
     if (options->disable_type_info) {
-        disable_type_info(dp_qos);
+        disable_type_information(dp_qos);
     }
+
+    set_type_object_version(dp_qos, options->type_object_version);
 
     dp = dpf->create_participant( options->domain_id, dp_qos, &dp_listener, LISTENER_STATUS_MASK_ALL );
     if (dp == NULL) {

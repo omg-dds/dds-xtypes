@@ -631,6 +631,17 @@ class Arguments:
                 'data representation, this parameter is not used.'
                 'The potential values are 1 for XCDR1 and 2 for XCDR2.'
                 'Default value 2.')
+        optional.add_argument('--type-object-version',
+            default="2",
+            required=None,
+            type=str,
+            choices=["1","2"],
+            help='Type Object version used if not provided when running the '
+                'test application. If this application already sets the '
+                'type object version, this parameter is not used.'
+                'If this parameter is not set, it does not add anything to the '
+                'application. The potential values are 1 for TypeObject V1 and '
+                '2 for TypeObject V2.')
 
         tests = parser.add_argument_group(title='Test Case and Test Suite')
         tests.add_argument('-s', '--suite',
@@ -704,6 +715,7 @@ def main():
         'test_cases': args.test,
         'test_cases_disabled': args.disable_test,
         'data_representation': args.data_representation,
+        'type_object_version': args.type_object_version,
     }
 
     # The executables's names are supposed to follow the pattern:
@@ -816,9 +828,11 @@ def main():
 
                     assert(len(parameters) == len(expected_codes))
 
-                    for element in parameters:
-                        if not '-x ' in element:
-                            element += f'-x {options["data_representation"]}'
+                    for i, element in enumerate(parameters):
+                        if not '-x ' in element and options['data_representation'] is not None:
+                            parameters[i] += f' -x {options["data_representation"]}'
+                        if not '--type-object-version ' in element and options['type_object_version'] is not None:
+                            parameters[i] += f' --type-object-version {options["type_object_version"]}'
 
                     case = junitparser.TestCase(f'{test_suite_name}_{test_case_name}')
                     now_test_case = datetime.now()

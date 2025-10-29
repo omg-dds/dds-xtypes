@@ -16,6 +16,51 @@ TypeConsistency_get_default(void) {
     return DDS_TYPE_CONSISTENCY_ENFORCEMENT_QOS_POLICY_DEFAULT;
 }
 
+
+void StringSeq_push(DDS::StringSeq  &string_seq, const char *elem)
+{
+    string_seq.ensure_length(string_seq.length()+1, string_seq.length()+1);
+    string_seq[string_seq.length()-1] = DDS_String_dup(elem);
+}
+
+DDS::DynamicDataTypeSupport * get_type_support(DDS::DynamicType* dt) {
+    if (g_type_support == NULL) {
+        g_type_support = new DDS::DynamicDataTypeSupport(
+                dt,
+                DDS_DYNAMIC_DATA_TYPE_PROPERTY_DEFAULT);
+    }
+    return g_type_support;
+}
+
+const char *get_qos_policy_name(DDS_QosPolicyId_t policy_id)
+{
+    return DDS_QosPolicyId_to_string(policy_id); // not standard...
+}
+
+void disable_type_information(DDS::DomainParticipantQos &dp_qos)
+{
+    dp_qos.resource_limits.type_code_max_serialized_length = 0;
+    dp_qos.resource_limits.type_object_max_serialized_length = 0;
+    dp_qos.discovery_config.enabled_builtin_channels =
+                DDS_DISCOVERYCONFIG_BUILTIN_CHANNEL_MASK_DEFAULT;
+}
+
+void set_type_object_version(DDS::DomainParticipantQos &dp_qos, int version)
+{
+    if (version == 1) {
+        dp_qos.discovery_config.enabled_builtin_channels =
+                DDS_DISCOVERYCONFIG_BUILTIN_CHANNEL_MASK_DEFAULT;
+        dp_qos.resource_limits.type_object_max_serialized_length = 8192;
+    } else if (version == 2) {
+        dp_qos.discovery_config.enabled_builtin_channels =
+                DDS_DISCOVERYCONFIG_TYPE_LOOKUP_SERVICE_CHANNEL;
+        dp_qos.resource_limits.type_object_max_serialized_length = 0;
+    } else {
+        std::cerr << "Unsupported Type Object version: " << version
+                << ". Using default." << std::endl;
+    }
+}
+
 void
 PRINT_DATA_JSON(DDS::DynamicData *dd)
 {
@@ -39,32 +84,6 @@ PRINT_DATA_JSON(DDS::DynamicData *dd)
 
     printf("%s\n", json_str);
     delete[] json_str;
-}
-
-void StringSeq_push(DDS::StringSeq  &string_seq, const char *elem)
-{
-    string_seq.ensure_length(string_seq.length()+1, string_seq.length()+1);
-    string_seq[string_seq.length()-1] = DDS_String_dup(elem);
-}
-
-DDS::DynamicDataTypeSupport * get_type_support(DDS::DynamicType* dt) {
-    if (g_type_support == NULL) {
-        g_type_support = new DDS::DynamicDataTypeSupport(
-                dt,
-                DDS_DYNAMIC_DATA_TYPE_PROPERTY_DEFAULT);
-    }
-    return g_type_support;
-}
-
-const char *get_qos_policy_name(DDS_QosPolicyId_t policy_id)
-{
-    return DDS_QosPolicyId_to_string(policy_id); // not standard...
-}
-
-void disable_type_info(DDS::DomainParticipantQos &dp_qos)
-{
-    dp_qos.resource_limits.type_code_max_serialized_length = 0;
-    dp_qos.resource_limits.type_object_max_serialized_length = 0;
 }
 
 DDS::DynamicType * CREATE_TYPE(
