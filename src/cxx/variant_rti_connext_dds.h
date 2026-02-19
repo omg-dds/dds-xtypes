@@ -4,6 +4,9 @@
 #include "ndds/ndds_namespace_cpp.h"
 
 #define LISTENER_STATUS_MASK_ALL (DDS_STATUS_MASK_ALL)
+
+#define CONFIGURE_PARTICIPANT_FACTORY config_dpf();
+
 namespace DDS{
     typedef TypeCode DynamicType;
     typedef TypeCodeFactory DynamicTypeFactory;
@@ -21,6 +24,11 @@ void StringSeq_push(DDS::StringSeq  &string_seq, const char *elem)
 {
     string_seq.ensure_length(string_seq.length()+1, string_seq.length()+1);
     string_seq[string_seq.length()-1] = DDS_String_dup(elem);
+}
+
+void config_dpf() {
+    NDDS_Config_set_xtypes_compliance_mask(
+            NDDS_CONFIG_XTYPES_COMPLIANCE_MASK_VENDOR);
 }
 
 DDS::DynamicDataTypeSupport * get_type_support(DDS::DynamicType* dt) {
@@ -58,6 +66,50 @@ void set_type_object_version(DDS::DomainParticipantQos &dp_qos, int version)
     } else {
         std::cerr << "Unsupported Type Object version: " << version
                 << ". Using default." << std::endl;
+    }
+}
+
+void print_type_objectV1(DDS::DynamicType *dt) {
+    DDS_TypeObject *type_object = DDS_TypeObject_create_from_typecode(dt);
+    if (type_object == NULL) {
+        std::cerr << "Failed to create Type Object from TypeCode" << std::endl;
+        return;
+    }
+    unsigned long long type_id = 0;
+    type_id = type_object->the_type._u.constructed_type_id;
+    std::cout << "Type Object V1 - Type ID: " << type_id << std::endl;
+    DDS_TypeObject_delete(type_object);
+}
+
+void print_type_objectV2(DDS::DynamicType *dt) {
+    DDS_TypeObjectV2EquivalenceHash completeHash;
+    DDS_TypeObjectV2 *type_object_v2 =
+            DDS_TypeObjectV2_create_from_typecode(dt, &completeHash);
+    if (type_object_v2 == NULL) {
+        std::cerr << "Failed to create Type Object V2 from TypeCode" << std::endl;
+        return;
+    }
+
+    std::cout << "Type Object V2 - Equivalence Hash: ";
+    for (size_t i = 0; i < DDS_TYPEOBJECTV2_EQUIVALENCE_HASH_SIZE; ++i) {
+        // print the hash (array of octets) in hexadecimal readable format
+        std::cout << std::hex << static_cast<int>(completeHash[i]);
+    }
+    std::cout << std::endl;
+
+    DDS_TypeObjectV2_delete(type_object_v2);
+}
+
+void
+PRINT_TYPEID(DDS::DynamicType *dt, int version)
+{
+    if (version == 1) {
+        print_type_objectV1(dt);
+    } else if (version == 2) {
+        print_type_objectV2(dt);
+    } else {
+        std::cerr << "Unsupported Type Object version: " << version
+                << ". Cannot print type information." << std::endl;
     }
 }
 

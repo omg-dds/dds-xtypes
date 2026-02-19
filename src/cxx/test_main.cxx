@@ -221,6 +221,7 @@ Logger logger(ERROR);
 #define OPT_ALLOW_TYPE_COERCION      0x1005
 #define OPT_DISABLE_TYPE_INFO        0x1006
 #define OPT_TYPE_OBJECT_VERSION      0x1007
+#define OPT_PRINT_TYPEID             0x1008
 
 static struct option long_opts[] =
   {
@@ -233,6 +234,7 @@ static struct option long_opts[] =
     { "allow-type-coercion",   required_argument, NULL, OPT_ALLOW_TYPE_COERCION    },
     { "disable-type-info",     no_argument,       NULL, OPT_DISABLE_TYPE_INFO      },
     { "type-object-version",   required_argument, NULL, OPT_TYPE_OBJECT_VERSION    },
+    { "print-typeid",          no_argument,       NULL, OPT_PRINT_TYPEID           },
     { NULL, 0, NULL, 0 }
   };
 
@@ -269,6 +271,7 @@ public:
   bool                disable_type_info;
 
   int                 type_object_version;
+  bool                print_typeid;
 
 
 public:
@@ -312,6 +315,7 @@ public:
 
     disable_type_info = false;
     type_object_version = 2;
+    print_typeid = false;
   }
 
   //-------------------------------------------------------------
@@ -366,6 +370,9 @@ public:
     printf("                        assignability\n");
     printf("   --type-object-version [1|2]: set the Type Object version to use.\n");
     printf("                                Default: 2.\n");
+    printf("   --print-typeid: print typeid (TypeObjectV1) or equivalence hash ");
+    printf("                   (TypeObjectV2)\n");
+    printf("                          print_typeid\n");
     printf("   -v [e|d]        : set log message verbosity [e: ERROR, d: DEBUG]\n");
   }
 
@@ -817,6 +824,10 @@ public:
             }
           break;
 
+          case OPT_PRINT_TYPEID:
+            print_typeid = true;
+            break;
+
           case 'h':
             {
               print_usage(argv[0]);
@@ -855,6 +866,7 @@ public:
                 "\n    Type consistency kind = " + QosUtils::to_string(type_consistency.kind) +
                 "\n    Disable type info = " + std::to_string(disable_type_info) +
                 "\n    TypeObject version = " + std::to_string(type_object_version) +
+                "\n    Print Type ID = " + std::to_string(print_typeid) +
                 "\n    Verbosity = " + QosUtils::to_string(logger.verbosity()),
             Verbosity::DEBUG);
         if (!publish) {
@@ -1053,6 +1065,10 @@ public:
     if (dt == NULL) {
         logger.log_message("failed to create type", Verbosity::ERROR);
         return false;
+    }
+
+    if (options->print_typeid) {
+        PRINT_TYPEID(dt, options->type_object_version);
     }
 
     if (REGISTER_TYPE(dp, dt, options->type_name) != DDS_RETCODE_OK) {
