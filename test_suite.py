@@ -878,15 +878,9 @@ xtypes_v2_struct_test_suite = {
         'description': ''
     },
     'struct_different_ids_ok': {
-        # CT: I don't understand why PUB:member_id:1 value should get assigned to SUB:member_id:2
-        #  that is: when reading, why would we assign data for member_id:1 to member_id:2?
-        #  [except that it is similar behavior to @appendable ]
-        #
-        # I would expect:  RX { x1: 0, x5: 5 }
-        #
         'common_args': ['-X xml/types/struct_names.xml'],
         'apps': ['pub-exe -P -t test -y Test::struct_1 -V xml/data/struct_num_x1_x5.xml -J json/data/struct_num_x1_x5.json',
-                 'sub-exe -S -t test -y Test::struct_2 -V xml/data/struct_num_x1_x5.xml -J json/data/struct_num_x1_x5.json'],
+                 'sub-exe -S -t test -y Test::struct_2 -V xml/data/struct_num_x1_x5.xml -J json/data/struct_num_x5.json'],
         'expected_codes': [ReturnCode.OK, ReturnCode.OK],
         'check_function': tsf.data_is_correct,
         'title': '',
@@ -1230,8 +1224,6 @@ xtypes_v2_union_rules = {
         'description': ''
     },
     'union_different_ids_1': {
-        # CT: but ignore_member_names = true, so name/id matching is not tested, so this should be OK, right?
-        #     [or is there a rule I am missing? maybe label/id matching?]
         'common_args': ['-X xml/types/unions.xml'],
         'apps': ['pub-exe -P -t test -y Test::union_1 -V xml/data/union_x1.xml -J json/data/union_x1.json',
                  'sub-exe -S -t test -y Test::union_2 -V xml/data/union_x1.xml -J json/data/union_x1.json'],
@@ -1241,8 +1233,6 @@ xtypes_v2_union_rules = {
         'description': ''
     },
     'union_different_ids_2': {
-        # CT: if the rule we are testing is label/id matching (see above speculation),
-        #     then why would ignore-member-names have an impact here?
         'common_args': ['-X xml/types/unions.xml'],
         'apps': ['pub-exe -P -t test -y Test::union_1 -V xml/data/union_x1.xml -J json/data/union_x1.json',
                  'sub-exe -S -t test -y Test::union_2 -V xml/data/union_x1.xml -J json/data/union_x1.json --ignore-member-names f'],
