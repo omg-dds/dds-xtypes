@@ -587,8 +587,8 @@ class Arguments:
     def parser():
         parser = argparse.ArgumentParser(
             description='Validation of interoperability of products compliant '
-                'with OMG DDS-RTPS standard. This script generates automatically '
-                'the verification between two test executables. '
+                'with OMG DDS-XTYPES standard. This script generates '
+                'automatically the verification between two test executables. '
                 'It also generates an XML report in JUnit format.',
             add_help=True)
 
