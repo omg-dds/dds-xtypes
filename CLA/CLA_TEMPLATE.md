@@ -4,7 +4,7 @@
 
 1. Definitions
 
-    1. "OMG DDS Interoperability Repository" (or “Repository”) means the Git repository [https://github.com/omg-dds/dds-rtps](https://github.com/omg-dds/dds-rtps).
+    1. "OMG DDS Xtypes Interoperability Repository" (or “Repository”) means the Git repository [https://github.com/omg-dds/dds-xtypes](https://github.com/omg-dds/dds-xtypes).
 
     2. "Moderator" means an entity or individual responsible for authorizing changes to the Repository.
 
