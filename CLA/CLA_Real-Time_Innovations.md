@@ -4,7 +4,7 @@
 
 1. Definitions
 
-    1. "OMG DDS Interoperability Repository" (or “Repository”) means the Git repository [https://github.com/omg-dds](https://github.com/omg-dds) and any repositories within it.
+    1. "OMG DDS Xtypes Interoperability Repository" (or “Repository”) means the Git repository https://github.com/omg-dds/dds-xtypes.
 
     2. "Moderator" means an entity or individual responsible for authorizing changes to the Repository.  Moderators include representatives of Real-Time Innovations, Inc. and Twin Oaks Computing, Inc.  Additional Moderators may be added at the discretion of the current Moderators.
 
