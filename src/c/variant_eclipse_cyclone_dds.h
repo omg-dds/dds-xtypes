@@ -47,13 +47,19 @@ const char* get_qos_policy_name(uint32_t last_policy_id) {
 
 
 dds_return_t
-INIT_DATA( void               ** dd,
+init_data( void               ** dd,
            struct dyntypelib   * dtl,
            struct dyntype      * dt,
-           const char          * xml_data_uri,
-           const char          * json_data_uri )
+           const char          * data_folder,
+           const char          * data_file )
 {
   dds_return_t retval = DDS_RETCODE_ERROR;
+  if (data_folder == NULL || data_file == NULL)
+  {
+    return retval;
+  }
+  const char* xml_data_uri = malloc(strlen(data_folder) + strlen("/xml/") + strlen(data_file) + strlen(".xml") + 1);
+  sprintf(xml_data_uri, "%s%s%s%s", data_folder, "/xml/", data_file, ".xml");
   if ( dd )
     {
       fflush( stderr );
@@ -77,21 +83,21 @@ INIT_DATA( void               ** dd,
   return retval;
 }
 
-bool CHECK_DATA(void        *dynamic_sample,
+bool check_data(void        *dynamic_sample,
                 struct dyntypelib *dtl,
                 struct dyntype    *dt,
-                const char  *xml_data_uri,
-                const char  *json_data_uri)
+                const char  *data_folder,
+                const char  *data_file)
 {
   bool retval = false;
 
-  if (dynamic_sample == NULL && xml_data_uri == NULL) {
+  if (dynamic_sample == NULL && data_file == NULL) {
     return retval;
   }
 
   void* data_check = NULL;
 
-  if (INIT_DATA(&data_check, dtl, dt, xml_data_uri, json_data_uri) != DDS_RETCODE_OK) {
+  if (init_data(&data_check, dtl, dt, data_folder, data_file) != DDS_RETCODE_OK) {
     retval = false;
     goto done;
   }
@@ -111,7 +117,7 @@ bool CHECK_DATA(void        *dynamic_sample,
   return retval;
 }
 
-void PRINT_TYPEID(struct dyntype *dt, int version) {
+void print_typeid(struct dyntype *dt, int version) {
     const DDS_XTypes_EquivalenceHash *id = &((DDS_XTypes_TypeInformation *)dt->typeinfo)->complete.typeid_with_size.type_id._u.equivalence_hash;
     printf("Type Object V%d - Type ID: %02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x\n", version,
              (unsigned) (*id)[0], (unsigned) (*id)[1], (unsigned) (*id)[2], (unsigned) (*id)[3],

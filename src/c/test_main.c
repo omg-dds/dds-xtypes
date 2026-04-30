@@ -182,15 +182,19 @@ void log_message(Verbosity level_verbosity, const char *format, ...)
 
 /*************************************************************/
 
-#define OPT_FORCE_TYPE_VALIDATION 0x1000
-#define OPT_CHECK_MEMBER_NAMES 0x1001
-#define OPT_CHECK_SEQUENCE_BOUNDS 0x1002
-#define OPT_CHECK_STRING_BOUNDS 0x1003
-#define OPT_PREVENT_TYPE_WIDENING 0x1004
-#define OPT_ALLOW_TYPE_COERCION 0x1005
-#define OPT_DISABLE_TYPE_INFO 0x1006
-#define OPT_TYPE_OBJECT_VERSION 0x1007
-#define OPT_PRINT_TYPEID 0x1008
+#define OPT_FORCE_TYPE_VALIDATION    0x1000
+#define OPT_CHECK_MEMBER_NAMES       0x1001
+#define OPT_CHECK_SEQUENCE_BOUNDS    0x1002
+#define OPT_CHECK_STRING_BOUNDS      0x1003
+#define OPT_PREVENT_TYPE_WIDENING    0x1004
+#define OPT_ALLOW_TYPE_COERCION      0x1005
+#define OPT_DISABLE_TYPE_INFO        0x1006
+#define OPT_TYPE_OBJECT_VERSION      0x1007
+#define OPT_PRINT_TYPEID             0x1008
+#define OPT_TYPE_FOLDER              0x1009
+#define OPT_TYPE_FILE                0x100A
+#define OPT_DATA_FOLDER              0x100B
+#define OPT_DATA_FILE                0x100C
 
 static struct option long_opts[] =
     {
@@ -204,6 +208,10 @@ static struct option long_opts[] =
         {"disable-type-info", no_argument, NULL, OPT_DISABLE_TYPE_INFO},
         {"type-object-version", required_argument, NULL, OPT_TYPE_OBJECT_VERSION},
         {"print-typeid", no_argument, NULL, OPT_PRINT_TYPEID},
+        { "type-folder", required_argument, NULL, OPT_TYPE_FOLDER},
+        { "type-file", required_argument, NULL, OPT_TYPE_FILE},
+        { "data-folder", required_argument, NULL, OPT_DATA_FOLDER},
+        { "data-file", required_argument, NULL, OPT_DATA_FILE},
         {NULL, 0, NULL, 0}};
 
 /*************************************************************/
@@ -225,10 +233,11 @@ typedef struct TestOptions_s
 
     char *topic_name;
     char *type_name;
-    char *types_uri; /* xml file of defined types */
+    char *type_folder; /* folder containing type definitions */
+    char *type_file;   /* local file with type definitions */
 
-    char *xml_data_uri;  /* xml file of data sample */
-    char *json_data_uri; /* json file of data sample */
+    char *data_folder; /* folder containing data samples */
+    char *data_file;   /* local file with data sample */
 
     char *partition;
 
@@ -274,9 +283,10 @@ TestOptions TestOptions_create()
     options.topic_name = NULL;
     options.type_name = NULL;
     options.partition = NULL;
-    options.types_uri = NULL;
-    options.xml_data_uri = NULL;
-    options.json_data_uri = NULL;
+    options.type_folder = NULL;
+    options.type_file = NULL;
+    options.data_folder = NULL;
+    options.data_file = NULL;
 
     options.publish = false;
     options.subscribe = false;
@@ -300,12 +310,14 @@ void TestOptions_free(TestOptions *options)
         free(options->topic_name);
     if (options->type_name)
         free(options->type_name);
-    if (options->types_uri)
-        free(options->types_uri);
-    if (options->xml_data_uri)
-        free(options->xml_data_uri);
-    if (options->json_data_uri)
-        free(options->json_data_uri);
+    if (options->type_folder)
+        free(options->type_folder);
+    if (options->type_file)
+        free(options->type_file);
+    if (options->data_folder)
+        free(options->data_folder);
+    if (options->data_file)
+        free(options->data_file);
     if (options->partition)
         free(options->partition);
 }
@@ -329,11 +341,10 @@ void print_usage(const char *prog)
     printf("   -P              : publish samples\n");
     printf("   -S              : subscribe samples\n");
     printf("   -x [1|2]        : set data representation [1: XCDR, 2: XCDR2]\n");
-    printf("   -X <types_uri>  : xml file with type definitions\n");
-    printf("   -V <xml_data_uri> : xml file with data sample values. XML and JSON may be\n");
-    printf("                       provided, the app is in charge of using what it needs\n");
-    printf("   -J <json_data_uri> : json file with data sample values. XML and JSON may be\n");
-    printf("                        provided, the app is in charge of using what it needs\n");
+    printf("   --type-folder <folder>: folder containing type definitions (eg: types)\n");
+    printf("   --type-file <file>    : type definition file name without extension\n");
+    printf("   --data-folder <folder>: folder containing data samples (eg: data)\n");
+    printf("   --data-file <file>    : data sample file name without extension\n");
     printf("   -w              : print Publisher's samples\n");
     printf("   --force-type-validation [t|f|d]: enable, disable or default value for\n");
     printf("                                 type_consistency.force_type_validation\n");
@@ -381,14 +392,14 @@ bool TestOptions_validate(TestOptions *options)
         return false;
     }
 #if 0 /* allow publishing an empty, unpopulated sample */
-    if ( options->xml_data_uri == NULL && options->json_data_uri == NULL ) {
-      log_message(ERROR, "please provide the data either in XML [-V] or JSON [-J]");
+    if ( options->data_folder == NULL && options->data_file == NULL ) {
+      log_message(ERROR, "please provide the data via --data-folder or --data-file");
       return false;
     }
 #endif
-    if (options->types_uri == NULL)
+    if (options->type_folder == NULL && options->type_file == NULL)
     {
-        log_message(ERROR, "please provide the types in XML [-X]");
+        log_message(ERROR, "please provide the types via --type-folder or --type-file");
         return false;
     }
     if (   options->type_consistency_kind != DDS_TYPE_CONSISTENCY_ALLOW_TYPE_COERCION 
@@ -413,7 +424,7 @@ bool TestOptions_parse(TestOptions *options, int argc, char *argv[])
     bool parse_ok = true;
     // double d;
     while ((opt = getopt_long(argc, argv,
-                              "hbrd:D:f:i:k:p:s:x:X:t:v:V:J:wy:PS",
+                              "hbrd:D:f:i:k:p:s:x:t:v:wy:PS",
                               long_opts, NULL)) != -1)
     {
         switch (opt)
@@ -615,24 +626,29 @@ bool TestOptions_parse(TestOptions *options, int argc, char *argv[])
             }
             break;
         }
-        case 'X':
-        {
-            options->types_uri = strdup(optarg);
-            break;
-        }
         case 'y':
         {
             options->type_name = strdup(optarg);
             break;
         }
-        case 'V':
+        case OPT_TYPE_FOLDER:
         {
-            options->xml_data_uri = strdup(optarg);
+            options->type_folder = strdup(optarg);
             break;
         }
-        case 'J':
+        case OPT_TYPE_FILE:
         {
-            options->json_data_uri = strdup(optarg);
+            options->type_file = strdup(optarg);
+            break;
+        }
+        case OPT_DATA_FOLDER:
+        {
+            options->data_folder = strdup(optarg);
+            break;
+        }
+        case OPT_DATA_FILE:
+        {
+            options->data_file = strdup(optarg);
             break;
         }
         case OPT_FORCE_TYPE_VALIDATION:
@@ -866,17 +882,21 @@ bool TestOptions_parse(TestOptions *options, int argc, char *argv[])
         {
             log_message(DEBUG, "    Type  = %s", options->type_name);
         }
-        if (options->types_uri != NULL)
+        if (options->type_folder != NULL)
         {
-            log_message(DEBUG, "    Types URI = %s",  options->types_uri);
+            log_message(DEBUG, "    Type Folder = %s",  options->type_folder);
         }
-        if (options->xml_data_uri != NULL)
+        if (options->type_file != NULL)
         {
-            log_message(DEBUG, "    XML Data URI = %s",  options->xml_data_uri);
+            log_message(DEBUG, "    Type File = %s",  options->type_file);
         }
-        if (options->json_data_uri != NULL)
+        if (options->data_folder != NULL)
         {
-            log_message(DEBUG, "    JSON Data URI = %s",  options->json_data_uri);
+            log_message(DEBUG, "    Data Folder = %s",  options->data_folder);
+        }
+        if (options->data_file != NULL)
+        {
+            log_message(DEBUG, "    Data File = %s",  options->data_file);
         }
         if (options->partition != NULL)
         {
@@ -1119,7 +1139,13 @@ bool TestApplication_initialize(TestApplication *app, TestOptions *options)
     
     app->dtl = dtl_new(app->dp);
     dtl_set_print_types (app->dtl, true);
-    if (dtl_add_xml_type_library (app->dtl, options->types_uri, &app->err) != DDS_RETCODE_OK)
+    char* types_uri = NULL;
+    if (options->type_folder != NULL && options->type_file != NULL)
+    {
+        types_uri = malloc(strlen(options->type_folder) + strlen("/xml/") + strlen(options->type_file) + strlen(".xml") + 1);
+        sprintf(types_uri, "%s%s%s%s", options->type_folder, "/xml/", options->type_file, ".xml");
+    }
+    if (dtl_add_xml_type_library (app->dtl, types_uri, &app->err) != DDS_RETCODE_OK)
     {
         log_message(ERROR, "failed to create type");
         log_message(DEBUG, "errmsg: %s", app->err.errmsg);
@@ -1135,7 +1161,7 @@ bool TestApplication_initialize(TestApplication *app, TestOptions *options)
 
     if (options->print_typeid)
     {
-        PRINT_TYPEID(app->dt, options->type_object_version);
+        print_typeid(app->dt, options->type_object_version);
     }
 
     //if ((retcode = dds_dynamic_type_register(app->dt->dtype, &app->dt->typeinfo)) != DDS_RETCODE_OK)
@@ -1514,7 +1540,7 @@ bool TestApplication_run_subscriber(TestApplication *app, TestOptions *options)
                     {
                         printf("sample_received()\n");
                         dtl_print_sample(app->dtl, sample_info->valid_data, sample, &app->dt->typeobj->_u.complete);
-                        if (CHECK_DATA(sample, app->dtl, app->dt, options->xml_data_uri, options->json_data_uri))
+                        if (check_data(sample, app->dtl, app->dt, options->data_folder, options->data_file))
                         {
                             printf("Received sample is the same as loaded\n");
                         }
@@ -1537,7 +1563,7 @@ bool TestApplication_run_subscriber(TestApplication *app, TestOptions *options)
 bool TestApplication_run_publisher(TestApplication *app, TestOptions *options)
 {
     void* dynamic_sample = NULL;
-    if (INIT_DATA(&dynamic_sample, app->dtl, app->dt, options->xml_data_uri, options->json_data_uri) != DDS_RETCODE_OK)
+    if (init_data(&dynamic_sample, app->dtl, app->dt, options->data_folder, options->data_file) != DDS_RETCODE_OK)
     {
         log_message(ERROR, "Error initializing data");
         return false;
