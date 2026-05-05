@@ -1,0 +1,8 @@
+module Test {
+
+  union union_uint32_key switch(@key uint32) {
+    case 2: short x1;
+    case 1: long x2;
+  };
+
+};

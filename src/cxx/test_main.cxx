@@ -24,6 +24,8 @@
 #include "variant_toc_coredx_dds.hh"
 #elif defined(OPENDDS)
 #include "variant_opendds.h"
+#elif defined(EPROSIMA_FAST_DDS)
+#include "variant_eprosima_fastdds.h"
 #else
 #error "Must define the DDS vendor"
 #endif
@@ -930,16 +932,51 @@ public:
 class DPListener : public DomainParticipantListener
 {
 public:
-  void on_inconsistent_topic         (Topic *topic,  const InconsistentTopicStatus &) {
+#if defined(EPROSIMA_FAST_DDS)
+  /* Fast DDS 3.x does not fire on_inconsistent_topic for type-name mismatches.
+   * We emulate it: track remote endpoint discovery and emit the message from
+   * the run loop when a discovered endpoint has no matching reader/writer. */
+  std::atomic<bool> remote_endpoint_seen{false};
+  std::atomic<bool> endpoint_matched{false};
+  std::atomic<bool> inconsistent_printed{false};
+
+  void on_data_writer_discovery(
+          DomainParticipant*,
+          eprosima::fastdds::rtps::WriterDiscoveryStatus reason,
+          const PublicationBuiltinTopicData&, bool&) override {
+    using eprosima::fastdds::rtps::WriterDiscoveryStatus;
+    if (reason == WriterDiscoveryStatus::DISCOVERED_WRITER)
+        remote_endpoint_seen = true;
+  }
+  void on_data_reader_discovery(
+          DomainParticipant*,
+          eprosima::fastdds::rtps::ReaderDiscoveryStatus reason,
+          const SubscriptionBuiltinTopicData&, bool&) override {
+    using eprosima::fastdds::rtps::ReaderDiscoveryStatus;
+    if (reason == ReaderDiscoveryStatus::DISCOVERED_READER)
+        remote_endpoint_seen = true;
+  }
+
+  void on_inconsistent_topic(Topic *topic, InconsistentTopicStatus) {
+    FDDS_DECLARE_NAMES(topic);
+    inconsistent_printed = true;
+#else
+  void on_inconsistent_topic(Topic *topic, const InconsistentTopicStatus &) {
     const char *topic_name = topic->get_name();
     const char *type_name  = topic->get_type_name();
+#endif
     printf("%s() topic: '%s'  type: '%s'\n", __FUNCTION__, topic_name, type_name);
+    fflush(stdout);
   }
 
   void on_offered_incompatible_qos(DataWriter *dw,  const OfferedIncompatibleQosStatus & status) {
     Topic      *topic       = dw->get_topic( );
+#if defined(EPROSIMA_FAST_DDS)
+    FDDS_DECLARE_NAMES(topic);
+#else
     const char *topic_name  = topic->get_name( );
     const char *type_name   = topic->get_type_name( );
+#endif
     const char *policy_name = NULL;
     policy_name = get_qos_policy_name(status.last_policy_id);
     printf("%s() topic: '%s'  type: '%s' : %d (%s)\n", __FUNCTION__,
@@ -950,32 +987,50 @@ public:
 
   void on_publication_matched (DataWriter *dw, const PublicationMatchedStatus & status) {
     Topic      *topic      = dw->get_topic( );
+#if defined(EPROSIMA_FAST_DDS)
+    FDDS_DECLARE_NAMES(topic);
+    if (status.current_count > 0) endpoint_matched = true;
+#else
     const char *topic_name = topic->get_name( );
     const char *type_name  = topic->get_type_name( );
+#endif
     printf("%s() topic: '%s'  type: '%s' : matched readers %d (change = %d)\n", __FUNCTION__,
            topic_name, type_name, status.current_count, status.current_count_change);
   }
 
   void on_offered_deadline_missed (DataWriter *dw, const OfferedDeadlineMissedStatus & status) {
     Topic      *topic      = dw->get_topic( );
+#if defined(EPROSIMA_FAST_DDS)
+    FDDS_DECLARE_NAMES(topic);
+#else
     const char *topic_name = topic->get_name( );
     const char *type_name  = topic->get_type_name( );
+#endif
     printf("%s() topic: '%s'  type: '%s' : (total = %d, change = %d)\n", __FUNCTION__,
            topic_name, type_name, status.total_count, status.total_count_change);
   }
 
   void on_liveliness_lost (DataWriter *dw, const LivelinessLostStatus & status) {
     Topic      *topic      = dw->get_topic( );
+#if defined(EPROSIMA_FAST_DDS)
+    FDDS_DECLARE_NAMES(topic);
+#else
     const char *topic_name = topic->get_name( );
     const char *type_name  = topic->get_type_name( );
+#endif
     printf("%s() topic: '%s'  type: '%s' : (total = %d, change = %d)\n", __FUNCTION__,
            topic_name, type_name, status.total_count, status.total_count_change);
   }
 
   void on_requested_incompatible_qos (DataReader *dr, const RequestedIncompatibleQosStatus & status) {
+#if defined(EPROSIMA_FAST_DDS)
+    const TopicDescription *td   = dr->get_topicdescription( );
+    FDDS_DECLARE_NAMES(td);
+#else
     TopicDescription *td         = dr->get_topicdescription( );
     const char       *topic_name = td->get_name( );
     const char       *type_name  = td->get_type_name( );
+#endif
     const char *policy_name = NULL;
     policy_name = get_qos_policy_name(status.last_policy_id);
     printf("%s() topic: '%s'  type: '%s' : %d (%s)\n", __FUNCTION__,
@@ -984,25 +1039,41 @@ public:
   }
 
   void on_subscription_matched (DataReader *dr, const SubscriptionMatchedStatus & status) {
+#if defined(EPROSIMA_FAST_DDS)
+    const TopicDescription *td   = dr->get_topicdescription( );
+    FDDS_DECLARE_NAMES(td);
+    if (status.current_count > 0) endpoint_matched = true;
+#else
     TopicDescription *td         = dr->get_topicdescription( );
     const char       *topic_name = td->get_name( );
     const char       *type_name  = td->get_type_name( );
+#endif
     printf("%s() topic: '%s'  type: '%s' : matched writers %d (change = %d)\n", __FUNCTION__,
            topic_name, type_name, status.current_count, status.current_count_change);
   }
 
   void on_requested_deadline_missed (DataReader *dr, const RequestedDeadlineMissedStatus & status) {
+#if defined(EPROSIMA_FAST_DDS)
+    const TopicDescription *td   = dr->get_topicdescription( );
+    FDDS_DECLARE_NAMES(td);
+#else
     TopicDescription *td         = dr->get_topicdescription( );
     const char       *topic_name = td->get_name( );
     const char       *type_name  = td->get_type_name( );
+#endif
     printf("%s() topic: '%s'  type: '%s' : (total = %d, change = %d)\n", __FUNCTION__,
            topic_name, type_name, status.total_count, status.total_count_change);
   }
 
   void on_liveliness_changed (DataReader *dr, const LivelinessChangedStatus & status) {
+#if defined(EPROSIMA_FAST_DDS)
+    const TopicDescription *td   = dr->get_topicdescription( );
+    FDDS_DECLARE_NAMES(td);
+#else
     TopicDescription *td         = dr->get_topicdescription( );
     const char       *topic_name = td->get_name( );
     const char       *type_name  = td->get_type_name( );
+#endif
     printf("%s() topic: '%s'  type: '%s' : (alive = %d, not_alive = %d)\n", __FUNCTION__,
            topic_name, type_name, status.alive_count, status.not_alive_count);
   }
@@ -1096,7 +1167,12 @@ public:
     }
 
     printf("Create topic: %s\n", options->topic_name );
+    fflush(stdout);
+#if defined(EPROSIMA_FAST_DDS)
+    topic = dp->create_topic( options->topic_name, FDDS_REGISTERED_TYPE_NAME, TOPIC_QOS_DEFAULT, nullptr, LISTENER_STATUS_MASK_ALL);
+#else
     topic = dp->create_topic( options->topic_name, options->type_name, TOPIC_QOS_DEFAULT, NULL, 0);
+#endif
     if (topic == NULL) {
       logger.log_message("failed to create topic", Verbosity::ERROR);
       return false;
@@ -1130,10 +1206,18 @@ public:
 
     dp->get_default_publisher_qos( pub_qos );
     if ( options->partition != NULL ) {
+#if defined(EPROSIMA_FAST_DDS)
+      StringSeq_push(pub_qos.partition(), options->partition);
+#else
       StringSeq_push(pub_qos.partition.name, options->partition);
+#endif
     }
 
+#if defined(EPROSIMA_FAST_DDS)
+    pub = dp->create_publisher(pub_qos, nullptr, LISTENER_STATUS_MASK_NONE);
+#else
     pub = dp->create_publisher(pub_qos, NULL, 0);
+#endif
     if (pub == NULL) {
       logger.log_message("failed to create publisher", Verbosity::ERROR);
       return false;
@@ -1155,8 +1239,14 @@ public:
 #elif defined(TWINOAKS_COREDX) || defined(OPENDDS)
     dw_qos.representation.value.length(1);
     dw_qos.representation.value[0] = options->data_representation;
+#elif defined(EPROSIMA_FAST_DDS)
+    dw_qos.representation.m_value = {options->data_representation};
 #endif
+#if defined(EPROSIMA_FAST_DDS)
+    logger.log_message("    Data_Representation = " + QosUtils::to_string(dw_qos.representation.m_value.empty() ? XCDR2_DATA_REPRESENTATION : dw_qos.representation.m_value[0]), Verbosity::DEBUG);
+#else
     logger.log_message("    Data_Representation = " + QosUtils::to_string(dw_qos.representation.value[0]), Verbosity::DEBUG);
+#endif
     if ( options->ownership_strength != -1 ) {
       dw_qos.ownership.kind = EXCLUSIVE_OWNERSHIP_QOS;
       dw_qos.ownership_strength.value = options->ownership_strength;
@@ -1195,8 +1285,12 @@ public:
 #endif
     
     printf("Create writer for topic: %s type: %s\n", options->topic_name, options->type_name );
-
+    fflush(stdout);
+#if defined(EPROSIMA_FAST_DDS)
+    dw = pub->create_datawriter( topic, dw_qos, &dp_listener, LISTENER_STATUS_MASK_ALL);
+#else
     dw = pub->create_datawriter( topic, dw_qos, NULL, 0);
+#endif
 
     if (dw == NULL) {
       logger.log_message("failed to create datawriter", Verbosity::ERROR);
@@ -1216,10 +1310,18 @@ public:
 
     dp->get_default_subscriber_qos( sub_qos );
     if ( options->partition != NULL ) {
+#if defined(EPROSIMA_FAST_DDS)
+      StringSeq_push(sub_qos.partition(), options->partition);
+#else
       StringSeq_push(sub_qos.partition.name, options->partition);
+#endif
     }
 
+#if defined(EPROSIMA_FAST_DDS)
+    sub = dp->create_subscriber( sub_qos, nullptr, LISTENER_STATUS_MASK_NONE );
+#else
     sub = dp->create_subscriber( sub_qos, NULL, 0 );
+#endif
     if (sub == NULL) {
       logger.log_message("failed to create subscriber", Verbosity::ERROR);
       return false;
@@ -1240,8 +1342,14 @@ public:
 #elif defined(TWINOAKS_COREDX) || defined(OPENDDS)
     dr_qos.representation.value.length(1);
     dr_qos.representation.value[0] = options->data_representation;
+#elif defined(EPROSIMA_FAST_DDS)
+    dr_qos.representation.m_value = {options->data_representation};
 #endif
+#if defined(EPROSIMA_FAST_DDS)
+    logger.log_message("    DataRepresentation = " + QosUtils::to_string(dr_qos.representation.m_value.empty() ? XCDR2_DATA_REPRESENTATION : dr_qos.representation.m_value[0]), Verbosity::DEBUG);
+#else
     logger.log_message("    DataRepresentation = " + QosUtils::to_string(dr_qos.representation.value[0]), Verbosity::DEBUG);
+#endif
     if ( options->ownership_strength != -1 ) {
       dr_qos.ownership.kind = EXCLUSIVE_OWNERSHIP_QOS;
     }
@@ -1271,6 +1379,15 @@ public:
       logger.log_message("    HistoryDepth = " + std::to_string(dr_qos.history.depth), Verbosity::DEBUG);
     }
 
+#if defined(EPROSIMA_FAST_DDS)
+    dr_qos.type_consistency() = (DDS::FDDS_TypeConsistency_Real)options->type_consistency;
+    logger.log_message("    TypeConsistency * kind = "  + QosUtils::to_string(options->type_consistency.kind), Verbosity::DEBUG );
+    logger.log_message("                    * ignore_sequence_bounds = "  + std::to_string(options->type_consistency.ignore_sequence_bounds ), Verbosity::DEBUG );
+    logger.log_message("                    * ignore_string_bounds   = "  + std::to_string(options->type_consistency.ignore_string_bounds), Verbosity::DEBUG );
+    logger.log_message("                    * ignore_member_names    = "  + std::to_string(options->type_consistency.ignore_member_names), Verbosity::DEBUG );
+    logger.log_message("                    * prevent_type_widening  = "  + std::to_string(options->type_consistency.prevent_type_widening), Verbosity::DEBUG );
+    logger.log_message("                    * force_type_validation  = "  + std::to_string(options->type_consistency.force_type_validation), Verbosity::DEBUG );
+#else
     dr_qos.type_consistency = options->type_consistency;
     logger.log_message("    TypeConsistency * kind = "  + QosUtils::to_string(dr_qos.type_consistency.kind), Verbosity::DEBUG );
     logger.log_message("                    * ignore_sequence_bounds = "  + std::to_string(dr_qos.type_consistency.ignore_sequence_bounds ), Verbosity::DEBUG );
@@ -1278,6 +1395,7 @@ public:
     logger.log_message("                    * ignore_member_names    = "  + std::to_string(dr_qos.type_consistency.ignore_member_names), Verbosity::DEBUG );
     logger.log_message("                    * prevent_type_widening  = "  + std::to_string(dr_qos.type_consistency.prevent_type_widening), Verbosity::DEBUG );
     logger.log_message("                    * force_type_validation  = "  + std::to_string(dr_qos.type_consistency.force_type_validation), Verbosity::DEBUG );
+#endif
     
 #if defined(TWINOAKS_COREDX)
     if ( options->disable_type_info )
@@ -1285,8 +1403,13 @@ public:
 #endif
 
     printf("Create reader for topic: %s\n", options->topic_name );
-    
+    fflush(stdout);
+
+#if defined(EPROSIMA_FAST_DDS)
+    dr = sub->create_datareader(topic, dr_qos, &dp_listener, LISTENER_STATUS_MASK_ALL);
+#else
     dr = sub->create_datareader(topic, dr_qos, NULL, LISTENER_STATUS_MASK_NONE);
+#endif
 
 
     if (dr == NULL) {
@@ -1300,6 +1423,9 @@ public:
   //-------------------------------------------------------------
   bool run_subscriber(TestOptions *options)
   {
+#if defined(EPROSIMA_FAST_DDS)
+    int inconsistent_ticks = 0;
+#endif
     while ( ! all_done )  {
       ReturnCode_t     retval;
       DynamicDataSeq   samples;
@@ -1307,7 +1433,9 @@ public:
 
       do {
         DynamicDataReader * ddr = dynamic_cast<DDS::DynamicDataReader*>(dr);
-#if   defined(RTI_CONNEXT_DDS) || defined(OPENDDS) || defined(EPROSIMA_FAST_DDS) || defined(INTERCOM_DDS)
+#if defined(EPROSIMA_FAST_DDS)
+                    retval = fdds_take(ddr, samples, sample_infos);
+#elif defined(RTI_CONNEXT_DDS) || defined(OPENDDS) || defined(INTERCOM_DDS)
                     retval = ddr->take ( samples,
                             sample_infos,
                             LENGTH_UNLIMITED,
@@ -1331,10 +1459,14 @@ public:
 #elif defined(TWINOAKS_COREDX)
                 DynamicData        *sample      = samples[i];
                 SampleInfo         *sample_info = sample_infos[i];
+#elif defined(EPROSIMA_FAST_DDS)
+                DynamicData        *sample      = &samples[i];
+                SampleInfo         *sample_info = samples.get_info(i);
 #endif
 
             if (sample_info->valid_data)  {
               printf( "sample_received()\n" );
+              fflush(stdout);
               print_data(sample);
               if (check_data(sample, options->data_folder, options->data_file)) {
                 printf("Received sample is the same as loaded\n");
@@ -1348,11 +1480,27 @@ public:
             ddr->return_loan(samples, sample_infos);
 #elif defined(TWINOAKS_COREDX)
             ddr->return_loan( &samples, &sample_infos );
+#elif defined(EPROSIMA_FAST_DDS)
+            samples.clear();
 #endif
         }
       } while (retval == RETCODE_OK);
 
       usleep(100000);
+
+#if defined(EPROSIMA_FAST_DDS)
+      // Fast DDS doesn't fire on_inconsistent_topic for type mismatches.
+      // Detect: remote endpoint discovered but no reader-writer match after ~2.5s.
+      if (dp_listener.remote_endpoint_seen && !dp_listener.endpoint_matched
+              && !dp_listener.inconsistent_printed) {
+          if (++inconsistent_ticks >= 25) {
+              FDDS_DECLARE_NAMES(topic);
+              printf("on_inconsistent_topic() topic: '%s'  type: '%s'\n", topic_name, type_name);
+              fflush(stdout);
+              dp_listener.inconsistent_printed = true;
+          }
+      }
+#endif
     }
 
     return true;
@@ -1374,10 +1522,16 @@ public:
         return false;
     }
 
+#if defined(EPROSIMA_FAST_DDS)
+    int inconsistent_ticks_pub = 0;
+#endif
     while (!all_done) {
       DynamicDataWriter *ddw = dynamic_cast<DynamicDataWriter *>(dw);
 #if defined(RTI_CONNEXT_DDS)
       ddw->write(*dd, HANDLE_NIL);
+#elif defined(EPROSIMA_FAST_DDS)
+      if (dp_listener.endpoint_matched)
+          fdds_write(ddw, dd, HANDLE_NIL);
 #elif defined(TWINOAKS_COREDX)
       ddw->write(dd, HANDLE_NIL);
 #endif
@@ -1387,6 +1541,19 @@ public:
           print_data( dd );
         }
       usleep(1000000);
+
+#if defined(EPROSIMA_FAST_DDS)
+      // Detect type incompatibility: remote DataReader discovered but no match after ~2.5s.
+      if (dp_listener.remote_endpoint_seen && !dp_listener.endpoint_matched
+              && !dp_listener.inconsistent_printed) {
+          if (++inconsistent_ticks_pub >= 3) {  // 3 * 1s publisher loop = 3 seconds
+              FDDS_DECLARE_NAMES(topic);
+              printf("on_inconsistent_topic() topic: '%s'  type: '%s'\n", topic_name, type_name);
+              fflush(stdout);
+              dp_listener.inconsistent_printed = true;
+          }
+      }
+#endif
     }
     cleanup_data( dd );
     return true;
@@ -1397,6 +1564,7 @@ public:
 /*************************************************************/
 int main( int argc, char * argv[] )
 {
+  setvbuf(stdout, nullptr, _IONBF, 0);  // unbuffered stdout for pexpect pipe detection
   install_sig_handlers();
 
   TestOptions options;

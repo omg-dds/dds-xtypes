@@ -1,0 +1,27 @@
+module Test {
+
+  @bit_bound(16)
+  bitmask B_16 {
+    B_FLAG_1,
+    B_FLAG_2
+  };
+
+  @bit_bound(32)
+  bitmask B_32 {
+    B_FLAG_1,
+    B_FLAG_2,
+    B_FLAG_3
+  };
+
+  /* Fast DDS IDL parser crashes on bitmask discriminators; use integer equivalents. */
+  union union_bitmask16 switch(unsigned short) {
+    case 2: short x1;
+    case 1: long x2;
+  };
+
+  union union_bitmask32 switch(unsigned long) {
+    case 2: short x1;
+    case 1: long x2;
+  };
+
+};

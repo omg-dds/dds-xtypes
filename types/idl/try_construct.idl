@@ -1,0 +1,175 @@
+module Test {
+
+  @final
+  struct seq_int32x20 {
+    sequence<long, 20> x1;
+  };
+
+  @final
+  struct seq_int32x10_trim {
+    @try_construct(TRIM) sequence<long, 10> x1;
+  };
+
+  @final
+  struct seq_int32x10_discard {
+    @try_construct(DISCARD) sequence<long, 10> x1;
+  };
+
+  @final
+  struct seq_int32x10_default {
+    @try_construct(USE_DEFAULT) sequence<long, 10> x1;
+  };
+
+  @final
+  struct seq_int32x10 {
+    sequence<long, 10> x1;
+  };
+
+
+  @final
+  struct string20 {
+    string<20> x1;
+  };
+
+  @final
+  struct string10_trim {
+    @try_construct(TRIM) string<10> x1;
+  };
+
+  @final
+  struct string10_discard {
+    @try_construct(DISCARD) string<10> x1;
+  };
+
+  @final
+  struct string10_default {
+    @try_construct(USE_DEFAULT) string<10> x1;
+  };
+
+  @final
+  struct string10 {
+    string<10> x1;
+  };
+
+
+  @appendable
+  enum E1 {
+    VAL0,
+    VAL1,
+    VAL2,
+    VAL3
+  };
+
+  @appendable
+  enum E2 {
+    VAL0,
+    @default_literal VAL1,
+    VAL2
+  };
+
+  @mutable
+  struct struct_enum_1 {
+    E1 x1;
+  };
+
+  @mutable
+  struct struct_enum_2_discard {
+    @try_construct(DISCARD) E2 x1;
+  };
+
+  @mutable
+  struct struct_enum_2_default {
+    @try_construct(USE_DEFAULT) E2 x1;
+  };
+
+  @mutable
+  struct struct_enum_2 {
+    E2 x1;
+  };
+
+
+  union union_seq_int32x20 switch(unsigned long) {
+    case 1: sequence<long, 20> x1;
+  };
+
+  union union_seq_int32x10_trim switch(unsigned long) {
+    case 1: @try_construct(TRIM) sequence<long, 10> x1;
+  };
+
+  union union_seq_int32x10_discard switch(unsigned long) {
+    case 1: @try_construct(DISCARD) sequence<long, 10> x1;
+  };
+
+  union union_seq_int32x10_default switch(unsigned long) {
+    case 1: @try_construct(USE_DEFAULT) sequence<long, 10> x1;
+  };
+
+  union union_seq_int32x10 switch(unsigned long) {
+    case 1: sequence<long, 10> x1;
+  };
+
+
+  union union_string20 switch(unsigned long) {
+    case 1: string<20> x1;
+  };
+
+  union union_string10_trim switch(unsigned long) {
+    case 1: @try_construct(TRIM) string<10> x1;
+  };
+
+  union union_string10_discard switch(unsigned long) {
+    case 1: @try_construct(DISCARD) string<10> x1;
+  };
+
+  union union_string10_default switch(unsigned long) {
+    case 1: @try_construct(USE_DEFAULT) string<10> x1;
+  };
+
+  union union_string10 switch(unsigned long) {
+    case 1: string<10> x1;
+  };
+
+
+  union union_enum_1 switch(unsigned long) {
+    case 1: E1 x1;
+  };
+
+  union union_enum_2_discard switch(unsigned long) {
+    case 1: @try_construct(DISCARD) E2 x1;
+  };
+
+  union union_enum_2_default switch(unsigned long) {
+    case 1: @try_construct(USE_DEFAULT) E2 x1;
+  };
+
+  union union_enum_2 switch(unsigned long) {
+    case 1: E2 x1;
+  };
+
+
+  union union_disc_enum_1 switch(E1) {
+    case VAL0: long x0;
+    case VAL1: long x1;
+    case VAL2: long x2;
+    case VAL3: long x3;
+  };
+
+  union union_disc_enum_2_discard switch(@try_construct(DISCARD) E2) {
+    case VAL0: long x0;
+    case VAL1: long x1;
+    case VAL2: long x2;
+  };
+
+  union union_disc_enum_2_default switch(@try_construct(USE_DEFAULT) E2) {
+    case VAL0: long x0;
+    case VAL1: long x1;
+    case VAL2: long x2;
+  };
+
+  union union_disc_enum_2 switch(E2) {
+    case VAL0: long x0;
+    case VAL1: long x1;
+    case VAL2: long x2;
+  };
+
+};

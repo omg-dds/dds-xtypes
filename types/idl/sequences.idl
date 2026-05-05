@@ -1,5 +1,9 @@
 module Test {
 
+  /* Fast DDS IDL parser cannot handle sequence<string<N>,M> directly; use typedefs. */
+  typedef string<10> str10;
+  typedef string<20> str20;
+
   @final
   struct int32_unbounded {
     sequence<int32> x1;
@@ -32,13 +36,13 @@ module Test {
 
   @final
   struct string10x10 {
-    sequence<string<10>,10 > x1;
+    sequence<str10,10> x1;
   };
 
 
   @final
   struct string20x10 {
-    sequence<string<20>,10 > x1;
+    sequence<str20,10> x1;
   };
 
   @appendable
