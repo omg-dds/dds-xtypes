@@ -58,7 +58,7 @@ init_data( void               ** dd,
   {
     return retval;
   }
-  const char* xml_data_uri = malloc(strlen(data_folder) + strlen("/xml/") + strlen(data_file) + strlen(".xml") + 1);
+  char* xml_data_uri = malloc(strlen(data_folder) + strlen("/xml/") + strlen(data_file) + strlen(".xml") + 1);
   sprintf(xml_data_uri, "%s%s%s%s", data_folder, "/xml/", data_file, ".xml");
   if ( dd )
     {

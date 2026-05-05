@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.16)
 project(shape LANGUAGES C)
 
 # Find the CycloneDDS package.
+if(NOT BUILD_SHARED_LIBS)
+    find_package(OpenSSL REQUIRED)
+endif()
 find_package(CycloneDDS REQUIRED)
 set(EXECUTABLE_NAME "eclipse_cyclone-${CycloneDDS_VERSION}_linux")
 
