@@ -118,8 +118,14 @@ bool check_data(void        *dynamic_sample,
 }
 
 void print_typeid(struct dyntype *dt, int version) {
-    const DDS_XTypes_EquivalenceHash *id = &((DDS_XTypes_TypeInformation *)dt->typeinfo)->complete.typeid_with_size.type_id._u.equivalence_hash;
-    printf("Type Object V%d - Type ID: %02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x\n", version,
+    const DDS_XTypes_EquivalenceHash *id = &((DDS_XTypes_TypeInformation *)dt->typeinfo)->minimal.typeid_with_size.type_id._u.equivalence_hash;
+    printf("Complete Type Object V%d - Type ID: %02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x\n", version,
+             (unsigned) (*id)[0], (unsigned) (*id)[1], (unsigned) (*id)[2], (unsigned) (*id)[3],
+             (unsigned) (*id)[4], (unsigned) (*id)[5], (unsigned) (*id)[6], (unsigned) (*id)[7],
+             (unsigned) (*id)[8], (unsigned) (*id)[9], (unsigned) (*id)[10], (unsigned) (*id)[11],
+             (unsigned) (*id)[12], (unsigned) (*id)[13]);
+    id = &((DDS_XTypes_TypeInformation *)dt->typeinfo)->minimal.typeid_with_size.type_id._u.equivalence_hash;
+    printf("Minimal Type Object V%d - Type ID: %02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x\n", version,
              (unsigned) (*id)[0], (unsigned) (*id)[1], (unsigned) (*id)[2], (unsigned) (*id)[3],
              (unsigned) (*id)[4], (unsigned) (*id)[5], (unsigned) (*id)[6], (unsigned) (*id)[7],
              (unsigned) (*id)[8], (unsigned) (*id)[9], (unsigned) (*id)[10], (unsigned) (*id)[11],

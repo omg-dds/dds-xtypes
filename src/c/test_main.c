@@ -166,7 +166,7 @@ static char* to_string_type_consistency(dds_type_consistency_kind_t consistency_
 }
 
 /*************************************************************/
-Verbosity verbosity = DEBUG;
+Verbosity verbosity = ERROR;
 
 void log_message(Verbosity level_verbosity, const char *format, ...)
 {
@@ -442,7 +442,7 @@ bool TestOptions_parse(TestOptions *options, int argc, char *argv[])
                 }
                 case 'e':
                 {
-                    verbosity = DEBUG;
+                    verbosity = ERROR;
                     break;
                 }
                 default:
