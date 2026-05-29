@@ -1033,11 +1033,14 @@ public:
   //-------------------------------------------------------------
   TestApplication()
   {
-    dpf = NULL;
-    dp  = NULL;
-
-    pub = NULL;
-    sub = NULL;
+    dpf   = NULL;
+    dp    = NULL;
+    pub   = NULL;
+    sub   = NULL;
+    topic = NULL;
+    dr    = NULL;
+    dw    = NULL;
+    dt    = NULL;
   }
 
   //-------------------------------------------------------------
@@ -1046,6 +1049,9 @@ public:
     if (dt)  cleanup_type( dp, dt );
     if (dp)  dp->delete_contained_entities( );
     if (dpf) dpf->delete_participant( dp );
+#if defined(OPENDDS)
+    TheServiceParticipant->shutdown();
+#endif
   }
 
   //-------------------------------------------------------------
@@ -1054,7 +1060,7 @@ public:
 #ifndef OBTAIN_DOMAIN_PARTICIPANT_FACTORY
 #define OBTAIN_DOMAIN_PARTICIPANT_FACTORY DomainParticipantFactory::get_instance()
 #endif
-    DomainParticipantFactory *dpf = OBTAIN_DOMAIN_PARTICIPANT_FACTORY;
+    dpf = OBTAIN_DOMAIN_PARTICIPANT_FACTORY;
     if (dpf == NULL) {
       logger.log_message("failed to create participant factory (missing license?).", Verbosity::ERROR);
       return false;
@@ -1193,7 +1199,7 @@ public:
     if ( options->disable_type_info )
       dw_qos.rtps_writer.send_typeobj_v2 = 0;
 #endif
-    
+
     printf("Create writer for topic: %s type: %s\n", options->topic_name, options->type_name );
 
     dw = pub->create_datawriter( topic, dw_qos, NULL, 0);
@@ -1278,14 +1284,14 @@ public:
     logger.log_message("                    * ignore_member_names    = "  + std::to_string(dr_qos.type_consistency.ignore_member_names), Verbosity::DEBUG );
     logger.log_message("                    * prevent_type_widening  = "  + std::to_string(dr_qos.type_consistency.prevent_type_widening), Verbosity::DEBUG );
     logger.log_message("                    * force_type_validation  = "  + std::to_string(dr_qos.type_consistency.force_type_validation), Verbosity::DEBUG );
-    
+
 #if defined(TWINOAKS_COREDX)
     if ( options->disable_type_info )
       dr_qos.rtps_reader.send_typeobj_v2 = 0;
 #endif
 
     printf("Create reader for topic: %s\n", options->topic_name );
-    
+
     dr = sub->create_datareader(topic, dr_qos, NULL, LISTENER_STATUS_MASK_NONE);
 
 
@@ -1378,6 +1384,8 @@ public:
       DynamicDataWriter *ddw = dynamic_cast<DynamicDataWriter *>(dw);
 #if defined(RTI_CONNEXT_DDS)
       ddw->write(*dd, HANDLE_NIL);
+#elif defined(OPENDDS)
+      ddw->write(dd, HANDLE_NIL);
 #elif defined(TWINOAKS_COREDX)
       ddw->write(dd, HANDLE_NIL);
 #endif
