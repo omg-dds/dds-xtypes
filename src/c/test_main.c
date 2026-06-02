@@ -1161,7 +1161,7 @@ bool TestApplication_initialize(TestApplication *app, TestOptions *options)
 
     if (options->print_typeid)
     {
-        print_typeid(app->dt, options->type_object_version);
+        print_typeid(app->dt, app->dtl, options->type_object_version);
     }
 
     //if ((retcode = dds_dynamic_type_register(app->dt->dtype, &app->dt->typeinfo)) != DDS_RETCODE_OK)

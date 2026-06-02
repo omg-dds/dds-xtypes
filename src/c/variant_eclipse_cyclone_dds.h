@@ -1,4 +1,5 @@
 #include "dds/dds.h"
+#include "dds/ddsi/ddsi_typelib.h"
 #include "dds/../../share/CycloneDDS/examples/dynsub/dyntypelib.h"
 #include "dds/../../share/CycloneDDS/examples/dynsub/domtree.h"
 #include "dds/../../share/CycloneDDS/examples/dynsub/dynsub.h"
@@ -117,17 +118,30 @@ bool check_data(void        *dynamic_sample,
   return retval;
 }
 
-void print_typeid(struct dyntype *dt, int version) {
+static void shift_typeid(char* str) {
+  int i = 0;
+  while(str[i] != ' ' && i < 50) i++;
+  if (i == 50) return;
+  i++;
+  int j = i;
+  while(str[j] != ']')
+  {
+    str[j - i] = str[j];
+    j++;
+  }
+  str[j - i] = '\0';
+}
+
+void print_typeid(struct dyntype *dt, struct dyntypelib *dtl, int version) {
     const DDS_XTypes_EquivalenceHash *id = &((DDS_XTypes_TypeInformation *)dt->typeinfo)->minimal.typeid_with_size.type_id._u.equivalence_hash;
-    printf("Complete Type Object V%d - Type ID: %02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x\n", version,
-             (unsigned) (*id)[0], (unsigned) (*id)[1], (unsigned) (*id)[2], (unsigned) (*id)[3],
-             (unsigned) (*id)[4], (unsigned) (*id)[5], (unsigned) (*id)[6], (unsigned) (*id)[7],
-             (unsigned) (*id)[8], (unsigned) (*id)[9], (unsigned) (*id)[10], (unsigned) (*id)[11],
-             (unsigned) (*id)[12], (unsigned) (*id)[13]);
-    id = &((DDS_XTypes_TypeInformation *)dt->typeinfo)->minimal.typeid_with_size.type_id._u.equivalence_hash;
-    printf("Minimal Type Object V%d - Type ID: %02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x\n", version,
-             (unsigned) (*id)[0], (unsigned) (*id)[1], (unsigned) (*id)[2], (unsigned) (*id)[3],
-             (unsigned) (*id)[4], (unsigned) (*id)[5], (unsigned) (*id)[6], (unsigned) (*id)[7],
-             (unsigned) (*id)[8], (unsigned) (*id)[9], (unsigned) (*id)[10], (unsigned) (*id)[11],
-             (unsigned) (*id)[12], (unsigned) (*id)[13]);
+    struct ddsi_typeid_str strm, strc;
+    const ddsi_typeid_t *type_id_minimal = NULL, *type_id_complete = NULL;
+    type_id_minimal = ddsi_typeinfo_minimal_typeid(dt->typeinfo);
+    type_id_complete = ddsi_typeinfo_complete_typeid(dt->typeinfo);
+    ddsi_make_typeid_str(&strc, type_id_complete);
+    shift_typeid(strc.str);
+    printf("Complete Type Object V%d - Type ID: %s\n", version, strc.str);
+    ddsi_make_typeid_str(&strm, type_id_minimal);
+    shift_typeid(strm.str);
+    printf("Minimal Type Object V%d - Type ID: %s\n", version, strm.str);
 }
