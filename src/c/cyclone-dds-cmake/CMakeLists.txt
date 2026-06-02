@@ -6,7 +6,7 @@ if(NOT BUILD_SHARED_LIBS)
     find_package(OpenSSL REQUIRED)
 endif()
 find_package(CycloneDDS REQUIRED)
-set(EXECUTABLE_NAME "eclipse_cyclone-${CycloneDDS_VERSION}_linux")
+set(EXECUTABLE_NAME "eclipse_cyclone-${CycloneDDS_VERSION}_test_main_linux")
 
 add_executable(${EXECUTABLE_NAME} ../test_main.c
     ${CMAKE_PREFIX_PATH}/share/CycloneDDS/examples/dynsub/dyntypelib.c
