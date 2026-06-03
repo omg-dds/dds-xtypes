@@ -1,0 +1,22 @@
+# Unsupported tests for eclipse_cyclone-11.0.1
+#
+# Format: one full test ID per line.
+# Test ID = <dict_name>_<test_case_name>
+
+# mutable union
+xtypes_v2_struct_test_suite_struct_key_union_1
+xtypes_v2_struct_test_suite_struct_key_union_2
+xtypes_v2_union_test_suite_union_primitives_mutable
+xtypes_v2_union_test_suite_union_final_mutable
+xtypes_v2_union_test_suite_union_appendable_mutable
+xtypes_v2_union_test_suite_union_mutable_one_common
+xtypes_v2_union_test_suite_union_mutable_no_common
+xtypes_v2_union_test_suite_union_mutable_no_common_w_default
+
+# default enum values
+xtypes_v2_tryconstruct_test_suite_tryc_enum_2
+xtypes_v2_tryconstruct_test_suite_tryc_union_enum_2
+xtypes_v2_tryconstruct_test_suite_tryc_union_enum_disc_2
+
+# union discriminator is key
+xtypes_v2_union_test_suite_union_uint32_one_key
