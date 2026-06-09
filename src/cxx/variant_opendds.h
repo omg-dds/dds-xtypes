@@ -196,7 +196,7 @@ inline DDS::ReturnCode_t init_data(DDS::DynamicData_ptr dd, const char* data_fol
     OpenDDS::XTypes::DynamicDataJsonOptions options;
     options.discriminator_format = OpenDDS::XTypes::DYNAMIC_DATA_JSON_DISCRIMINATOR_AUTO;
     return OpenDDS::XTypes::dynamic_data_from_json_file(
-        dd, ACE_TEXT_CHAR_TO_TCHAR(file_path.c_str()), options);
+        dd, file_path, options);
 }
 
 inline DDS::ReturnCode_t INIT_DATA(DDS::DynamicData_ptr dd, const char* data_folder, const char* data_file) {
