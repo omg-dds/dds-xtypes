@@ -1,12 +1,10 @@
 #include "dds/dds.h"
 #include "dds/ddsi/ddsi_typelib.h"
-#include "dds/../../share/CycloneDDS/examples/dynsub/dyntypelib.h"
-#include "dds/../../share/CycloneDDS/examples/dynsub/domtree.h"
-#include "dds/../../share/CycloneDDS/examples/dynsub/dynsub.h"
-#include "dds/../../share/CycloneDDS/examples/dynsub/compare_samples.h"
-#include "dds/../../share/CycloneDDS/examples/dynsub/print_type.h"
-#include "dds/../../share/CycloneDDS/examples/dynsub/type_cache.h"
-#include "dds/../../share/CycloneDDS/examples/dynsub/size_and_align.h"
+#include "dds/dyntypelib/dyntypelib.h"
+#include "dds/dyntypelib/domtree.h"
+#include "dds/dyntypelib/print_type.h"
+#include "dds/dyntypelib/type_cache.h"
+#include "dds/dyntypelib/size_and_align.h"
 
 #define DDS_BOOLEAN_TRUE         (1)
 #define DDS_BOOLEAN_FALSE        (0)
@@ -103,7 +101,7 @@ bool check_data(void        *dynamic_sample,
     goto done;
   }
 
-  retval = compare_samples(dtl->typecache, true, dynamic_sample, data_check, &dt->typeobj->_u.complete);
+  retval = dtl_compare_samples(dtl, true, dynamic_sample, data_check, &dt->typeobj->_u.complete);
   if ( retval <= 0 )
     {
       printf("%d: ", retval);
