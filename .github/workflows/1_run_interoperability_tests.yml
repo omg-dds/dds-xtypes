@@ -6,11 +6,11 @@ on:
       publishers:
         description: Publishers to use
         type: string
-        default: '["connext_dds","toc_coredx_dds", "eclipse_cyclone", "opendds"]'
+        default: '["connext_dds","toc_coredx_dds", "eclipse_cyclone", "opendds", "dust_dds"]'
       subscribers:
         description: Subscribers to use
         type: string
-        default: '["connext_dds","toc_coredx_dds", "eclipse_cyclone", "opendds"]'
+        default: '["connext_dds","toc_coredx_dds", "eclipse_cyclone", "opendds", "dust_dds"]'
 jobs:
   generate_timestamp:
     runs-on: ubuntu-latest
@@ -80,6 +80,9 @@ jobs:
         to2_enabled=true
         if [[ "${publisher_exe,,}" == *opendds* || "${subscriber_exe,,}" == *opendds* ]]; then
           xcdr1_enabled=false
+        fi
+        if [[ "${publisher_exe,,}" == *dust_dds* || "${subscriber_exe,,}" == *dust_dds* ]]; then
+          to1_enabled=false
         fi
         if [[ "$xcdr1_enabled" == true ]]; then
           if [[ "$to1_enabled" == true ]]; then
