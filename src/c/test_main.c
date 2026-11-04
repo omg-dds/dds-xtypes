@@ -195,6 +195,7 @@ void log_message(Verbosity level_verbosity, const char *format, ...)
 #define OPT_TYPE_FILE                0x100A
 #define OPT_DATA_FOLDER              0x100B
 #define OPT_DATA_FILE                0x100C
+#define OPT_PERIODIC_ANNOUNCEMENT    0x100D
 
 static struct option long_opts[] =
     {
@@ -212,6 +213,7 @@ static struct option long_opts[] =
         { "type-file", required_argument, NULL, OPT_TYPE_FILE},
         { "data-folder", required_argument, NULL, OPT_DATA_FOLDER},
         { "data-file", required_argument, NULL, OPT_DATA_FILE},
+        { "periodic-announcement", required_argument, NULL, OPT_PERIODIC_ANNOUNCEMENT},
         {NULL, 0, NULL, 0}};
 
 /*************************************************************/
@@ -253,6 +255,8 @@ typedef struct TestOptions_s
 
     int type_object_version;
     bool print_typeid;
+
+    useconds_t periodic_announcement_period_us;
 } TestOptions;
 
 //-------------------------------------------------------------
@@ -299,6 +303,8 @@ TestOptions TestOptions_create()
     options.disable_type_info = false;
     options.type_object_version = 2;
     options.print_typeid = false;
+
+    options.periodic_announcement_period_us = 0;
 
     return options;
 }
@@ -365,6 +371,8 @@ void print_usage(const char *prog)
     printf("   --print-typeid: print typeid (TypeObjectV1) or equivalence hash ");
     printf("                   (TypeObjectV2)\n");
     printf("                          print_typeid\n");
+    printf("   --periodic-announcement <ms> : indicates the periodic participant\n");
+    printf("                                  announcement period in ms. Default 0 (off)\n");
     printf("   -v [e|d]        : set log message verbosity [e: ERROR, d: DEBUG]\n");
 }
 
@@ -821,6 +829,18 @@ bool TestOptions_parse(TestOptions *options, int argc, char *argv[])
             options->print_typeid = true;
             break;
 
+        case OPT_PERIODIC_ANNOUNCEMENT:
+        {
+            unsigned int converted_param = 0;
+            if (sscanf(optarg, "%u", &converted_param) == 0)
+            {
+                log_message(ERROR, "unrecognized value for periodic_announcement %c", optarg[0]);
+                parse_ok = false;
+            }
+            options->periodic_announcement_period_us = (useconds_t) converted_param * 1000;
+            break;
+        }
+
         case 'h':
         {
             print_usage(argv[0]);
@@ -864,6 +884,7 @@ bool TestOptions_parse(TestOptions *options, int argc, char *argv[])
         log_message(DEBUG, "    Disable type info = %d", options->disable_type_info);
         log_message(DEBUG, "    TypeObject version = %d", options->type_object_version);
         log_message(DEBUG, "    Print Type ID = %d", options->print_typeid);
+        log_message(DEBUG, "    Periodic Announcement Period = %ums", (unsigned int)(options->periodic_announcement_period_us/1000));
         log_message(DEBUG, "    Verbosity = %s", to_string_verbosity(verbosity));
         if (!options->publish)
         {
