@@ -1073,6 +1073,7 @@ typedef struct TestApplication_s
 {
     dds_listener_t* dp_listener;
 
+    dds_entity_t domain;
     dds_entity_t dp;
     dds_entity_t pub;
     dds_entity_t sub;
@@ -1119,6 +1120,8 @@ void TestApplication_free(TestApplication *app)
         dtl_free(app->dtl);
     if (app->dp)
         dds_delete(app->dp);
+    if (app->domain)
+        dds_delete(app->domain);
 }
 
 //-------------------------------------------------------------
@@ -1149,6 +1152,8 @@ bool TestApplication_initialize(TestApplication *app, TestOptions *options)
     }
 
     //set_type_object_version(dp_qos, options->type_object_version);
+
+    app->domain = dds_create_domain(options->domain_id, "<CycloneDDS><Domain><Compatibility><AllowMismatchingTypeId>true</AllowMismatchingTypeId></Compatibility></Domain></CycloneDDS>");
 
     app->dp = dds_create_participant(options->domain_id, dp_qos, app->dp_listener);
     if (app->dp == 0)
