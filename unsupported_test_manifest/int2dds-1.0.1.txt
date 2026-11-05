@@ -1,0 +1,9 @@
+# Unsupported tests for int2dds-1.0.1
+#
+# Format: one full test ID per line.
+# Test ID = <dict_name>_<test_case_name>
+
+# --disable-type-info is not supported
+xtypes_v2_type_consistency_test_suite_tc_force_type_validation_1
+xtypes_v2_type_consistency_test_suite_tc_force_type_validation_2
+xtypes_v2_type_consistency_test_suite_tc_force_type_validation_3

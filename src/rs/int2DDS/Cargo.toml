@@ -1,0 +1,17 @@
+[package]
+name = "int2dds_test_main"
+version = "0.1.0"
+description = "int2DDS OMG DDS-XTypes interoperability test application"
+edition = "2021"
+rust-version = "1.89.0"
+
+[dependencies]
+int2dds = "1.0.1"
+clap = { version = "4.5", features = ["derive"] }
+ctrlc = "3.4"
+roxmltree = "0.20"
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+strip = true
