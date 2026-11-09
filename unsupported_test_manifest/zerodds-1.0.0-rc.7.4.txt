@@ -1,0 +1,6 @@
+# Unsupported tests for zerodds-1.0.0-rc.7.4
+#
+# Format: one full test ID per line.
+# Test ID = <dict_name>_<test_case_name>
+
+# empty
